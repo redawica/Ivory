@@ -13,7 +13,7 @@ local items = {
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Self)", tooltip = "Use spell on player", enabled = false, key = "fearward" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Focus)", tooltip = "Use spell on focus target", enabled = false, key = "fearwardmemb" },
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },	
+	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
@@ -26,7 +26,7 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.priest.painIcon()..":26:26\124t Exorcism", tooltip = "Use spell when player mana > 75%", enabled = false, key = "pain" },
 	{ type = "entry", text = "\124T"..data.priest.shackIcon()..":26:26\124t Shackle Undead (Auto Use)", tooltip = "Auto check and use spell on proper enemies", enabled = false, key = "shackundead" },
-	{ type = "entry", text = "\124T"..data.priest.painIcon()..":26:26\124t Pain Suppression", tooltip = "Use spell when member HP < %", enabled = true, value = 20, key = "painsupp" },	
+	{ type = "entry", text = "\124T"..data.priest.painIcon()..":26:26\124t Pain Suppression", tooltip = "Use spell when member HP < %", enabled = true, value = 20, key = "painsupp" },
 	{ type = "entry", text = "\124T"..data.priest.powerIcon()..":26:26\124t Power Infusion (Focus)", tooltip = "Use spell on focus target", enabled = true, key = "powerinfus" },
 	{ type = "entry", text = "\124T"..data.priest.innerIcon()..":26:26\124t +  \124T"..data.priest.hymnIcon()..":26:26\124t Inner Focus + Divine Hymn", tooltip = "Enable spell", enabled = true, key = "innerhymn" },
 	{ type = "entry", text = "Inner Focus + Divine Hymn (Members HP)", tooltip = "Use spell when member HP < %", value = 35, key = "innerhymnhp" },
@@ -40,13 +40,23 @@ local items = {
 	{ type = "page", number = 3, text = "|cff95f900Healing spells settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal members after fight when HP < %", enabled = true, value = 95, key = "noncombatheal" },
-	{ type = "entry", text = "\124T"..data.priest.pwsIcon()..":26:26\124t Power Word: Shield (Before Combat)", tooltip = "Cast shield on members before combat", enabled = false, key = "pwsbeforecombat" },	
-	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },	
-	{ type = "entry", text = "\124T"..data.priest.renewIcon()..":26:26\124t Renew", tooltip = "Use spell when member HP < %.", enabled = true, value = 90, key = "renew" },	
-	{ type = "entry", text = "\124T"..data.priest.penIcon()..":26:26\124t Penance", tooltip = "Use spell when member HP < %", enabled = true, value = 83, key = "penance" },	
-	{ type = "entry", text = "\124T"..data.priest.flashIcon()..":26:26\124t Flash Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 79, key = "flash" },		
-	{ type = "entry", text = "\124T"..data.priest.bindIcon()..":26:26\124t Binding Heal", tooltip = "Use spell when member HP < % and your HP < %", enabled = true, value = 75, key = "bind" },		
+	{ type = "entry", text = "\124T"..data.priest.pwsIcon()..":26:26\124t Power Word: Shield (Before Combat)", tooltip = "Cast shield on members before combat", enabled = false, key = "pwsbeforecombat" },
+	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },
+	{ type = "entry", text = "\124T"..data.priest.renewIcon()..":26:26\124t Renew", tooltip = "Use spell when member HP < %.", enabled = true, value = 90, key = "renew" },
+	{ type = "entry", text = "\124T"..data.priest.penIcon()..":26:26\124t Penance", tooltip = "Use spell when member HP < %", enabled = true, value = 83, key = "penance" },
+	{ type = "entry", text = "\124T"..data.priest.flashIcon()..":26:26\124t Flash Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 79, key = "flash" },
+	{ type = "entry", text = "\124T"..data.priest.bindIcon()..":26:26\124t Binding Heal", tooltip = "Use spell when member HP < % and your HP < %", enabled = true, value = 75, key = "bind" },
 	{ type = "entry", text = "\124T"..data.priest.prayIcon()..":26:26\124t Prayer of Healing", tooltip = "Use spell when member HP < %", enabled = true, value = 75, key = "prayer" },
+	{ type = "separator" },
+	{ type = "page", number = 4, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -74,12 +84,12 @@ end;
 local function OnLoad()
 	ni.GUI.AddFrame("Discipline_DarhangeR", items);
 end
-local function OnUnLoad()  
+local function OnUnLoad()
 	ni.GUI.DestroyFrame("Discipline_DarhangeR");
 end
 
 local queue = {
-		
+
 	"Universal pause",
 	"Inner Fire",
 	"Prayer of Fortitude",
@@ -91,14 +101,16 @@ local queue = {
 	"Combat specific Pause",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
-	"Mana Potions (Use)",		
+	"Mana Potions (Use)",
 	"Racial Stuff",
+	"Trinkets (Config)",
+	"Use enginer gloves",
 	"Shadowfiend",
 	"Fade",
 	"Desperate Prayer",
 	"Power Infusion",
 	"Shackle Undead (Auto Use)",
-	"Inner Focus",	
+	"Inner Focus",
 	"Divine Hymn",
 	"Tank Heal",
 	"Pain Suppression",
@@ -119,7 +131,7 @@ local queue = {
 local abilities = {
 -----------------------------------
 	["Universal pause"] = function()
-		if (data.UniPause() 
+		if (data.UniPause()
 		 or data.PlayerDebuffs("player")) then
 			return true
 		end
@@ -136,33 +148,33 @@ local abilities = {
 -----------------------------------
 	["Prayer of Fortitude"] = function()
 		if ni.player.buff(48162)
-		 or not IsUsableSpell(GetSpellInfo(48162)) then 
+		 or not IsUsableSpell(GetSpellInfo(48162)) then
 		 return false
 	end
 		if ni.spell.available(48162) then
-			ni.spell.cast(48162)	
+			ni.spell.cast(48162)
 			return true
 		end
 	end,
 -----------------------------------
 	["Prayer of Spirit"] = function()
 		if ni.player.buffs("48074||57567")
-		 or not IsUsableSpell(GetSpellInfo(48074)) then 
+		 or not IsUsableSpell(GetSpellInfo(48074)) then
 		 return false
 	end
 		if ni.spell.available(48074) then
-			ni.spell.cast(48074)	
+			ni.spell.cast(48074)
 			return true
 		end
 	end,
 -----------------------------------
 	["Prayer of Shadow Protection"] = function()
 		if ni.player.buff(48170)
-		 or not IsUsableSpell(GetSpellInfo(48170)) then 
+		 or not IsUsableSpell(GetSpellInfo(48170)) then
 		 return false
 	end
 		if ni.spell.available(48170) then
-			ni.spell.cast(48170)	
+			ni.spell.cast(48170)
 			return true
 		end
 	end,
@@ -178,7 +190,7 @@ local abilities = {
 		end
 		if enabledM
 		 and ni.unit.exists("focus")
-		 and not ni.unit.buff("focus", 6346) 
+		 and not ni.unit.buff("focus", 6346)
 		 and ni.spell.available(6346)
 		 and ni.spell.valid("focus", 6346, false, true, true) then
 			ni.spell.cast(6346, "focus")
@@ -190,7 +202,7 @@ local abilities = {
 		local value, enabled = GetSetting("noncombatheal");
 		if enabled
 		 and not UnitAffectingCombat("player")
-		 and ni.spell.available(48068)		 
+		 and ni.spell.available(48068)
 		 and ni.spell.available(48071) then
 		   if ni.members[1].hp < value
 		    and not ni.unit.buff(ni.members[1].unit, 48068, "player")
@@ -209,8 +221,8 @@ local abilities = {
 -----------------------------------
 	["Power Word: Shield (Before Combat)"] = function()
 		local _, enabled = GetSetting("pwsbeforecombat");
-		if enabled 
-		 and ni.spell.available(48066) 
+		if enabled
+		 and ni.spell.available(48066)
 		 and UnitAffectingCombat("player")== nil then
 		  for i = 1, #ni.members do
 		   if ni.members[i].range
@@ -248,12 +260,12 @@ local abilities = {
 		for i = 1, #hstones do
 			if enabled
 			 and ni.player.hp() < value
-			 and ni.player.hasitem(hstones[i]) 
+			 and ni.player.hasitem(hstones[i])
 			 and ni.player.itemcd(hstones[i]) == 0 then
 				ni.player.useitem(hstones[i])
 				return true
 			end
-		end	
+		end
 	end,
 -----------------------------------
 	["Heal Potions (Use)"] = function()
@@ -284,6 +296,16 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Use enginer gloves"] = function()
+		local _, enabled = GetSetting("detect")
+		if ni.player.slotcastable(10)
+		 and ni.player.slotcd(10) == 0
+		 and data.CDorBoss("target", 5, 35, 5, enabled) then
+			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
 	["Racial Stuff"] = function()
 		local hracial = { 33697, 20572, 33702, 26297 }
 		local bloodelf = { 25046, 28730, 50613 }
@@ -300,17 +322,17 @@ local abilities = {
 		if ni.members.averageof(7) < 40
 		 and IsSpellKnown(hracial[i])
 		 and ni.spell.available(hracial[i])
-		 and ni.spell.valid("target", 48125) then 
+		 and ni.spell.valid("target", 48125) then
 					ni.spell.cast(hracial[i])
 					return true
 			end
 		end
 		--- Blood Elf
 		for i = 1, #bloodelf do
-		if ni.player.power() < 70 
+		if ni.player.power() < 70
 		 and IsSpellKnown(bloodelf[i])
 		 and ni.spell.available(bloodelf[i])
-		 and ni.spell.valid("target", 48125) then 
+		 and ni.spell.valid("target", 48125) then
 					ni.spell.cast(bloodelf[i])
 					return true
 			end
@@ -320,7 +342,7 @@ local abilities = {
 		if ni.spell.valid("target", 48125)
 		 and ni.player.hp() < 20
 		 and IsSpellKnown(alracial[i])
-		 and ni.spell.available(alracial[i]) then 
+		 and ni.spell.available(alracial[i]) then
 					ni.spell.cast(alracial[i])
 					return true
 				end
@@ -328,7 +350,7 @@ local abilities = {
 		end,
 -----------------------------------
 	["Fade"] = function()
-		if #ni.members > 1 
+		if #ni.members > 1
 		 and ni.unit.threat("player") >= 2
 		 and not ni.player.buff(586)
 		 and ni.spell.available(586) then
@@ -341,9 +363,15 @@ local abilities = {
 		local value, enabled = GetSetting("despplayer");
 		if enabled
 		 and ni.player.hp() < value
-		 and IsSpellKnown(48173) 
+		 and IsSpellKnown(48173)
 		 and ni.spell.available(48173) then
 			ni.spell.cast(48173)
+			return true
+		end
+		end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 			return true
 		end
 	end,
@@ -358,13 +386,13 @@ local abilities = {
 -----------------------------------
 	["Power Infusion"] = function()
 		local _, enabled1 = GetSetting("powerinfus")
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		if enabled1
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.unit.exists("focus")
 		 and not ni.unit.buff("focus", 10060)
 		 and (not ni.unit.buff("focus", 2825)
-		 or not ni.unit.buff("focus", 32182)) 
+		 or not ni.unit.buff("focus", 32182))
 		 and ni.spell.available(10060)
 		 and ni.spell.valid("focus", 10060, false, true, true) then
 			ni.spell.cast(10060, "focus")
@@ -372,9 +400,9 @@ local abilities = {
 		end
 	end,
 -----------------------------------
-	["Shackle Undead (Auto Use)"] = function()        
+	["Shackle Undead (Auto Use)"] = function()
 		local _, enabled = GetSetting("shackundead")
-		if enabled 
+		if enabled
 		 and ni.unit.exists("target")
 		 and ni.spell.available(10955)
 		 and UnitCanAttack("player", "target") then
@@ -382,7 +410,7 @@ local abilities = {
 		  enemies = ni.unit.enemiesinrange("player", 25)
 		  local dontShackle = false
 		  for i = 1, #enemies do
-		   local tar = enemies[i].guid; 
+		   local tar = enemies[i].guid;
 		   if (ni.unit.creaturetype(enemies[i].guid) == 6
 		    or ni.unit.aura(enemies[i].guid, 49039))
 		    and ni.unit.debuff(tar, 10955, "player") then
@@ -392,7 +420,7 @@ local abilities = {
 		end
 		if not dontShackle then
 		 for i = 1, #enemies do
-		 local tar = enemies[i].guid; 
+		 local tar = enemies[i].guid;
 		  if (ni.unit.creaturetype(enemies[i].guid) == 6
 		   or ni.unit.aura(enemies[i].guid, 49039))
 		   and not ni.unit.isboss(tar)
@@ -412,7 +440,7 @@ local abilities = {
 	["Inner Focus"] = function()
 		local _, enabled = GetSetting("innerhymn");
 		local valueHp = GetSetting("innerhymnhp");
-		local valueCount = GetSetting("innerhymncount");		
+		local valueCount = GetSetting("innerhymncount");
 		if enabled
 		 and ni.members.averageof(valueCount) < valueHp
 		 and ni.spell.available(14751)
@@ -445,7 +473,7 @@ local abilities = {
 		 local rnewtank, _, _, _, _, _, rnewtank_time = ni.unit.buff(tank, 48068, "player")
 		 local pwstank, _, _, _, _, _, pwstank_time = ni.unit.buff(tank, 48066, "player")
 		 local ws = ni.unit.debuff(tank, 6788)
-		-- Heal MT with Renew 
+		-- Heal MT with Renew
 		if ni.spell.available(48068)
 		 and (not rnewtank
 		 or (rnewtank and rnewtank_time - GetTime() < 2))
@@ -469,8 +497,8 @@ local abilities = {
 		 local rnewotank, _, _, _, _, _, rnewotank_time = ni.unit.buff(offTank, 48068, "player")
 		 local pwotank, _, _, _, _, _, pwotank_time = ni.unit.buff(offTank, 48066, "player")
 		 local ws = ni.unit.debuff(offTank, 6788)
-		-- Heal OT with Renew 
-		if ni.spell.available(48068) 
+		-- Heal OT with Renew
+		if ni.spell.available(48068)
 		 and (not rnewotank
 		 or (rnewotank and rnewotank_time - GetTime() < 2))
 		 and ni.spell.valid(offTank, 48068, false, true, true) then
@@ -619,7 +647,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Prayer of Healing"] = function()
-		local value, enabled = GetSetting("prayer");		
+		local value, enabled = GetSetting("prayer");
 		if enabled
 		 and ni.spell.available(48072)
 		 and not ni.player.ismoving() then
@@ -642,7 +670,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Renew"] = function()
-		local value, enabled = GetSetting("renew");	
+		local value, enabled = GetSetting("renew");
 		if enabled
 		 and ni.spell.available(48068) then
 		 for i = 1, #ni.members do
@@ -657,11 +685,11 @@ local abilities = {
 	end,
 -----------------------------------
 	["Binding Heal"] = function()
-		local value, enabled = GetSetting("bind");	
+		local value, enabled = GetSetting("bind");
 		if enabled
 		 and ni.spell.available(48120)
 		 and not ni.player.ismoving()
-		 and ni.player.hp() < value 
+		 and ni.player.hp() < value
 		 and ni.members[1].hp < value
 		 and ni.spell.valid(ni.members[1].unit, 48120, false, true, true) then
 				ni.spell.cast(48120, ni.members[1].unit)
@@ -669,7 +697,7 @@ local abilities = {
 		end
 	end,
 -----------------------------------
-	["Abolish Disease (Member)"] = function() 
+	["Abolish Disease (Member)"] = function()
 		local _, enabled = GetSetting("abolishmb")
 		if enabled
 		and ni.spell.available(552) then
@@ -709,7 +737,7 @@ local abilities = {
 		if enabled
 		 and ni.spell.available(48071)
 		 and not ni.player.ismoving()
-		 and ni.members[1].hp < value 
+		 and ni.members[1].hp < value
 		 and ni.spell.valid(ni.members[1].unit, 48071, false, true, true) then
 				ni.spell.cast(48071, ni.members[1].unit)
 			return true
@@ -728,14 +756,14 @@ local abilities = {
 			ni.spell.cast(48125, "target")
 			return true
 		end
-	end,	
+	end,
 -----------------------------------
 	["Window"] = function()
 		if not popup_shown then
-		  ni.debug.popup("Discipline Priest by DarhangeR for 3.3.5a", 
+		  ni.debug.popup("Discipline Priest by DarhangeR for 3.3.5a",
 		 "Welcome to Discipline Priest Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank & Off Tank put tank name to Tank Overrides and press Enable Main/Off\n-For use Power Infusion focus your ally or yourself.")
 		popup_shown = true;
-		end 
+		end
 	end,
 }
 

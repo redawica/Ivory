@@ -183,6 +183,17 @@ if build == 30300 and level == 80 and data then
     { type = "entry", text = "|T" .. icon(31821) .. ":26:26|t Aura Mastery", tooltip = "Use Aura Mastery when allies HP < % (with throttle)", enabled = true, key = "auramastery" },
     { type = "entry", text = "Aura Mastery HP", tooltip = "HP threshold for Aura Mastery", enabled = true, value = 30, key = "auramasteryhp" },
     { type = "entry", text = "Aura Mastery Count", tooltip = "Allies below threshold required", enabled = true, value = 4, key = "auramasterycount" },
+
+    { type = "separator" },
+    { type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+    { type = "separator" },
+    { type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
   };
 
   local function GetSetting(name)
@@ -227,6 +238,7 @@ if build == 30300 and level == 80 and data then
     "Mana Potions (Use)",
     "Racial Stuff",
     "Use engineer gloves",
+    "Trinkets (Config)",
     "Trinkets",
     "Lay on Hands (Self)",
     "Lay on Hands (Ally)",
@@ -469,6 +481,12 @@ if build == 30300 and level == 80 and data then
           and data.CDorBoss("target", 5, 35, 5, enabled)
           and data.paladin.RetriRange() then
           ni.player.useinventoryitem(10)
+        return true
+      end
+    end,
+
+    ["Trinkets (Config)"] = function()
+      if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
         return true
       end
     end,
