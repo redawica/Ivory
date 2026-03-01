@@ -1,19 +1,11 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = {};
 local build = select(4, GetBuildInfo());
 local p = "player";
 local t = "target";
 local level = UnitLevel(p);
 local function ActiveEnemies()
-	table.wipe(enemies);
-	enemies = ni.unit.enemiesinrange(t, 8);
-	for k, v in ipairs(enemies) do
-		if ni.player.threat(v.guid) == -1 then
-			table.remove(enemies, k);
-		end
-	end
-	return #enemies;
+	return data.GetActiveEnemies(t, 8, true, 0.15)
 end
 if build == 30300 and level == 80 and data then
 	local items = {
@@ -734,15 +726,8 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------	
 		["Pummel (Interrupt)"] = function()
 			local _, enabled = GetSetting("autointerrupt")
-			if enabled
-					and ni.spell.shouldinterrupt(t)
-					and ni.spell.available(spells.pummel.id)
-					and ni.spell.valid(t, spells.pummel.id, true, true)
-					and (ni.unit.castingpercent(t) > 80
-						or ni.unit.ischanneling(t))
-			then
-				ni.spell.castinterrupt(t)
-				data.LastInterrupt = GetTime()
+			if (ni.unit.castingpercent(t) > 80 or ni.unit.ischanneling(t))
+			 and data.TryInterrupt(t, enabled, spells.pummel.id, 0.35) then
 				return true
 			end
 		end,

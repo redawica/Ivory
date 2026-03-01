@@ -241,15 +241,9 @@ if build == 30300 and level == 80 and data and Muti then
 		-----------------------------------	
 		["Kick (Interrupt)"] = function()
 			local _, enabled = GetSetting("autointerrupt")
-			if enabled
-					and ni.spell.shouldinterrupt("target")
-					and ni.spell.available(1766)
-					and GetTime() - data.LastInterrupt > 9
-					and ni.spell.valid("target", 1766, true, true) then
-				ni.spell.castinterrupt("target")
-				data.LastInterrupt = GetTime()
-				return true
-			end
+		if data.TryInterrupt("target", enabled, 1766, 0.35) then
+			return true
+		end
 		end,
 		-----------------------------------	
 		["Tricks of the Trade"] = function()

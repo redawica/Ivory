@@ -1,18 +1,10 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = { };
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
 local ExploShot = IsSpellKnown(60053)
 local function ActiveEnemies()
-	table.wipe(enemies);
-	enemies = ni.unit.enemiesinrange("target", 7);
-	for k, v in ipairs(enemies) do
-		if ni.player.threat(v.guid) == -1 then
-			table.remove(enemies, k);
-		end
-	end
-	return #enemies;
+	return data.GetActiveEnemies("target", 7, true, 0.15)
 end
 if build == 30300 and level == 80 and data and ExploShot then
 local items = {
