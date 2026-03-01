@@ -42,6 +42,16 @@ local items = {
 	{ type = "entry", text = "\124T"..data.shaman.lhwaveIcon()..":26:26\124t Lesser Healing Wave", tooltip = "Use spell when member HP < %", enabled = true, value = 40, key = "leserhealing" },
 	{ type = "entry", text = "\124T"..data.shaman.hwaveIcon()..":26:26\124t Healing Wave", tooltip = "Use spell when member HP < %", enabled = true, value = 70, key = "healingwave" },
 	{ type = "entry", text = "\124T"..data.shaman.chainIcon()..":26:26\124t Chain Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 83, key = "сhain" },	
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -83,6 +93,7 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
 	"Wind Shear (Interrupt)",
 	"Control (Member)",
@@ -199,6 +210,12 @@ local abilities = {
 				ni.player.useitem(mpot[i])
 				return true
 			end
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
 		end
 	end,
 -----------------------------------

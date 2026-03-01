@@ -48,6 +48,16 @@ local items = {
 	{ type = "entry", text = "\124T"..data.paladin.flashIcon()..":26:26\124t Flash of Light", tooltip = "Use spell when member HP < %", enabled = true, value = 85, key = "flash" },	
 	{ type = "entry", text = "\124T"..data.paladin.lightIcon()..":26:26\124t Holy Light", tooltip = "Use spell when member HP < %", enabled = true, value = 40, key = "light" },
 	{ type = "entry", text = "\124T"..data.paladin.lightIcon()..":26:26\124t Holy Light (Glyph)", tooltip = "Use spell when you have glyph and member HP < %", enabled = true, value = 55, key = "lightglyph" },
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -91,6 +101,7 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
 	"Divine Shield",
 	"Cleanse (Member)",
@@ -250,6 +261,12 @@ local abilities = {
 				ni.player.useitem(mpot[i])
 				return true
 			end
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
 		end
 	end,
 -----------------------------------
