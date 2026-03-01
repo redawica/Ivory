@@ -58,6 +58,16 @@ local items = {
 	{ type = "separator" },	
 	{ type = "entry", text = "\124T"..data.priest.renewIcon()..":26:26\124t Renew", tooltip = "Use spell when member HP < %. And you move or your mana < 55%", enabled = true, value = 89, key = "renew" },	
 	{ type = "entry", text = "\124T"..data.priest.greatIcon()..":26:26\124t Greater Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 58, key = "great" },
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -101,7 +111,8 @@ local RenewBuildActive = {
 	"Combat specific Pause",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
-	"Mana Potions (Use)",		
+	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
 	"Shadowfiend",
 	"Fade",
@@ -133,7 +144,8 @@ local SerenBuildACtive = {
 	"Combat specific Pause",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
-	"Mana Potions (Use)",		
+	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
 	"Shadowfiend",
 	"Fade",
@@ -296,6 +308,12 @@ local abilities = {
 				ni.player.useitem(mpot[i])
 				return true
 			end
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
 		end
 	end,
 -----------------------------------

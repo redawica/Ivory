@@ -88,15 +88,8 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function ActiveEnemies()
-		table.wipe(enemies);
-		enemies = ni.unit.enemiesinrange("target", 7);
 		if ni.vars.combat.aoe then
-			for k, v in ipairs(enemies) do
-				if ni.player.threat(v.guid) == -1 then
-					table.remove(enemies, k);
-				end
-			end
-			return #enemies;
+			return data.GetActiveEnemies("target", 7, true, 0.15)
 		end
 	end
 
