@@ -49,6 +49,40 @@ local bleedUp = { 48564, 48566, 46856 };
 local data = { };
 data.LastDispel = 0
 data.LastInterrupt = 0
+
+local enemyCache = {
+	stamp = 0,
+	key = "",
+	count = 0,
+}
+
+local function CacheKey(unit, range, threat)
+	return tostring(unit) .. "|" .. tostring(range) .. "|" .. tostring(threat)
+end
+
+data.GetActiveEnemies = function(unit, range, useThreatFilter, throttle)
+	unit = unit or "target"
+	range = range or 8
+	throttle = throttle or 0.15
+	local now = GetTime()
+	local key = CacheKey(unit, range, useThreatFilter and 1 or 0)
+	if enemyCache.key == key and now - enemyCache.stamp <= throttle then
+		return enemyCache.count
+	end
+
+	local enemies = ni.unit.enemiesinrange(unit, range) or {}
+	local count = 0
+	for _, v in ipairs(enemies) do
+		if (not useThreatFilter) or ni.player.threat(v.guid) ~= -1 then
+			count = count + 1
+		end
+	end
+
+	enemyCache.stamp = now
+	enemyCache.key = key
+	enemyCache.count = count
+	return count
+end
 				
 -- Check Start Fight with TTD --
 data.CDsaverTTD = function(unit, valueTime, valueTTD, hp)
@@ -72,26 +106,85 @@ data.CombatStart = function(value)
 		return false
 end
 
-data.CDorBoss = function(unit, valueTime, valueTTD, hp, enabled)
+local function GetCooldownProfile(unit, valueTime, valueTTD, hp)
+	local profile = {
+		valueTime = valueTime or 5,
+		valueTTD = valueTTD or 25,
+		hp = hp or 0,
+	}
+	local inInstance, instanceType = IsInInstance()
+	local isBoss = unit and ni.unit.isboss(unit) or false
+
+	if inInstance and instanceType == "raid" then
+		profile.valueTime = math.max(profile.valueTime, 3)
+		profile.valueTTD = math.max(profile.valueTTD, 20)
+	elseif inInstance and instanceType == "party" then
+		profile.valueTime = math.max(profile.valueTime, 2)
+		profile.valueTTD = math.max(profile.valueTTD, 12)
+	else
+		if UnitLevel("player") < 80 then
+			profile.valueTime = math.max(profile.valueTime, 1)
+			profile.valueTTD = math.max(profile.valueTTD, 4)
+		else
+			profile.valueTime = math.max(profile.valueTime, 6)
+			profile.valueTTD = math.max(profile.valueTTD, 8)
+		end
+	end
+
+	if isBoss then
+		profile.valueTime = math.max(0, profile.valueTime - 1)
+		profile.valueTTD = math.max(5, profile.valueTTD - 5)
+	end
+
+	return profile
+end
+
+data.ShouldUseCooldowns = function(unit, valueTime, valueTTD, hp, requireBoss)
 	if ni.vars.combat.cd then
-		return true;
+		return true
 	end
-	local isboss = false;
-	if enabled then
-	isboss = ni.unit.isboss(unit);
-	 if not isboss then
-		return false;
-		end
+
+	local isBoss = unit and ni.unit.isboss(unit) or false
+	if requireBoss and not isBoss then
+		return false
 	end
-	if data.CDsaverTTD(unit, valueTime, valueTTD, hp) then
-	 if enabled then
-	  if isboss then
-		return true;
-      end
-	return true;
-		end
+
+	local profile = GetCooldownProfile(unit, valueTime, valueTTD, hp)
+	if data.CDsaverTTD(unit, profile.valueTime, profile.valueTTD, profile.hp) then
+		return true
 	end
-		return false;
+
+	return false
+end
+
+data.CDorBoss = function(unit, valueTime, valueTTD, hp, enabled)
+	return data.ShouldUseCooldowns(unit, valueTime, valueTTD, hp, enabled)
+end
+
+data.TryInterrupt = function(unit, enabled, spellId, lockout)
+	unit = unit or "target"
+	lockout = lockout or 0.35
+	if not enabled then
+		return false
+	end
+	if not spellId then
+		return false
+	end
+	if not ni.spell.shouldinterrupt(unit) then
+		return false
+	end
+	if not ni.spell.available(spellId) then
+		return false
+	end
+	if not ni.spell.valid(unit, spellId, true, true) then
+		return false
+	end
+	if GetTime() - data.LastInterrupt <= lockout then
+		return false
+	end
+	ni.spell.castinterrupt(unit)
+	data.LastInterrupt = GetTime()
+	return true
 end
 
 data.ControlMember = function(t)

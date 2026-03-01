@@ -113,12 +113,6 @@ local items = {
 		key = "full_bags",
 	},
 }
-local function OnLoad()
-	ni.GUI.AddFrame("Fishing", items);
-end
-local function OnUnload()
-	ni.GUI.DestroyFrame("Fishing");
-end
 local function FullBags()
 	local fullbags = 0;
 	for i = 0, 4 do
@@ -127,6 +121,55 @@ local function FullBags()
 		end
 	end
 	return fullbags == 5
+end
+
+local localeDefaults = {
+	enUS = { bobber = "Fishing Bobber", pool = "School" },
+	ruRU = { bobber = "Поплавок", pool = "Косяк" },
+	esES = { bobber = "Corcho de pesca", pool = "Banco" },
+	esMX = { bobber = "Corcho de pesca", pool = "Banco" },
+}
+
+
+local function IsKnownLocaleValue(value, field)
+	for _, defaults in pairs(localeDefaults) do
+		if defaults[field] == value then
+			return true
+		end
+	end
+	return false
+end
+local function ResolveLocaleInputs()
+	local locale = GetLocale()
+	local defaults = localeDefaults[locale] or localeDefaults.enUS
+	if not inputs["bobber"] or inputs["bobber"] == "" or IsKnownLocaleValue(inputs["bobber"], "bobber") then
+		inputs["bobber"] = defaults.bobber
+	end
+	if not inputs["pool"] or inputs["pool"] == "" or IsKnownLocaleValue(inputs["pool"], "pool") then
+		inputs["pool"] = defaults.pool
+	end
+end
+
+local function IsBobberName(name)
+	if not name then
+		return false
+	end
+	if name == inputs["bobber"] then
+		return true
+	end
+	for _, defaults in pairs(localeDefaults) do
+		if name == defaults.bobber then
+			return true
+		end
+	end
+	return false
+end
+local function OnLoad()
+	ResolveLocaleInputs()
+	ni.GUI.AddFrame("Fishing", items);
+end
+local function OnUnload()
+	ni.GUI.DestroyFrame("Fishing");
 end
 local Fishing = GetSpellInfo(7620);
 local offset;
@@ -139,6 +182,8 @@ else
 end
 local functionsent = 0;
 local lure_applied = 0;
+local failed_bobber_reads = 0;
+local last_recast = 0;
 local abilities = {
 	["action check"] = function()
 		if FullBags() then
@@ -230,15 +275,18 @@ local abilities = {
 		if UnitChannelInfo("player") then
 			if GetTime() - functionsent > 1 then
 				local playerguid = UnitGUID("player");
+				local foundBobber = false
 				for k, v in pairs(ni.objects) do
 					if type(k) ~= "function" and (type(k) == "string" and type(v) == "table") then
-						if v.name == inputs["bobber"] then
+						if IsBobberName(v.name) then
 							local creator = v:creator();
 							if creator == playerguid then
+								foundBobber = true
 								local ptr = ni.memory.objectpointer(v.guid);
 								if ptr then
 									local result = ni.memory.read("byte", ptr, offset);
 									if result == 1 then
+										failed_bobber_reads = 0
 										ni.player.interact(v.guid);
 										functionsent = GetTime();
 										return true;
@@ -247,6 +295,15 @@ local abilities = {
 							end 
 						end
 					end
+				end
+				if foundBobber then
+					failed_bobber_reads = failed_bobber_reads + 1
+				end
+				if failed_bobber_reads >= 3 and GetTime() - last_recast > 2 then
+					failed_bobber_reads = 0
+					last_recast = GetTime()
+					ni.spell.stopchanneling()
+					return true
 				end
 			end
 		else

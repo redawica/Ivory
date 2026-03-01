@@ -1,19 +1,11 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = { };
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
 local FrostStrike = IsSpellKnown(55268)
 local Howling = IsSpellKnown(51411)
 local function ActiveEnemies()
-	table.wipe(enemies);
-	enemies = ni.unit.enemiesinrange("target", 7);
-	for k, v in ipairs(enemies) do
-		if ni.player.threat(v.guid) == -1 then
-			table.remove(enemies, k);
-		end
-	end
-	return #enemies;
+	return data.GetActiveEnemies("target", 7, true, 0.15)
 end
 if build == 30300 and level == 80 and data and FrostStrike and Howling then
 local items = {
@@ -290,13 +282,7 @@ local abilities = {
 -----------------------------------
 	["Mind Freeze (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled	
-		 and ni.spell.shouldinterrupt("target")
-		 and ni.spell.available(47528)
-		 and GetTime() - data.LastInterrupt > 9
-		 and ni.spell.valid("target", 47528, true, true)  then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		if data.TryInterrupt("target", enabled, 47528, 0.35) then
 			return true
 		end
 	end,

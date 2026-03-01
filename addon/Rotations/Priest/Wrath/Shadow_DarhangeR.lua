@@ -388,13 +388,7 @@ local abilities = {
 -----------------------------------	
 	["Silence (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled 
-		 and ni.spell.shouldinterrupt("target")
-		 and ni.spell.available(15487)
-		 and GetTime() - data.LastInterrupt > 9
-		 and ni.spell.valid("target", 15487, true, true)  then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		if data.TryInterrupt("target", enabled, 15487, 0.35) then
 			return true
 		end
 	end,
