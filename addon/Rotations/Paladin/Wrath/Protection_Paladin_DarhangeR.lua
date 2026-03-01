@@ -60,6 +60,16 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.paladin.cleanIcon()..":26:26\124t Cleanse (Self)", tooltip = "Auto dispel debuffs from player", enabled = true, key = "cleans" },
 	{ type = "entry", text = "\124T"..data.paladin.handFreeIcon()..":26:26\124t Hand of Freedom (Self)", tooltip = "Auto cast on player when you have criteria for spell", enabled = true, key = "freedom" },
+	{ type = "separator" },
+	{ type = "page", number = 3, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -105,6 +115,7 @@ local queue = {
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
 	"Racial Stuff",
+	"Trinkets (Config)",
 	"Lay on Hands (Self)",
 	"Divine Protection",
 	"Divine Sacrifice",
@@ -311,6 +322,12 @@ local abilities = {
 				end
 			end
 		end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
+		end
+	end,
 -----------------------------------
 	["Lay on Hands (Self)"] = function()
 		local value, enabled = GetSetting("layon");

@@ -20,6 +20,7 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",  enabled = false,                                                               key = "commandshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.inter1Icon() .. ":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",          tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
+		{ type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
 		{
 			type = "entry",
 			text = "|cFFFF0000\124T" ..
@@ -371,6 +372,7 @@ if build == 30300 and level == 80 and data then
 		-- "Racial Stuff",
 		"Use enginer gloves",
 		"Trinkets",
+		"Cancel Shadowmourne",
 		"Bombs",
 		"Heroic Throw",
 		-- "Death Wish",
@@ -723,7 +725,7 @@ if build == 30300 and level == 80 and data then
 				end
 			end
 		end,
-		-----------------------------------	
+		-----------------------------------
 		["Pummel (Interrupt)"] = function()
 			local _, enabled = GetSetting("autointerrupt")
 			if (ni.unit.castingpercent(t) > 80 or ni.unit.ischanneling(t))
@@ -731,8 +733,8 @@ if build == 30300 and level == 80 and data then
 				return true
 			end
 		end,
-		-----------------------------------	
-		-----------------------------------	
+		-----------------------------------
+		-----------------------------------
 		["Heroic Throw"] = function()
 			if not data.warrior.InRange()
 					and UnitAffectingCombat(p)
@@ -743,7 +745,7 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 
-		-----------------------------------	
+		-----------------------------------
 		["Death Wish"] = function()
 			local sunder, _, _, count = ni.unit.debuff(t, spells.sunderArmor.id)
 			local _, enabled = GetSetting("detect")
@@ -885,7 +887,7 @@ if build == 30300 and level == 80 and data then
 			end
 			return false
 		end,
-		-----------------------------------	
+		-----------------------------------
 		["Sunder Armor"] = function()
 			local sunder, _, _, count = ni.unit.debuff(t, spells.sunderArmor.id)
 			local _, enabled = GetSetting("sunder")
@@ -926,6 +928,21 @@ if build == 30300 and level == 80 and data then
 			return false
 		end,
 		-----------------------------------
+
+		-----------------------------------
+		["Cancel Shadowmourne"] = function()
+			local _, enabled = GetSetting("cancelshadow")
+			if enabled then
+				local p = "player"
+				for i = 1, 40 do
+					local _, _, _, _, _, _, _, u, _, _, spellId = UnitBuff(p, i)
+					if u == p and spellId == 73422 then
+						CancelUnitBuff(p, i)
+						break
+					end
+				end
+			end
+		end,
 
 	}
 
