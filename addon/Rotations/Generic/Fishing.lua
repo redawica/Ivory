@@ -12,6 +12,8 @@ local enables = {
 }
 local values = {
 	lure = 6532,
+	failed_attempts = 3,
+	cast_delay = 1.5,
 }
 local inputs = {
 	pole = "6256",
@@ -70,6 +72,24 @@ local items = {
 		width = 140,
 		height = 15,
 		key = "bobber"
+	},
+	{
+		type = "entry",
+		text = "Failed attempts",
+		tooltip = "How many unreadable bobber checks before forcing recast",
+		enabled = true,
+		value = values["failed_attempts"],
+		width = 50,
+		key = "failed_attempts",
+	},
+	{
+		type = "entry",
+		text = "Delay between casts",
+		tooltip = "Delay in seconds before casting fishing again",
+		enabled = true,
+		value = values["cast_delay"],
+		width = 50,
+		key = "cast_delay",
 	},
 	{
 		type = "entry",
@@ -299,7 +319,11 @@ local abilities = {
 				if foundBobber then
 					failed_bobber_reads = failed_bobber_reads + 1
 				end
-				if failed_bobber_reads >= 3 and GetTime() - last_recast > 2 then
+				local recastAfter = tonumber(values["failed_attempts"]) or 3
+				if recastAfter < 1 then
+					recastAfter = 1
+				end
+				if failed_bobber_reads >= recastAfter and GetTime() - last_recast > 2 then
 					failed_bobber_reads = 0
 					last_recast = GetTime()
 					ni.spell.stopchanneling()
@@ -316,7 +340,11 @@ local abilities = {
 					end
 				end
 			end
-			ni.spell.delaycast(Fishing, nil, 1.5);
+			local castDelay = tonumber(values["cast_delay"]) or 1.5
+			if castDelay < 0 then
+				castDelay = 0
+			end
+			ni.spell.delaycast(Fishing, nil, castDelay);
 			ni.utils.resetlasthardwareaction();
 		end
 	end,

@@ -58,7 +58,9 @@ if build == 30300 and level == 80 and data then
 
     { type = "entry", text = "|T" .. icon(54428) .. ":26:26|t Divine Plea", tooltip = "Use Divine Plea when player mana < %", enabled = true, value = 50, key = "plea" },
     { type = "entry", text = "|T" .. icon(53601) .. ":26:26|t Sacred Shield", tooltip = "Cast Sacred Shield in combat when missing (optional HP threshold)", enabled = true, value = 60, key = "sacred" },
+    { type = "entry", text = "|T" .. icon(32223) .. ":26:26|t Crusader Aura", tooltip = "Auto keep Crusader Aura out of combat", enabled = true, key = "crusaderaura" },
     { type = "entry", text = "|T" .. icon(48785) .. ":26:26|t Flash of Light (Self)", tooltip = "Use Flash of Light with Art of War proc when HP < %", enabled = true, value = 90, key = "flashoflight" },
+    { type = "entry", text = "Ignore Exorcism CD", tooltip = "Allow Flash of Light with Art of War even if Exorcism is ready", enabled = false, key = "ignoreexocd" },
 
     { type = "separator" },
     { type = "title", text = "Important settings" },
@@ -66,6 +68,7 @@ if build == 30300 and level == 80 and data then
 
     { type = "entry", text = "Auto Target", tooltip = "Automatically target enemies in combat", enabled = true, key = "autotarget" },
     { type = "entry", text = "|T" .. icon(31884) .. ":26:26|t Boss Detect", tooltip = "Auto detect bosses for cooldown usage", enabled = true, key = "detect" },
+    { type = "entry", text = "Profile Pause", tooltip = "Custom profile pause throttle in seconds", enabled = true, value = 1.5, key = "profilepause" },
     { type = "entry", text = "|T" .. icon(2382) .. ":26:26|t Debug Printing", tooltip = "Enable debug output", enabled = false, value = 1.5, key = "Debug" },
 
     -- PAGE 2: Rotation Settings #2
@@ -115,7 +118,9 @@ if build == 30300 and level == 80 and data then
 
     { type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
     { type = "entry", text = "Use racial abilities", tooltip = "Use racial abilities on cooldown/boss", enabled = true, key = "racial" },
+    { type = "entry", text = "Using Potions", tooltip = "Use burst potion in combat on cooldown/boss", enabled = false, value = 0, key = "usingpotions" },
     { type = "entry", text = "|T" .. icon(31884) .. ":26:26|t Avenging Wrath", tooltip = "Use Avenging Wrath on boss with seal stacks", enabled = true, key = "avengingwrath" },
+    { type = "entry", text = "Engineering bombs", tooltip = "Use engineering bombs in combat", enabled = false, key = "engineeringbombs" },
 
     -- PAGE 3: Rotation Settings #3
     { type = "separator" },
@@ -134,6 +139,7 @@ if build == 30300 and level == 80 and data then
     { type = "entry", text = "|T" .. icon(48806) .. ":26:26|t Hammer of Wrath", tooltip = "Use Hammer of Wrath on targets below 20% HP", enabled = true, key = "hammerwrath" },
     { type = "entry", text = "|T" .. icon(10326) .. ":26:26|t Turn Evil (Auto)", tooltip = "Use Turn Evil vs Undead/Demon", enabled = false, key = "turn" },
     { type = "entry", text = "|T" .. icon(20066) .. ":26:26|t Auto Control (Allys)", tooltip = "Auto control mind-controlled allies", enabled = true, key = "control" },
+    { type = "entry", text = "Auto Interrupt (Hammer of Justice)", tooltip = "Use Hammer of Justice as backup interrupt", enabled = false, key = "hojinterrupt" },
 
     { type = "separator" },
     { type = "title", text = "Dispel" },
@@ -228,6 +234,7 @@ if build == 30300 and level == 80 and data then
     "Universal pause",
     "AutoTarget",
     "Blessings (Raid/Dungeon)",
+    "Crusader Aura",
     "Main Seal",
     "Seal of Command (AoE)",
     "Cancel Righteous Fury",
@@ -253,8 +260,11 @@ if build == 30300 and level == 80 and data then
     "Divine Plea",
     "Sacred Shield (In Combat)",
     "Avenging Wrath",
+    "Burst Potion",
+    "Engineering Bombs",
     "Aura Mastery",
     "Turn Evil (Auto Use)",
+    "Hammer of Justice (Interrupt)",
     "Control (Member)",
     "Hammer of Wrath",
     "Hammer of Wrath (Auto Target)",
@@ -311,6 +321,18 @@ if build == 30300 and level == 80 and data then
             return true
           end
         end
+      end
+    end,
+
+    ["Crusader Aura"] = function()
+      local _, enabled = GetSetting("crusaderaura")
+      if enabled
+        and not UnitAffectingCombat("player")
+        and IsSpellKnown(32223)
+        and ni.spell.available(32223)
+        and not ni.player.buff(32223) then
+        ni.spell.cast(32223)
+        return true
       end
     end,
 
@@ -569,13 +591,14 @@ if build == 30300 and level == 80 and data then
     end,
 
     ["Flash of Light (Self)"] = function()
-      local value, enabled = GetSetting("flashoflight");
+      local value, enabled = GetSetting("flashoflight")
+      local _, ignoreExoCD = GetSetting("ignoreexocd")
       local aow = data.paladin.aow()
       if enabled
         and ni.player.hp() < value
         and aow
         and ni.spell.isinstant(48785)
-        and not ni.spell.available(48801)
+        and (ignoreExoCD or not ni.spell.available(48801))
         and ni.spell.available(48785) then
         ni.spell.cast(48785, "player")
         return true
@@ -680,6 +703,48 @@ if build == 30300 and level == 80 and data then
         ni.spell.cast(31884)
         data.paladin.LastAven = GetTime()
         return true
+      end
+    end,
+
+    ["Burst Potion"] = function()
+      local _, enabled = GetSetting("usingpotions")
+      local _, bossDetect = GetSetting("detect")
+      local burstPotions = { 40211, 22838 }
+      if not enabled
+        or not UnitAffectingCombat("player")
+        or not data.CDorBoss("target", 5, 35, 5, bossDetect)
+        or not data.paladin.RetriRange() then
+        return
+      end
+
+      for i = 1, #burstPotions do
+        local potion = burstPotions[i]
+        if ni.player.hasitem(potion)
+          and ni.player.itemcd(potion) == 0 then
+          ni.player.useitem(potion)
+          return true
+        end
+      end
+    end,
+
+    ["Engineering Bombs"] = function()
+      local _, enabled = GetSetting("engineeringbombs")
+      local _, bossDetect = GetSetting("detect")
+      local bombs = { 42641, 41119 }
+      if not enabled
+        or not UnitAffectingCombat("player")
+        or not data.CDorBoss("target", 5, 35, 5, bossDetect)
+        or not data.paladin.RetriRange() then
+        return
+      end
+
+      for i = 1, #bombs do
+        local bomb = bombs[i]
+        if ni.player.hasitem(bomb)
+          and ni.player.itemcd(bomb) == 0 then
+          ni.player.useitem(bomb)
+          return true
+        end
       end
     end,
 
@@ -916,6 +981,13 @@ if build == 30300 and level == 80 and data then
             end
           end
         end
+      end
+    end,
+
+    ["Hammer of Justice (Interrupt)"] = function()
+      local _, enabled = GetSetting("hojinterrupt")
+      if data.TryInterrupt("target", enabled, 10308, 0.35) then
+        return true
       end
     end,
 

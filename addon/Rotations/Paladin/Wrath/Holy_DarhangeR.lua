@@ -13,6 +13,8 @@ local items = {
 	{ type = "entry", text = "\124T"..data.paladin.pleaIcon()..":26:26\124t Divine Plea", tooltip = "Use spell when player mana < %", enabled = true, value = 60, key = "plea" },
 	{ type = "entry", text = "\124T"..data.paladin.illumIcon()..":26:26\124t Divine Illumination", tooltip = "Use spell when player mana < %", enabled = true, value = 35, key = "illumination" },
 	{ type = "entry", text = "\124T"..data.paladin.aveWrathIcon()..":26:26\124t Avenging Wrath", tooltip = "Use spell when enabled", enabled = true, key = "aven" },
+	{ type = "entry", text = "\124T"..(select(3, GetSpellInfo(32223)) or "")..":26:26\124t Crusader Aura", tooltip = "Auto use aura out of combat", enabled = true, key = "crusaderaura" },
+	{ type = "entry", text = "\124T"..(select(3, GetSpellInfo(5019)) or "")..":26:26\124t Profile Pause", tooltip = "Custom profile pause throttle in seconds", enabled = true, value = 1.5, key = "profilepause" },
 	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
@@ -23,6 +25,21 @@ local items = {
 	{ type = "entry", text = "\124T"..data.mpotionIcon()..":26:26\124t Mana Potion", tooltip = "Use Mana Potions (if you have) when player mana < %", enabled = true, value = 25, key = "manapotionuse" },
 	{ type = "separator" },
 	{ type = "page", number = 2, text = "|cff95f900CD's and important spells" },
+	{ type = "separator" },
+	{ type = "title", text = "Blessings Settings" },
+	{ type = "dropdown", menu = {
+		{ selected = false, value = 25898, text = "\124T"..(select(3, GetSpellInfo(25898)) or "")..":20:20\124t Greater Blessing of Kings" },
+		{ selected = false, value = 48934, text = "\124T"..(select(3, GetSpellInfo(48934)) or "")..":20:20\124t Greater Blessing of Might" },
+		{ selected = true, value = 48938, text = "\124T"..(select(3, GetSpellInfo(48938)) or "")..":20:20\124t Greater Blessing of Wisdom" },
+	}, key = "BlessingType" },
+	{ type = "entry", text = "Use in combat", tooltip = "Allow blessing in combat", enabled = false, key = "blesscombat" },
+	{ type = "separator" },
+	{ type = "title", text = "Active Judgement" },
+	{ type = "dropdown", menu = {
+		{ selected = true, value = 20271, text = "\124T"..(select(3, GetSpellInfo(20271)) or "")..":20:20\124t Judgement of Light" },
+		{ selected = false, value = 53408, text = "\124T"..(select(3, GetSpellInfo(53408)) or "")..":20:20\124t Judgement of Wisdom" },
+		{ selected = false, value = 53407, text = "\124T"..(select(3, GetSpellInfo(53407)) or "")..":20:20\124t Judgement of Justice" },
+	}, key = "JudgementType" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.paladin.exorIcon()..":26:26\124t Exorcism", tooltip = "Use spell when player mana > 75%", enabled = false, key = "exorc" },
 	{ type = "entry", text = "\124T"..data.paladin.hamWraIcon()..":26:26\124t Hammer of Wrath", tooltip = "Auto check ''execute'' target in this spell range and use it.", enabled = false, key = "masswrath" },
@@ -37,6 +54,7 @@ local items = {
 	{ type = "separator" },
 	{ type = "title", text = "Dispel" },
 	{ type = "separator" },
+	{ type = "entry", text = "Delay for dispeling", tooltip = "Delay between dispels", enabled = true, value = 1.5, key = "dispeldelay" },
 	{ type = "entry", text = "\124T"..data.paladin.cleanIcon()..":26:26\124t Cleanse (Member)", tooltip = "Auto dispel debuffs from members", enabled = true, key = "cleans" },
 	{ type = "entry", text = "\124T"..data.paladin.handFreeIcon()..":26:26\124t Hand of Freedom (Member)", tooltip = "Auto cast on member when he have criteria for spell", enabled = true, key = "freedom" },
 	{ type = "separator" },
@@ -93,6 +111,8 @@ local queue = {
 
 	"Universal pause",
 	"Seal of Wisdom/Light",
+	"Crusader Aura",
+	"Blessings (Raid/Dungeon)",
 	"Cancel Righteous Fury",
 	"Divine Plea",
 	"Non Combat Healing",
@@ -106,7 +126,7 @@ local queue = {
 	"Racial Stuff",
 	"Divine Shield",
 	"Cleanse (Member)",
-	"Judgement of Light",
+	"Judgement (Selected Type)",
 	"Exorcism",
 	"Aura Mastery",
 	"Hand of Sacrifice (Member)",
@@ -176,6 +196,31 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Crusader Aura"] = function()
+		local _, enabled = GetSetting("crusaderaura")
+		if enabled
+		 and not UnitAffectingCombat("player")
+		 and IsSpellKnown(32223)
+		 and ni.spell.available(32223)
+		 and not ni.player.buff(32223) then
+			ni.spell.cast(32223)
+			return true
+		end
+	end,
+-----------------------------------
+	["Blessings (Raid/Dungeon)"] = function()
+		local blessing = GetSetting("BlessingType")
+		local _, combatEnabled = GetSetting("blesscombat")
+		if not blessing then return end
+		if (not UnitAffectingCombat("player") or combatEnabled)
+		 and IsSpellKnown(blessing)
+		 and ni.spell.available(blessing)
+		 and not ni.player.buff(blessing) then
+			ni.spell.cast(blessing, "player")
+			return true
+		end
+	end,
+-----------------------------------
 	["Cancel Righteous Fury"] = function()
 		local p="player" for i = 1,40
 		do local _,_,_,_,_,_,_,u,_,_,s=UnitBuff(p,i)
@@ -212,6 +257,10 @@ local abilities = {
 	end,
 -----------------------------------
 	["Combat specific Pause"] = function()
+		local pauseDelay, enabled = GetSetting("profilepause")
+		if enabled and pauseDelay and pauseDelay > 0 and not data.CombatStart(pauseDelay) then
+			return true
+		end
 		if UnitAffectingCombat("player") then
 			return false
 		end
@@ -335,12 +384,13 @@ local abilities = {
 		end
 	end,
 -----------------------------------
-	["Judgement of Light"] = function()
-		if ni.spell.available(20271)
+	["Judgement (Selected Type)"] = function()
+		local judgement = GetSetting("JudgementType")
+		if judgement
 		 and ni.members[1].hp > 75
-		 and ni.unit.debuffremaining("target", 20185, "player") < 2
-		 and ni.spell.valid("target", 20271, false, true, true) then
-			ni.spell.cast(20271, "target")
+		 and ni.spell.available(judgement)
+		 and ni.spell.valid("target", judgement, false, true, true) then
+			ni.spell.cast(judgement, "target")
 			return true
 		end
 	end,
@@ -688,7 +738,7 @@ local abilities = {
 		  for i = 1, #ni.members do
 		  if ni.unit.debufftype(ni.members[i].unit, "Magic|Disease|Poison")
 		  and ni.healing.candispel(ni.members[i].unit)
-		  and GetTime() - data.LastDispel > 1.2
+		  and GetTime() - data.LastDispel > GetSetting("dispeldelay")
 		  and ni.spell.valid(ni.members[i].unit, 4987, false, true, true) then
 				ni.spell.cast(4987, ni.members[i].unit)
 				data.LastDispel = GetTime()

@@ -610,7 +610,7 @@ local abilities = {
 		 and plague
 		 and icy
 		 and ni.spell.available(49941)
-		 and ni.spell.valid("target", 55262, true, true) then
+		 and ni.spell.valid("target", 49941, true, true) then
 			ni.spell.cast(49941, "target")
 			return true
 		end

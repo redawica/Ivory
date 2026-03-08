@@ -73,7 +73,7 @@ if build == 30300 and level == 80 and data then
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
 		"Racial Stuff",
-		"Use enginer gloves",
+		"Use engineer gloves",
 		"Trinkets (Config)",
 		"Trinkets",
 		"Barkskin",
@@ -165,7 +165,7 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 
-		["Use enginer gloves"] = function()
+		["Use engineer gloves"] = function()
 			local _, enabled = GetSetting("detect")
 			if ni.player.slotcastable(10)
 			 and ni.player.slotcd(10) == 0

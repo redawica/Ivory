@@ -7,15 +7,22 @@ local function icon(spellID)
 	return select(3, GetSpellInfo(spellID)) or ""
 end
 
+local function ActiveEnemies()
+	return data.GetActiveEnemies("target", 8, true, 0.15)
+end
+
 if build == 30300 and level == 80 and data then
 	local items = {
-		settingsfile = "DarhangeR_Subtlety.xml",
-		{ type = "title", text = "Subtlety Rogue by |c0000CED1DarhangeR" },
+		settingsfile = "DarhangeR_Feral_Tank.xml",
+		{ type = "title", text = "Feral Druid Tank by |c0000CED1DarhangeR" },
 		{ type = "separator" },
 		{ type = "title", text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
-		{ type = "entry", text = "|T" .. icon(14185) .. ":26:26|t Auto Stealth", tooltip = "Auto stealth out of combat", enabled = true, key = "autostealth" },
-		{ type = "entry", text = "|T" .. icon(1766) .. ":26:26|t Auto Interrupt", tooltip = "Auto Kick interrupts", enabled = true, key = "autointerrupt" },
+		{ type = "entry", text = "|T" .. icon(9634) .. ":26:26|t Auto Bear Form", tooltip = "Auto switch to Dire Bear Form", enabled = true, key = "autoform" },
+		{ type = "entry", text = "|T" .. icon(22812) .. ":26:26|t Barkskin", tooltip = "Use when HP < %", enabled = true, value = 55, key = "barkskin" },
+		{ type = "entry", text = "|T" .. icon(22842) .. ":26:26|t Frenzied Regeneration", tooltip = "Use when HP < %", enabled = true, value = 35, key = "frenzied" },
+		{ type = "entry", text = "|T" .. icon(61336) .. ":26:26|t Survival Instincts", tooltip = "Use when HP < %", enabled = true, value = 30, key = "survival" },
+		{ type = "entry", text = "|T" .. icon(62078) .. ":26:26|t Swipe AoE", tooltip = "Use Swipe on 2+ enemies", enabled = true, key = "swipeaoe" },
 		{ type = "entry", text = "|T" .. icon(3127) .. ":26:26|t Racial Stuff", tooltip = "Enable racial abilities", enabled = true, key = "racial" },
 		{ type = "entry", text = "|T" .. icon(2382) .. ":26:26|t Debug Printing", tooltip = "Enable debug output", enabled = false, key = "Debug" },
 		{ type = "separator" },
@@ -42,17 +49,19 @@ if build == 30300 and level == 80 and data then
 	end;
 
 	local function OnLoad()
-		ni.GUI.AddFrame("Subtlety_DarhangeR", items);
+		ni.GUI.AddFrame("Feral_Tank_DarhangeR", items);
 	end
 
 	local function OnUnLoad()
-		ni.GUI.DestroyFrame("Subtlety_DarhangeR");
+		ni.GUI.DestroyFrame("Feral_Tank_DarhangeR");
 	end
 
 	local queue = {
 		"Universal pause",
 		"AutoTarget",
-		"Auto Stealth",
+		"Mark of the Wild",
+		"Thorns",
+		"Bear Form",
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
@@ -60,13 +69,16 @@ if build == 30300 and level == 80 and data then
 		"Use engineer gloves",
 		"Trinkets (Config)",
 		"Trinkets",
-		"Kick (Interrupt)",
-		"Shadowstep",
-		"Shadow Dance",
-		"Slice and Dice",
-		"Hemorrhage",
-		"Rupture",
-		"Eviscerate",
+		"Barkskin",
+		"Survival Instincts",
+		"Frenzied Regeneration",
+		"Enrage",
+		"Faerie Fire (Feral)",
+		"Demoralizing Roar",
+		"Mangle (Bear)",
+		"Lacerate",
+		"Maul",
+		"Swipe (Bear)",
 		"Window",
 	}
 
@@ -86,10 +98,24 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 
-		["Auto Stealth"] = function()
-			local _, enabled = GetSetting("autostealth")
-			if enabled and not UnitAffectingCombat("player") and ni.spell.available(1784) and not ni.player.buff(1784) then
-				ni.spell.cast(1784)
+		["Mark of the Wild"] = function()
+			if not UnitAffectingCombat("player") and ni.spell.available(48469) and not ni.player.buffs("48469||48470") then
+				ni.spell.cast(48469)
+				return true
+			end
+		end,
+
+		["Thorns"] = function()
+			if not UnitAffectingCombat("player") and ni.spell.available(53307) and not ni.player.buff(53307) then
+				ni.spell.cast(53307)
+				return true
+			end
+		end,
+
+		["Bear Form"] = function()
+			local _, enabled = GetSetting("autoform")
+			if enabled and not ni.player.buff(9634) and ni.spell.available(9634) then
+				ni.spell.cast(9634)
 				return true
 			end
 		end,
@@ -122,7 +148,10 @@ if build == 30300 and level == 80 and data then
 
 		["Racial Stuff"] = function()
 			local _, enabled = GetSetting("racial")
-			if enabled and data.rogue and data.rogue.Race and data.rogue.Race() then
+			if not enabled then
+				return false
+			end
+			if data.druid.Race() then
 				return true
 			end
 		end,
@@ -151,74 +180,103 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 
-		["Kick (Interrupt)"] = function()
-			local _, enabled = GetSetting("autointerrupt")
-			if data.TryInterrupt("target", enabled, 1766, 0.35) then
+		["Barkskin"] = function()
+			local value, enabled = GetSetting("barkskin")
+			if enabled and ni.player.hp() < value and ni.spell.available(22812) and not ni.player.buff(22812) then
+				ni.spell.cast(22812)
 				return true
 			end
 		end,
 
-		["Shadowstep"] = function()
-			if ni.spell.available(36554) and ni.spell.valid("target", 36554, true, true) then
-				ni.spell.cast(36554, "target")
+		["Survival Instincts"] = function()
+			local value, enabled = GetSetting("survival")
+			if enabled and ni.player.hp() < value and ni.spell.available(61336) and not ni.player.buff(61336) then
+				ni.spell.cast(61336)
 				return true
 			end
 		end,
 
-		["Shadow Dance"] = function()
-			if ni.spell.available(51713) and ni.player.buff(14177) then
-				ni.spell.cast(51713)
+		["Frenzied Regeneration"] = function()
+			local value, enabled = GetSetting("frenzied")
+			if enabled and ni.player.hp() < value and ni.spell.available(22842) and ni.player.rage() > 20 then
+				ni.spell.cast(22842)
 				return true
 			end
 		end,
 
-		["Slice and Dice"] = function()
-			if ni.spell.available(6774)
-			 and not ni.player.buff(6774)
-			 and GetComboPoints("player", "target") > 0 then
-				ni.spell.cast(6774)
+		["Enrage"] = function()
+			if UnitAffectingCombat("player") and ni.spell.available(5229) and not ni.player.buff(5229) and ni.player.rage() < 25 then
+				ni.spell.cast(5229)
 				return true
 			end
 		end,
 
-		["Hemorrhage"] = function()
-			if ni.spell.available(48660)
-			 and ni.spell.valid("target", 48660, true, true)
-			 and GetComboPoints("player", "target") < 5 then
-				ni.spell.cast(48660, "target")
+		["Faerie Fire (Feral)"] = function()
+			if ni.spell.available(16857)
+			 and ni.spell.valid("target", 16857, true, true)
+			 and not ni.unit.debuff("target", 16857) then
+				ni.spell.cast(16857, "target")
 				return true
 			end
 		end,
 
-		["Rupture"] = function()
-			if ni.spell.available(48672)
-			 and ni.spell.valid("target", 48672, true, true)
-			 and GetComboPoints("player", "target") >= 4
-			 and not ni.unit.debuff("target", 48672, "player") then
-				ni.spell.cast(48672, "target")
+		["Demoralizing Roar"] = function()
+			if ni.spell.available(48560)
+			 and ni.spell.valid("target", 48560, true, true)
+			 and not ni.unit.debuff("target", 48560, "player") then
+				ni.spell.cast(48560)
 				return true
 			end
 		end,
 
-		["Eviscerate"] = function()
-			if ni.spell.available(48668)
-			 and ni.spell.valid("target", 48668, true, true)
-			 and GetComboPoints("player", "target") >= 5 then
-				ni.spell.cast(48668, "target")
+		["Mangle (Bear)"] = function()
+			if ni.spell.available(48564)
+			 and ni.spell.valid("target", 48564, true, true)
+			 and not ni.unit.debuff("target", 48564, "player") then
+				ni.spell.cast(48564, "target")
+				return true
+			end
+		end,
+
+		["Lacerate"] = function()
+			if ni.spell.available(48568)
+			 and ni.spell.valid("target", 48568, true, true)
+			 and (select(4, ni.unit.debuff("target", 48568, "player")) or 0) < 5 then
+				ni.spell.cast(48568, "target")
+				return true
+			end
+		end,
+
+		["Maul"] = function()
+			if ni.spell.available(48480)
+			 and ni.spell.valid("target", 48480, true, true)
+			 and ni.player.rage() > 35 then
+				ni.spell.cast(48480, "target")
+				return true
+			end
+		end,
+
+		["Swipe (Bear)"] = function()
+			local _, enabled = GetSetting("swipeaoe")
+			if enabled
+			 and ActiveEnemies() > 1
+			 and ni.spell.available(48562)
+			 and ni.spell.valid("target", 48562, true, true) then
+				ni.spell.cast(48562)
 				return true
 			end
 		end,
 
 		["Window"] = function()
 			if not popup_shown then
-				ni.debug.popup("Subtlety Rogue by DarhangeR for 3.3.5a",
-				"Welcome to Subtlety Rogue Profile!\n\nAutonomous profile with utility, interrupts, trinkets and engineering support.")
+				ni.debug.popup("Feral Druid Tank by DarhangeR for 3.3.5a",
+				"Welcome to Feral Druid Tank Profile!\n\nAutonomous tank profile with defensives, utility, trinkets and engineering support.")
 				popup_shown = true;
 			end
 		end,
 	}
 
-	ni.bootstrap.profile("Subtlety_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
+	ni.bootstrap.profile("Feral_Tank_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
 else
 	local queue = { "Error" }
 	local abilities = {
@@ -233,5 +291,5 @@ else
 			end
 		end,
 	}
-	ni.bootstrap.profile("Subtlety_DarhangeR", queue, abilities);
+	ni.bootstrap.profile("Feral_Tank_DarhangeR", queue, abilities);
 end
