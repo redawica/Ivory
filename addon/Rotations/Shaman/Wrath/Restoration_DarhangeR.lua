@@ -11,7 +11,7 @@ local items = {
 	{ type = "title", text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.shaman.interIcon()..":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells", enabled = true, key = "autointerrupt" },
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },	
+	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
@@ -21,7 +21,7 @@ local items = {
 	{ type = "separator" },
 	{ type = "page", number = 2, text = "|cff95f900CD's and important spells" },
 	{ type = "separator" },
-	{ type = "entry", text = "\124T"..data.controlIcon()..":26:26\124t Auto Control (Member)", tooltip = "Auto check and control member if he mindcontrolled or etc.", enabled = true, key = "control" },	
+	{ type = "entry", text = "\124T"..data.controlIcon()..":26:26\124t Auto Control (Member)", tooltip = "Auto check and control member if he mindcontrolled or etc.", enabled = true, key = "control" },
 	{ type = "entry", text = "\124T"..data.shaman.purgeIcon()..":26:26\124t Purge", tooltip = "Purge proper spell. You can edit table in Data file.", enabled = true, key = "purge" },
 	{ type = "entry", text = "\124T"..data.shaman.flshockIcon()..":26:26\124t Flame Shock", tooltip = "Use spell when player mana > 75%", enabled = false, key = "flame" },
 	{ type = "entry", text = "\124T"..data.shaman.switIcon()..":26:26\124t Nature Swiftness", enabled = true, value = 40, key = "natureswift" },
@@ -32,16 +32,26 @@ local items = {
 	{ type = "title", text = "Dispel" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.shaman.cureIcon()..":26:26\124t Cure Toxins (Member)", tooltip = "Auto dispel debuffs from members", enabled = false, key = "toxinsmemb" },
-	{ type = "entry", text = "\124T"..data.shaman.cleanIcon()..":26:26\124t Cleanse Spirit (Member)", tooltip = "Auto dispel debuffs from members", enabled = true, key = "spiritmemb" },	
+	{ type = "entry", text = "\124T"..data.shaman.cleanIcon()..":26:26\124t Cleanse Spirit (Member)", tooltip = "Auto dispel debuffs from members", enabled = true, key = "spiritmemb" },
 	{ type = "separator" },
 	{ type = "page", number = 3, text = "|cff95f900Healing spells settings" },
 	{ type = "separator" },
-	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal members after fight when HP < %", enabled = true, value = 95, key = "noncombatheal" },	
-	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },	
-	{ type = "entry", text = "\124T"..data.shaman.riptIcon()..":26:26\124t Riptide", tooltip = "Use spell when member HP < %", enabled = true, value = 89, key = "riptide" },	
+	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal members after fight when HP < %", enabled = true, value = 95, key = "noncombatheal" },
+	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },
+	{ type = "entry", text = "\124T"..data.shaman.riptIcon()..":26:26\124t Riptide", tooltip = "Use spell when member HP < %", enabled = true, value = 89, key = "riptide" },
 	{ type = "entry", text = "\124T"..data.shaman.lhwaveIcon()..":26:26\124t Lesser Healing Wave", tooltip = "Use spell when member HP < %", enabled = true, value = 40, key = "leserhealing" },
 	{ type = "entry", text = "\124T"..data.shaman.hwaveIcon()..":26:26\124t Healing Wave", tooltip = "Use spell when member HP < %", enabled = true, value = 70, key = "healingwave" },
-	{ type = "entry", text = "\124T"..data.shaman.chainIcon()..":26:26\124t Chain Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 83, key = "сhain" },	
+	{ type = "entry", text = "\124T"..data.shaman.chainIcon()..":26:26\124t Chain Heal", tooltip = "Use spell when member HP < %", enabled = true, value = 83, key = "сhain" },
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -69,12 +79,12 @@ end;
 local function OnLoad()
 	ni.GUI.AddFrame("Restoration_DarhangeR", items);
 end
-local function OnUnLoad()  
+local function OnUnLoad()
 	ni.GUI.DestroyFrame("Restoration_DarhangeR");
 end
 
 local queue = {
-	
+
 	"Universal pause",
 	"Enchant Weapon",
 	"Water Shield",
@@ -83,6 +93,8 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
+	"Use enginer gloves",
 	"Racial Stuff",
 	"Wind Shear (Interrupt)",
 	"Control (Member)",
@@ -90,7 +102,7 @@ local queue = {
 	"Valithria Heal",
 	"Tidal Force",
 	"Nature's Swiftness",
-	"Flame Shock",	
+	"Flame Shock",
 	"Lesser Healing Wave",
 	"Chain Heal Spam",
 	"Chain Heal",
@@ -103,7 +115,7 @@ local queue = {
 local abilities = {
 -----------------------------------
 	["Universal pause"] = function()
-		if (data.UniPause() 
+		if (data.UniPause()
 		 or data.PlayerDebuffs("player")) then
 			return true
 		end
@@ -131,7 +143,7 @@ local abilities = {
 		local value, enabled = GetSetting("noncombatheal");
 		if enabled
 		 and not UnitAffectingCombat("player")
-		 and ni.spell.available(61301)		 
+		 and ni.spell.available(61301)
 		 and ni.spell.available(49276) then
 		   if ni.members[1].hp < value
 		    and not ni.unit.buff(ni.members[1].unit, 61301, "player")
@@ -166,12 +178,12 @@ local abilities = {
 		for i = 1, #hstones do
 			if enabled
 			 and ni.player.hp() < value
-			 and ni.player.hasitem(hstones[i]) 
+			 and ni.player.hasitem(hstones[i])
 			 and ni.player.itemcd(hstones[i]) == 0 then
 				ni.player.useitem(hstones[i])
 				return true
 			end
-		end	
+		end
 	end,
 -----------------------------------
 	["Heal Potions (Use)"] = function()
@@ -202,6 +214,21 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
+		end
+	end,
+-----------------------------------
+	["Use enginer gloves"] = function()
+		if ni.player.slotcastable(10)
+		 and ni.player.slotcd(10) == 0
+		 and UnitAffectingCombat("player") then
+			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
 	["Racial Stuff"] = function()
 		local hracial = { 33697, 20572, 33702, 26297 }
 		local bloodelf = { 25046, 28730, 50613 }
@@ -218,17 +245,17 @@ local abilities = {
 		if ni.members.averageof(7) < 40
 		 and IsSpellKnown(hracial[i])
 		 and ni.spell.available(hracial[i])
-		 and ni.spell.valid("target", 49238) then 
+		 and ni.spell.valid("target", 49238) then
 					ni.spell.cast(hracial[i])
 					return true
 			end
 		end
 		--- Blood Elf
 		for i = 1, #bloodelf do
-		if ni.player.power() < 70 
+		if ni.player.power() < 70
 		 and IsSpellKnown(bloodelf[i])
 		 and ni.spell.available(bloodelf[i])
-		 and ni.spell.valid("target", 49238) then 
+		 and ni.spell.valid("target", 49238) then
 					ni.spell.cast(bloodelf[i])
 					return true
 			end
@@ -238,7 +265,7 @@ local abilities = {
 		if ni.spell.valid("target", 49238)
 		 and ni.player.hp() < 20
 		 and IsSpellKnown(alracial[i])
-		 and ni.spell.available(alracial[i]) then 
+		 and ni.spell.available(alracial[i]) then
 					ni.spell.cast(alracial[i])
 					return true
 				end
@@ -247,13 +274,7 @@ local abilities = {
 -----------------------------------
 	["Wind Shear (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled
-		 and ni.spell.shouldinterrupt("target")
-		 and ni.spell.available(57994)
-		 and GetTime() - data.LastInterrupt > 9
-		 and ni.spell.valid("target", 57994, true, true)  then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		if data.TryInterrupt("target", enabled, 57994, 0.35) then
 			return true
 		end
 	end,
@@ -269,7 +290,7 @@ local abilities = {
 		 -- Put Earth Shield on MT
 		if not ni.unit.exists("boss1") then
 		if not OthEarthTank
-		 and not EarthTank		 
+		 and not EarthTank
 		 and ni.spell.available(49284)
 		 and ni.spell.valid(tank, 49284, false, true, true) then
 			ni.spell.cast(49284, tank)
@@ -282,7 +303,7 @@ local abilities = {
 		 and ni.spell.available(49273)
 		 and ni.spell.valid(tank, 49273, false, true, true) then
 			ni.spell.cast(16188)
-			ni.spell.cast(49273, tank)			
+			ni.spell.cast(49273, tank)
 			return true
 			end
 		end
@@ -292,27 +313,27 @@ local abilities = {
 		local friends = ni.members.inrangebelow(ni.members[1].unit, 9, 79)
 		local tank = ni.tanks()
 		if ni.unit.exists("boss1") then
-		 if ni.unit.id("boss1") == 36789 
+		 if ni.unit.id("boss1") == 36789
 		  and ni.unit.hp("boss1") < 100 then
-		 local ReptideBoss, _, _, _, _, _, ReptideBoss_time = ni.unit.buff("boss1", 61301, "player")		 
-		 local EarthBoss, _, _, _, _, _, EarthBoss_time = ni.unit.buff("boss1", 49284, "player")	
+		 local ReptideBoss, _, _, _, _, _, ReptideBoss_time = ni.unit.buff("boss1", 61301, "player")
+		 local EarthBoss, _, _, _, _, _, EarthBoss_time = ni.unit.buff("boss1", 49284, "player")
 		 local SelfEarthBoss = ni.unit.buff("boss1", 49284)
 		-- Put Earth Shield on Boss --
 		if (not SelfEarthBoss
-		 or (EarthBoss and EarthBoss_time - GetTime() < 2))       
+		 or (EarthBoss and EarthBoss_time - GetTime() < 2))
 		 and ni.spell.available(49284)
 		 and ni.spell.valid("boss1", 49284, false, true, true) then
 			ni.spell.cast(49284, "boss1")
 			return true
 		end
-		-- Heal Boss with Reptide 
+		-- Heal Boss with Reptide
 		if ni.spell.available(61301)
 		 and (not ReptideBoss
 		 or (ReptideBoss and ReptideBoss_time - GetTime() < 2))
 		 and ni.spell.valid("boss1", 61301, false, true, true) then
 			ni.spell.cast(61301, "boss1")
 			return true
-		end		
+		end
 		-- Heal Boss with Chain --
 		if not ni.player.ismoving()
 		 and ni.spell.available(55459)
@@ -320,16 +341,16 @@ local abilities = {
 		 and ni.spell.valid("boss1", 55459, false, true, true) then
 			ni.spell.cast(55459, "boss1")
 			return true
-		end	
+		end
 		-- Heal Boss with Healing Wave --
 		if not ni.player.ismoving()
-		 and ni.members[1].hp > 80        
+		 and ni.members[1].hp > 80
 		 and ni.spell.available(49273)
 		 and not ni.player.ismoving()
 		 and GetTime() - data.shaman.LastWave > 4.5
 		 and ni.spell.valid("boss1", 49273, false, true, true) then
 			ni.spell.cast(49273, "boss1")
-			data.shaman.LastWave = GetTime()        
+			data.shaman.LastWave = GetTime()
 			return true
 		end
 			end
@@ -339,7 +360,7 @@ local abilities = {
 	["Tidal Force"] = function()
 		local _, enabled = GetSetting("tidal");
 		local valueHp = GetSetting("tidalhp");
-		local valueCount = GetSetting("tidalcount");	
+		local valueCount = GetSetting("tidalcount");
 		if enabled
 		 and ni.members.averageof(valueCount) < valueHp
 		 and not ni.player.ismoving()
@@ -412,7 +433,7 @@ local abilities = {
 -----------------------------------
 	["Healing Wave"] = function()
 		local value, enabled = GetSetting("healingwave");
-		if enabled 
+		if enabled
 		 and ni.spell.available(49273)
 		 and not ni.player.ismoving() then
 		-- Lowest member Tank but one member more need heal
@@ -499,17 +520,17 @@ local abilities = {
 			end
 		end
 		if enabled
-		 and ni.spell.available(55459) 
+		 and ni.spell.available(55459)
 		 and not ni.player.ismoving() then
 		-- Heal party/raid with Chain Heal
 		if #friends > 3
 		 and ni.player.hasglyph(55437)
-		 and ni.members[1].hp < value 
+		 and ni.members[1].hp < value
 		 and ni.spell.valid(riptidetarget, 55459, false, true, true) then
 				ni.spell.cast(55459, riptidetarget)
 				return true
 		end
-		-- Heal party/raid with Chain Heal    
+		-- Heal party/raid with Chain Heal
 		if #friends > 1
 		 and ni.members[1].hp < value
 		 and ni.spell.valid(riptidetarget, 55459, false, true, true) then
@@ -522,9 +543,9 @@ local abilities = {
 	["Chain Heal Spam"] = function()
 		local friends = ni.members.inrange(ni.members[1].unit, 9)
 		if ni.vars.combat.aoe
-		 and ni.spell.available(55459) 
+		 and ni.spell.available(55459)
 		 and not ni.player.ismoving() then
-		-- Heal party/raid with Chain Heal	
+		-- Heal party/raid with Chain Heal
 		if ni.members.averageof(2) < 90
 		 and ni.members[1].hp < 95
 		 and #friends > 1
@@ -535,9 +556,9 @@ local abilities = {
 		end
 	end,
 -----------------------------------
-	["Flame Shock"] = function()	
+	["Flame Shock"] = function()
 		local _, enabled = GetSetting("flame");
-		local flameshock = data.shaman.flameshock()		
+		local flameshock = data.shaman.flameshock()
 		if enabled
 		 and ni.members[1].hp > 75
 		 and ni.player.power() > 75
@@ -567,10 +588,10 @@ local abilities = {
 -----------------------------------
 	["Window"] = function()
 		if not popup_shown then
-		 ni.debug.popup("Restoration Shaman by DarhangeR for 3.3.5a", 
-		 "Welcome to Restoration Shaman Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main.\n-For enable Chain of Heal Spam  configure AoE Toggle key.")		
+		 ni.debug.popup("Restoration Shaman by DarhangeR for 3.3.5a",
+		 "Welcome to Restoration Shaman Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main.\n-For enable Chain of Heal Spam  configure AoE Toggle key.")
 		popup_shown = true;
-		end 
+		end
 	end,
 }
 

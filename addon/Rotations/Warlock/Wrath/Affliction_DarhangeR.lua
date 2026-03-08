@@ -318,13 +318,9 @@ local abilities = {
 -----------------------------------
 	["Spell Lock (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled
-		 and ni.spell.shouldinterrupt("target")
-		 and IsSpellKnown(19647, true)
+		if IsSpellKnown(19647, true)
 		 and GetSpellCooldown(19647) == 0
-		 and GetTime() - data.LastInterrupt > 9 then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		 and data.TryInterrupt("target", enabled, 19647, 0.35) then
 			return true
 		end
 	end,
@@ -448,13 +444,9 @@ local abilities = {
 -----------------------------------		
 	["Spell Lock (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled
-		 and ni.spell.shouldinterrupt("target")
-		 and IsSpellKnown(19647, true)
+		if IsSpellKnown(19647, true)
 		 and GetSpellCooldown(19647) == 0
-		 and GetTime() - data.LastInterrupt > 9 then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		 and data.TryInterrupt("target", enabled, 19647, 0.35) then
 			return true
 		end
 	end,

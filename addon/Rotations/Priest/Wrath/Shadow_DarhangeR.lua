@@ -37,6 +37,16 @@ local items = {
 	{ type = "entry", text = "\124T"..data.priest.dispIcon()..":24:24\124t Dispel Magic (Member)", tooltip = "Auto dispel debuffs from members", enabled = false, key = "dispelmagmemb" },
 	{ type = "entry", text = "\124T"..data.priest.abolIcon()..":24:24\124t Abolish Disease (Self)", tooltip = "Auto dispel debuffs from player", enabled = false, key = "abolish" },
 	{ type = "entry", text = "\124T"..data.priest.abolIcon()..":24:24\124t Abolish Disease (Member)", tooltip = "Auto dispel debuffs from members", enabled = false, key = "abolishmb" },
+	{ type = "separator" },
+	{ type = "page", number = 3, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -86,6 +96,7 @@ local Rotation4T10 = {
 	"Mana Potions (Use)",		
 	"Racial Stuff",
 	"Use enginer gloves",
+	"Trinkets (Config)",
 	"Trinkets",
 	"Silence (Interrupt)",
 	"Fade",
@@ -123,6 +134,7 @@ local StandartRotation = {
 	"Mana Potions (Use)",		
 	"Racial Stuff",
 	"Use enginer gloves",
+	"Trinkets (Config)",
 	"Trinkets",
 	"Silence (Interrupt)",
 	"Fade",
@@ -368,6 +380,12 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
+		end
+	end,
+-----------------------------------
 	["Trinkets"] = function()
 		local _, enabled = GetSetting("detect")
 		if data.CDorBoss("target", 5, 35, 5, enabled)
@@ -388,13 +406,7 @@ local abilities = {
 -----------------------------------	
 	["Silence (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled 
-		 and ni.spell.shouldinterrupt("target")
-		 and ni.spell.available(15487)
-		 and GetTime() - data.LastInterrupt > 9
-		 and ni.spell.valid("target", 15487, true, true)  then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		if data.TryInterrupt("target", enabled, 15487, 0.35) then
 			return true
 		end
 	end,

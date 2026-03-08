@@ -1,3 +1,4 @@
+local data = ni.utils.require("DarhangeR");
 local GetBuildInfo, select, ipairs, pairs, tonumber, GetSpellInfo, IsUsableSpell, GetTime, UnitAffectingCombat, IsMounted, ni_tanks, UnitInVehicle, UnitIsDeadOrGhost, UnitChannelInfo, UnitCastingInfo = GetBuildInfo, select, ipairs, pairs, tonumber, GetSpellInfo, IsUsableSpell, GetTime, UnitAffectingCombat, IsMounted, ni.tanks, UnitInVehicle, UnitIsDeadOrGhost, UnitChannelInfo, UnitCastingInfo
 local build = select(4, GetBuildInfo());
 local wotlk = build == 30300 or false;
@@ -10,44 +11,62 @@ local items = {
 	{ type = "title", text = "|cffFF7C0AProfile version 0.0.2|r" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cffFFFF00Main Settings" },
-	{ type = "separator" },	
-	{ type = "entry", text = ni.spell.icon(33891).." Auto Form", tooltip = "Auto use proper form.", enabled = true, key = "autoform" },	
-	{ type = "entry", text = ni.spell.icon(52674).." Auto Buff", tooltip = "Enable Auto Buff player/ally.", enabled = true, key = "AutoBuff" },	
+	{ type = "separator" },
+	{ type = "entry", text = ni.spell.icon(33891).." Auto Form", tooltip = "Auto use proper form.", enabled = true, key = "autoform" },
+	{ type = "entry", text = ni.spell.icon(52674).." Auto Buff", tooltip = "Enable Auto Buff player/ally.", enabled = true, key = "AutoBuff" },
 	{ type = "entry", text = ni.spell.icon(2382).." |cffffa500Debug Printing|r", tooltip = "Enable for debug if you have problems.", enabled = false, key = "Debug" },
 	{ type = "page", number = 2, text = "|cff95f900CD's and important spells|r" },
 	{ type = "separator" },
 	{ type = "entry", text = ni.spell.icon(18562).." Swiftmend", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 60, min = 10, max = 100, step = 1, width = 40, key = "swift" },
-	{ type = "entry", text = ni.spell.icon(17116).." Nature's Swiftness", tooltip = "Use spell when ally |cff00D700HP|r < %.\nWith Nature Swiftness also will be used [Healing Touch].", enabled = true, value = 40, min = 10, max = 100, step = 1, width = 40, key = "natureswift" },	
+	{ type = "entry", text = ni.spell.icon(17116).." Nature's Swiftness", tooltip = "Use spell when ally |cff00D700HP|r < %.\nWith Nature Swiftness also will be used [Healing Touch].", enabled = true, value = 40, min = 10, max = 100, step = 1, width = 40, key = "natureswift" },
 	{ type = "separator" },
 	{ type = "entry", text = ni.spell.icon(48447).." Tranquility", tooltip = "Spell will be used when average |cff00D700HP|r\nof specified number allies is lower < %.", enabled = true, key = "tranquil" },
 	{ type = "entry", text = "Tranquility (Ally HP)", tooltip = "Adjust ally average |cff00D700HP|r < %.", value = 37, min = 25, max = 100, step = 1, width = 40, key = "tranquilhp" },
 	{ type = "entry", text = "Tranquility (Ally Count)", tooltip = "Adjust ally count in your party.", value = 4, min = 2, max = 5, step = 1, width = 40, key = "tranquilcount" },
-	{ type = "separator" },	
+	{ type = "separator" },
 	{ type = "title", text = "Dispel" },
 	{ type = "separator" },
 	{ type = "entry", text = ni.spell.icon(2782).." Remove Curse (Ally)", tooltip = "Auto dispel debuffs from ally.", enabled = true, key = "removecurse" },
-	{ type = "entry", text = ni.spell.icon(2893).." Abolish Poison (Ally)", tooltip = "Auto dispel debuffs from ally.", enabled = true, key = "ambolishpoison" },	
+	{ type = "entry", text = ni.spell.icon(2893).." Abolish Poison (Ally)", tooltip = "Auto dispel debuffs from ally.", enabled = true, key = "ambolishpoison" },
 	{ type = "page", number = 3, text = "|cff95f900Party/Raid Healing Settings|r" },
 	{ type = "separator" },
-	{ type = "entry", text = ni.spell.icon(48441).." Rejuvenation", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 99, min = 10, max = 100, step = 1, width = 40, key = "rejuall" },	
-	{ type = "entry", text = ni.spell.icon(48438).." Wild Growth", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 95, min = 10, max = 100, step = 1, width = 40, key = "growth" },	
-	{ type = "entry", text = ni.spell.icon(50464).." Nourish", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 75, min = 10, max = 100, step = 1, width = 40, key = "nourish" },	
+	{ type = "entry", text = ni.spell.icon(48441).." Rejuvenation", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 99, min = 10, max = 100, step = 1, width = 40, key = "rejuall" },
+	{ type = "entry", text = ni.spell.icon(48438).." Wild Growth", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 95, min = 10, max = 100, step = 1, width = 40, key = "growth" },
+	{ type = "entry", text = ni.spell.icon(50464).." Nourish", tooltip = "Use spell when ally |cff00D700HP|r < %.", enabled = true, value = 75, min = 10, max = 100, step = 1, width = 40, key = "nourish" },
 	{ type = "page", number = 4, text = "|cff95f900Tank Settings|r" },
 	{ type = "separator" },
-	{ type = "entry", text = ni.spell.icon(2565).." Auto Track Tank", tooltip = "Auto Track Tank and mainly heal him.\nDruid support MAIN TANK and OFF TANK.", enabled = true, key = "healtank" },	
-	{ type = "entry", text = ni.spell.icon(48441).." Rejuvenation", tooltip = "Always keeps [Rejuvenation] on Main Tank and Off Tank.", enabled = true, key = "rejuTanks" },	
+	{ type = "entry", text = ni.spell.icon(2565).." Auto Track Tank", tooltip = "Auto Track Tank and mainly heal him.\nDruid support MAIN TANK and OFF TANK.", enabled = true, key = "healtank" },
+	{ type = "entry", text = ni.spell.icon(48441).." Rejuvenation", tooltip = "Always keeps [Rejuvenation] on Main Tank and Off Tank.", enabled = true, key = "rejuTanks" },
 	{ type = "entry", text = ni.spell.icon(50464).." Nourish", tooltip = "Use spell when tanks |cff00D700HP|r < %.", enabled = true, value = 70, min = 10, max = 100, step = 1, width = 40, key = "nouriTanks" },
 	{ type = "page", number = 5, text = "|cff00C957Defensive Settings" },
-	{ type = "separator" },	
-	{ type = "entry", text = ni.spell.icon(22812).." Barkskin", tooltip = "Use spell when player |cff00D700HP|r < %.", enabled = true, value = 40, min = 15, max = 100, step = 1, width = 40, key = "barkskin" },	
+	{ type = "separator" },
+	{ type = "entry", text = ni.spell.icon(22812).." Barkskin", tooltip = "Use spell when player |cff00D700HP|r < %.", enabled = true, value = 40, min = 15, max = 100, step = 1, width = 40, key = "barkskin" },
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
 };
 local function ui(name)
     return ni.bootstrap.getseting(name, items)
 end;
+
+local function TrinketSetting(name)
+	local value = ui(name)
+	if type(value) == "table" then
+		return value[1], value[2]
+	end
+	return value
+end;
 local function OnLoad()
 	ni.GUI.AddFrame("Wrath_Restoration_DarhangeR", items);
 end;
-local function OnUnLoad()  
+local function OnUnLoad()
 	ni.GUI.DestroyFrame("Wrath_Restoration_DarhangeR");
 end;
 local function UsableSilence(spellid, stutter)
@@ -100,15 +119,17 @@ local queue = {
 "Thorns",
 "Tree of Life",
 "Barkskin",
+"Trinkets (Config)",
+"Use enginer gloves",
 "Combat Specific Pause",
 "Nature's Swiftness",
-"Swiftmend",	
+"Swiftmend",
 "Wild Growth",
 "Tank Heal",
-"Rejuvenation",	
+"Rejuvenation",
 "Remove Curse (Ally)",
 "Abolish Poison (Ally)",
-"Nourish",	
+"Nourish",
 };
 local abilities = {
 -----------------------------------
@@ -140,11 +161,11 @@ local abilities = {
 		end
 		if cache.PlayerCombat
 		or ni.player.buff(spells.MarkOfTheWild)
-		or ni.player.buff(spells.GiftOfTheWild) then 
+		or ni.player.buff(spells.GiftOfTheWild) then
 			return false;
 		end
 		if UsableSilence(spells.GiftOfTheWild) then
-			ni.spell.cast(spells.GiftOfTheWild, "player")	
+			ni.spell.cast(spells.GiftOfTheWild, "player")
 			return true;
 		end
 		if UsableSilence(spells.MarkOfTheWild)
@@ -168,7 +189,7 @@ local abilities = {
 			return true;
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Tree of Life"] = function()
 		local enabled = ui("autoform")[2];
 		if not enabled then
@@ -180,19 +201,34 @@ local abilities = {
 			return true;
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Barkskin"] = function()
 		if not ui("barkskin")[2] or cache.PlayerCombat then
 			return false;
 		end
 		if ni.player.hp() <= ui("barkskin")[1]
-		and ni.spell.available(spells.Barkskin) 
+		and ni.spell.available(spells.Barkskin)
 		and not ni.player.buff(spells.Barkskin) then
 			ni.spell.cast(spells.Barkskin)
 			return true;
 		end
 	end,
------------------------------------	
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data and data.UseConfiguredTrinkets and data.UseConfiguredTrinkets(TrinketSetting, nil, "target") then
+			return true
+		end
+	end,
+-----------------------------------
+	["Use enginer gloves"] = function()
+		if ni.player.slotcastable(10)
+		 and ni.player.slotcd(10) == 0
+		 and UnitAffectingCombat("player") then
+			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
 	["Combat Specific Pause"] = function()
 		if cache.PlayerCombat then
 			return false;
@@ -217,8 +253,8 @@ local abilities = {
 				and ally.auras(spells.Rejuvenation.."||"..spells.Regrowth)
 				and ally:valid(ally, spells.Swiftmend, false, true) then
 					ni.spell.cast(spells.Swiftmend, ally.unit)
-					return true;				
-				end					
+					return true;
+				end
 			end
 		end
 	end,
@@ -228,8 +264,8 @@ local abilities = {
 			return false;
 		end
 		if UsableSilence(spells.NatureSwiftness)
-		and UsableSilence(spells.HealingTouch) 
-		and (ni.spell.cd(spells.Swiftmend) ~= 0 
+		and UsableSilence(spells.HealingTouch)
+		and (ni.spell.cd(spells.Swiftmend) ~= 0
 		and ni.spell.cd(spells.Swiftmend) > 1.5) then
 			local allyOne = ni.members[1];
 			if allyOne:hp() <= ui("natureswift")[1]
@@ -240,20 +276,20 @@ local abilities = {
 			end
 		end
 	end,
------------------------------------			
+-----------------------------------
     ["Tranquility"] = function()
-		if not ui("tranquil")[2] or cache.IsMoving then 
+		if not ui("tranquil")[2] or cache.IsMoving then
 			return false;
 		end
 		local value = ui("tranquilhp")[1];
-		local total = members.subgroupbelow(value, 30, true);
+		local total = ni.members.subgroupbelow(value, 30, true);
 		if total >= ui("tranquilcount")[1]
-		and usableSilence(spells.Tranquility) then
-			spellCast(spells.Tranquility)
+		and UsableSilence(spells.Tranquility) then
+			ni.spell.cast(spells.Tranquility)
 			return true;
 		end
 	end,
------------------------------------		
+-----------------------------------
 	["Tank Heal"] = function()
 		local mainTank, offTank = ni_tanks();
 		local enabled = ui("healtank")[2];
@@ -264,14 +300,14 @@ local abilities = {
 		end
 		if mainTank then
 			if UnitExists(mainTank.unit)
-			and ni.spell.valid(mainTank.unit, spells.HealingTouch, false, true, true) then	
+			and ni.spell.valid(mainTank.unit, spells.HealingTouch, false, true, true) then
 				if nourEnable then
 					if not cache.IsMoving
 					and ni.unit.hp(mainTank.unit) <= nourVal
 					and UsableSilence(spells.Nourish) then
 						if (ni.unit.buff(mainTank.unit, spells.Rejuvenation)
 						or ni.unit.buff(mainTank.unit, spells.WildGrowth)) then
-							ni.spell.cast(spells.Nourish, mainTank.unit) 
+							ni.spell.cast(spells.Nourish, mainTank.unit)
 							return true;
 						end
 					end
@@ -286,15 +322,15 @@ local abilities = {
 			end
 		end
 		if offTank then
-			if UnitExists(offTank.unit) 
-			and ni.spell.valid(offTank.unit, spells.HealingTouch, false, true, true) then	
+			if UnitExists(offTank.unit)
+			and ni.spell.valid(offTank.unit, spells.HealingTouch, false, true, true) then
 				if nourEnable then
 					if not cache.IsMoving
 					and ni.unit.hp(offTank.unit) <= nourVal
 					and UsableSilence(spells.Nourish) then
 						if (ni.unit.buff(offTank.unit, spells.Rejuvenation)
 						or ni.unit.buff(offTank.unit, spells.WildGrowth)) then
-							ni.spell.cast(spells.Nourish, offTank.unit) 
+							ni.spell.cast(spells.Nourish, offTank.unit)
 							return true;
 						end
 					end
@@ -309,7 +345,7 @@ local abilities = {
 			end
 		end
 	end,
------------------------------------			
+-----------------------------------
 	["Remove Curse (Ally)"] = function()
 		if not ui("removecurse")[2]
 		or not UsableSilence(spells.RemoveCurse) then
@@ -317,7 +353,7 @@ local abilities = {
 		end
 		for i = 1, #ni.members.sort() do
 		local ally = ni.members[i];
-			if ally:debufftype("Curse")	 
+			if ally:debufftype("Curse")
 			and ally:dispel()
 			and ni.spell.lastcast(spells.RemoveCurse, 1.8)
 			and ally:valid(spells.RemoveCurse, false, true) then
@@ -326,15 +362,15 @@ local abilities = {
 			end
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Abolish Poison (Ally)"] = function()
-		if not ui("ambolishpoison")[2] 
+		if not ui("ambolishpoison")[2]
 		or not UsableSilence(spells.AbolishPoison) then
 			return false;
 		end
 		for i = 1, #ni.members.sort() do
 		local ally = ni.members[i];
-			if ally:debufftype("Poison")	 
+			if ally:debufftype("Poison")
 			and ally:dispel()
 			and not ally:aura(spells.AbolishPoison)
 			and ni.spell.lastcast(spells.AbolishPoison, 1.8)
@@ -344,7 +380,7 @@ local abilities = {
 			end
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Rejuvenation"] = function()
 		if not ui("rejuall")[2] then
 			return false;
@@ -357,11 +393,11 @@ local abilities = {
 				and ally:valid(spells.Rejuvenation, false, true) then
 					ni.spell.cast(spells.Rejuvenation, ally.unit)
 					return true;
-				end	
+				end
 			end
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Nourish"] = function()
 		if not ui("nourish")[2] or cache.IsMoving then
 			return false;
@@ -378,7 +414,7 @@ local abilities = {
 			end
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Wild Growth"] = function()
 		if not ui("growth")[2] or not UsableSilence(spells.WildGrowth) then
 			return false;

@@ -424,7 +424,7 @@ frames.OnUpdate = function(self, elapsed)
 		
 		ni.drtracker.updateresettime();
 		
-		if ni.vars.profiles.interrupt then
+		if ni.vars.profiles.interrupt and not ni.vars.profiles.enabled then
 			if ni.spell.shouldinterrupt("target") then
 				ni.spell.castinterrupt("target");
 			end

@@ -124,4 +124,4 @@ local abilities = {
 		end
 	end,
 };
-ni.bootstrap.profile("GUIExample", queue, abilities, OnLoad, OnUnload);
+ni.bootstrap.profile("GUIExample", queue, abilities, OnLoad, OnUnLoad);

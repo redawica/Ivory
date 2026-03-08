@@ -9,11 +9,11 @@ local items = {
 	{ type = "title", text = "Holy Paladin by |c0000CED1DarhangeR" },
 	{ type = "separator" },
 	{ type = "title", text = "|cffFFFF00Main Settings" },
-	{ type = "separator" },	
+	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.paladin.pleaIcon()..":26:26\124t Divine Plea", tooltip = "Use spell when player mana < %", enabled = true, value = 60, key = "plea" },
-	{ type = "entry", text = "\124T"..data.paladin.illumIcon()..":26:26\124t Divine Illumination", tooltip = "Use spell when player mana < %", enabled = true, value = 35, key = "illumination" },	
-	{ type = "entry", text = "\124T"..data.paladin.aveWrathIcon()..":26:26\124t Avenging Wrath", tooltip = "Use spell when enabled", enabled = true, key = "aven" },		
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },	
+	{ type = "entry", text = "\124T"..data.paladin.illumIcon()..":26:26\124t Divine Illumination", tooltip = "Use spell when player mana < %", enabled = true, value = 35, key = "illumination" },
+	{ type = "entry", text = "\124T"..data.paladin.aveWrathIcon()..":26:26\124t Avenging Wrath", tooltip = "Use spell when enabled", enabled = true, key = "aven" },
+	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
@@ -25,15 +25,15 @@ local items = {
 	{ type = "page", number = 2, text = "|cff95f900CD's and important spells" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.paladin.exorIcon()..":26:26\124t Exorcism", tooltip = "Use spell when player mana > 75%", enabled = false, key = "exorc" },
-	{ type = "entry", text = "\124T"..data.paladin.hamWraIcon()..":26:26\124t Hammer of Wrath", tooltip = "Auto check ''execute'' target in this spell range and use it.", enabled = false, key = "masswrath" },		
+	{ type = "entry", text = "\124T"..data.paladin.hamWraIcon()..":26:26\124t Hammer of Wrath", tooltip = "Auto check ''execute'' target in this spell range and use it.", enabled = false, key = "masswrath" },
 	{ type = "entry", text = "\124T"..data.paladin.masteryIcon()..":26:26\124t Aura Mastery", tooltip = "Enable spell", enabled = true, key = "auramastery" },
 	{ type = "entry", text = "Aura Mastery (Members HP)", tooltip = "Use spell when member HP < %", value = 30, key = "auramasteryhp" },
 	{ type = "entry", text = "Aura Mastery (Members Count)", tooltip = "Use spell when member count in Party/Raid have low hp", value = 4, key = "auramasterycount" },
 	{ type = "entry", text = "\124T"..data.paladin.handSacrIcon()..":26:26\124t Hand of Sacrifice (Member)", tooltip = "Use spell when member HP < %", enabled = true, value = 25, key = "handsacrifice" },
 	{ type = "entry", text = "\124T"..data.paladin.handSalIcon()..":26:26\124t Hand of Salvation (Member)", tooltip = "Auto check member agro and use spell", enabled = true, key = "salva" },
 	{ type = "entry", text = "\124T"..data.paladin.handProIcon()..":26:26\124t Hand of Protection (Member)", tooltip = "Use spell when member HP < %. Work only on caster clases", enabled = true, value = 20, key = "handofprot" },
-	{ type = "entry", text = "\124T"..data.paladin.turnIcon()..":26:26\124t Turn Evil (Auto Use)", tooltip = "Auto check and use spell on proper enemies", enabled = false, key = "turn" },	
-	{ type = "entry", text = "\124T"..data.controlIcon()..":26:26\124t Auto Control (Member)", tooltip = "Auto check and control member if he mindcontrolled or etc.", enabled = true, key = "control" },		
+	{ type = "entry", text = "\124T"..data.paladin.turnIcon()..":26:26\124t Turn Evil (Auto Use)", tooltip = "Auto check and use spell on proper enemies", enabled = false, key = "turn" },
+	{ type = "entry", text = "\124T"..data.controlIcon()..":26:26\124t Auto Control (Member)", tooltip = "Auto check and control member if he mindcontrolled or etc.", enabled = true, key = "control" },
 	{ type = "separator" },
 	{ type = "title", text = "Dispel" },
 	{ type = "separator" },
@@ -43,11 +43,21 @@ local items = {
 	{ type = "page", number = 3, text = "|cff95f900Healing spells settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal members after fight when HP < %", enabled = true, value = 95, key = "noncombatheal" },
-	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },		
-	{ type = "entry", text = "\124T"..data.paladin.hsockIcon()..":26:26\124t Holy Shock", tooltip = "Use spell when member HP < %", enabled = true, value = 75, key = "shock" },	
-	{ type = "entry", text = "\124T"..data.paladin.flashIcon()..":26:26\124t Flash of Light", tooltip = "Use spell when member HP < %", enabled = true, value = 85, key = "flash" },	
+	{ type = "entry", text = "\124T"..data.tankIcon()..":26:26\124t Priority Tank", tooltip = "Priority Tank healing first", enabled = true, key = "healtank" },
+	{ type = "entry", text = "\124T"..data.paladin.hsockIcon()..":26:26\124t Holy Shock", tooltip = "Use spell when member HP < %", enabled = true, value = 75, key = "shock" },
+	{ type = "entry", text = "\124T"..data.paladin.flashIcon()..":26:26\124t Flash of Light", tooltip = "Use spell when member HP < %", enabled = true, value = 85, key = "flash" },
 	{ type = "entry", text = "\124T"..data.paladin.lightIcon()..":26:26\124t Holy Light", tooltip = "Use spell when member HP < %", enabled = true, value = 40, key = "light" },
 	{ type = "entry", text = "\124T"..data.paladin.lightIcon()..":26:26\124t Holy Light (Glyph)", tooltip = "Use spell when you have glyph and member HP < %", enabled = true, value = 55, key = "lightglyph" },
+	{ type = "separator" },
+	{ type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -71,16 +81,16 @@ local function GetSetting(name)
             return v.value
         end
     end
-end;	
+end;
 local function OnLoad()
 	ni.GUI.AddFrame("Holy_DarhangeR", items);
 end
-local function OnUnLoad()  
+local function OnUnLoad()
 	ni.GUI.DestroyFrame("Holy_DarhangeR");
 end
 
 local queue = {
-	
+
 	"Universal pause",
 	"Seal of Wisdom/Light",
 	"Cancel Righteous Fury",
@@ -91,6 +101,8 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
+	"Use enginer gloves",
 	"Racial Stuff",
 	"Divine Shield",
 	"Cleanse (Member)",
@@ -107,7 +119,7 @@ local queue = {
 	"Valithria Heal",
 	"Hammer of Wrath (Auto Target)",
 	"Turn Evil (Auto Use)",
-	"Control (Member)",	
+	"Control (Member)",
 	"Holy Light (Glyph)",
 	"Holy Light",
 	"Holy Shock",
@@ -117,7 +129,7 @@ local queue = {
 local abilities = {
 -----------------------------------
 	["Universal pause"] = function()
-		if (data.UniPause() 
+		if (data.UniPause()
 		 or data.PlayerDebuffs("player")) then
 			return true
 		end
@@ -126,32 +138,32 @@ local abilities = {
 -----------------------------------
 	["Auto Track Undeads"] = function()
 		if ni.player.hasglyph(57947) then
-		 if not UnitAffectingCombat("player") 
+		 if not UnitAffectingCombat("player")
 		  and GetTime() - data.paladin.LastTrack > 8 then
-				SetTracking(nil);	
+				SetTracking(nil);
 		 end
-			-- Undead --				
+			-- Undead --
 		 if UnitAffectingCombat("player")
 		  and ni.unit.exists("target")
 		  and ni.unit.creaturetype("target") == 6
-		  and ni.spell.available(5502) 
-		  and GetTime() - data.paladin.LastTrack > 8 then 
-				data.paladin.LastTrack = GetTime()		  
+		  and ni.spell.available(5502)
+		  and GetTime() - data.paladin.LastTrack > 8 then
+				data.paladin.LastTrack = GetTime()
 				ni.spell.cast(5502)
-			end				
+			end
 		end
 	end,
 -----------------------------------
 	["Seal of Wisdom/Light"] = function()
 		if ni.spell.available(20166)
 		 and ni.player.hasglyph(54940)
-		 and not ni.player.buff(20166) then 
+		 and not ni.player.buff(20166) then
 			ni.spell.cast(20166)
 			return true
 		end
 		if ni.spell.available(20165)
 		 and ni.player.hasglyph(54943)
-		 and not ni.player.buff(20165) then 
+		 and not ni.player.buff(20165) then
 			ni.spell.cast(20165)
 			return true
 		else
@@ -165,20 +177,20 @@ local abilities = {
 	end,
 -----------------------------------
 	["Cancel Righteous Fury"] = function()
-		local p="player" for i = 1,40 
+		local p="player" for i = 1,40
 		do local _,_,_,_,_,_,_,u,_,_,s=UnitBuff(p,i)
 			if u==p and s==25780 then
-				CancelUnitBuff(p,i) 
+				CancelUnitBuff(p,i)
 				break;
 			end
-		end 
+		end
 	end,
 -----------------------------------
 	["Divine Plea"] = function()
 		local value, enabled = GetSetting("plea");
-		if enabled 
+		if enabled
 		 and ni.player.power() < value
-		 and not ni.player.buff(54428)		 
+		 and not ni.player.buff(54428)
 		 and ni.spell.available(54428) then
 			ni.spell.cast(54428)
 			return true
@@ -188,7 +200,7 @@ local abilities = {
 	["Non Combat Healing"] = function()
 		local value, enabled = GetSetting("noncombatheal");
 		if enabled
-		 and not UnitAffectingCombat("player")	 
+		 and not UnitAffectingCombat("player")
 		 and ni.spell.available(48785) then
 		   if ni.members[1].hp < value
 		    and not ni.player.ismoving()
@@ -217,12 +229,12 @@ local abilities = {
 		for i = 1, #hstones do
 			if enabled
 			 and ni.player.hp() < value
-			 and ni.player.hasitem(hstones[i]) 
+			 and ni.player.hasitem(hstones[i])
 			 and ni.player.itemcd(hstones[i]) == 0 then
 				ni.player.useitem(hstones[i])
 				return true
 			end
-		end	
+		end
 	end,
 -----------------------------------
 	["Heal Potions (Use)"] = function()
@@ -253,6 +265,21 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true
+		end
+	end,
+-----------------------------------
+	["Use enginer gloves"] = function()
+		if ni.player.slotcastable(10)
+		 and ni.player.slotcd(10) == 0
+		 and UnitAffectingCombat("player") then
+			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
 	["Racial Stuff"] = function()
 		local hracial = { 33697, 20572, 33702, 26297 }
 		local bloodelf = { 25046, 28730, 50613 }
@@ -269,17 +296,17 @@ local abilities = {
 		if ni.members.averageof(7) < 40
 		 and IsSpellKnown(hracial[i])
 		 and ni.spell.available(hracial[i])
-		 and ni.spell.valid("target", 20271) then 
+		 and ni.spell.valid("target", 20271) then
 					ni.spell.cast(hracial[i])
 					return true
 			end
 		end
 		--- Blood Elf
 		for i = 1, #bloodelf do
-		if ni.player.power() < 70 
+		if ni.player.power() < 70
 		 and IsSpellKnown(bloodelf[i])
 		 and ni.spell.available(bloodelf[i])
-		 and ni.spell.valid("target", 20271) then 
+		 and ni.spell.valid("target", 20271) then
 					ni.spell.cast(bloodelf[i])
 					return true
 			end
@@ -289,7 +316,7 @@ local abilities = {
 		if ni.spell.valid("target", 20271)
 		 and ni.player.hp() < 20
 		 and IsSpellKnown(alracial[i])
-		 and ni.spell.available(alracial[i]) then 
+		 and ni.spell.available(alracial[i]) then
 					ni.spell.cast(alracial[i])
 					return true
 				end
@@ -324,7 +351,7 @@ local abilities = {
 		 and ni.members[1].hp > 75
 		 and ni.player.power() > 75
 		 and ni.spell.available(48801)
-		 and not ni.player.ismoving() 
+		 and not ni.player.ismoving()
 		 and ni.spell.valid("target", 48801, true, true) then
 			ni.spell.cast(48801, "target")
 			return true
@@ -336,7 +363,7 @@ local abilities = {
 		local valueHp = GetSetting("auramasteryhp");
 		local valueCount = GetSetting("auramasterycount");
 		if enabled
-		 and ni.members.averageof(valueCount) < valueHp	
+		 and ni.members.averageof(valueCount) < valueHp
 		 and ni.spell.available(31821) then
 			ni.spell.cast(31821)
 			return true
@@ -346,7 +373,7 @@ local abilities = {
 	["Hand of Sacrifice (Member)"] = function()
 		local value, enabled = GetSetting("handsacrifice");
 		if enabled
-		 and #ni.members > 1	
+		 and #ni.members > 1
 		 and ni.spell.available(6940) then
 		   if ni.members[1].range
 		   and ni.members[1].hp < value
@@ -363,13 +390,13 @@ local abilities = {
 	["Hand of Salvation (Member)"] = function()
 		local _, enabled = GetSetting("salva")
 		if enabled
-		 and #ni.members > 1		 
+		 and #ni.members > 1
 		 and ni.spell.available(1038)
 		 and data.CombatStart(10) then
 		  if ni.members[1].threat >= 2
 		   and not ni.members[1].istank
-		   and not data.paladin.HandActive(ni.members[1].unit)		    
-		   and ni.spell.valid(ni.members[1].unit, 1038, false, true, true) then 
+		   and not data.paladin.HandActive(ni.members[1].unit)
+		   and ni.spell.valid(ni.members[1].unit, 1038, false, true, true) then
 				ni.spell.cast(1038, ni.members[1].unit)
 				return true
 			end
@@ -379,7 +406,7 @@ local abilities = {
 	["Hand of Protection (Member)"] = function()
 		local value, enabled = GetSetting("handofprot");
 		if enabled
-		 and #ni.members > 1		 
+		 and #ni.members > 1
 		 and ni.spell.available(10278) then
 		  if ni.members[1].range
 		  and ni.members[1].hp < value
@@ -394,7 +421,7 @@ local abilities = {
 		  and ni.members[1].class ~= "WARRIOR"
 		  and not data.paladin.HandActive(ni.members[1].unit)
 		  and not ni.unit.debuff(ni.members[1].unit, 25771)
-		  and ni.spell.valid(ni.members[1].unit, 10278, false, true, true) then 
+		  and ni.spell.valid(ni.members[1].unit, 10278, false, true, true) then
 				ni.spell.cast(10278, ni.members[1].unit)
 				return true
 			end
@@ -419,7 +446,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Divine Illumination T10"] = function()
-		if data.checkforSet(data.paladin.itemsetT10, 2) then 
+		if data.checkforSet(data.paladin.itemsetT10, 2) then
 		 if data.youInInstance()
 		 and ni.members.averageof(4) < 45
 		 and not ni.player.buff(54428)
@@ -461,7 +488,7 @@ local abilities = {
 		 local SCtank, _, _, _, _, _, SCtank_time = ni.unit.buff(tank, 53601, "player")
 		 local SelfSCtank = ni.unit.buff(tank, 53601)
 		 local forbtank = ni.unit.debuff(tank, 25771)
-			-- Put Beacon on MT -- 
+			-- Put Beacon on MT --
 		if not ni.unit.exists("boss1") then
 		 if (not BofLtank
 		 or (BofLtank and BofLtank_time - GetTime() < 2))
@@ -471,11 +498,11 @@ local abilities = {
 			 return true
 			end
 		end
-			-- Put Sacred on MT -- 
+			-- Put Sacred on MT --
 		 if not ni.unit.exists("boss1") then
 		  if not SelfSCtank
 		  and (not SCtank
-		  or (SCtank and SCtank_time - GetTime() < 2))	 
+		  or (SCtank and SCtank_time - GetTime() < 2))
 		  and ni.spell.available(53601)
 		  and ni.spell.valid(tank, 53601, false, true, true) then
 			 ni.spell.cast(53601, tank)
@@ -491,7 +518,7 @@ local abilities = {
 			ni.spell.cast(48788, tank)
 			return true
 		end
-			-- Heal MT with Holy Light --	
+			-- Heal MT with Holy Light --
 		 if tank ~= nil
 		 and ni.unit.hp(tank) < 25
 		 and ni.spell.available(20216)
@@ -506,14 +533,14 @@ local abilities = {
 	["Valithria Heal"] = function()
 		local tank = ni.tanks()
 		if ni.unit.exists("boss1") then
-		 if ni.unit.id("boss1") == 36789 
+		 if ni.unit.id("boss1") == 36789
 		  and ni.unit.hp("boss1") < 100 then
 		 local BofLBoss, _, _, _, _, _, BofLBoss_time = ni.unit.buff("boss1", 53563, "player")
 		 local SCBoss, _, _, _, _, _, SCBoss_time = ni.unit.buff("boss1", 53601, "player")
 		 local SCtank, _, _, _, _, _, SCtank_time = ni.unit.buff(tank, 53601, "player")
-		 local SelfSCtank = ni.unit.buff(tank, 53601)		
+		 local SelfSCtank = ni.unit.buff(tank, 53601)
 		 local SelfSCBoss = ni.unit.buff("boss1", 53601)
-		-- Put Beacon on Boss --         
+		-- Put Beacon on Boss --
 		if (not BofLBoss
 		 or (BofLBoss and BofLBoss_time - GetTime() < 2))
 		 and ni.spell.available(53563)
@@ -523,7 +550,7 @@ local abilities = {
 		end
 		-- Put Sacred on Boss --
 		if (not SelfSCBoss
-		 or (SCBoss and SCBoss_time - GetTime() < 2))       
+		 or (SCBoss and SCBoss_time - GetTime() < 2))
 		 and ni.spell.available(53601)
 		 and ni.spell.valid("boss1", 53601, false, true, true) then
 			ni.spell.cast(53601, "boss1")
@@ -532,31 +559,31 @@ local abilities = {
 		if SelfSCBoss
 		 and ni.unit.exists(tank)
 		 and (not SelfSCtank
-		 or (SCtank and SCtank_time - GetTime() < 2))        
+		 or (SCtank and SCtank_time - GetTime() < 2))
 		 and ni.spell.available(53601)
 		 and ni.spell.valid(tank, 53601, false, true, true) then
 			ni.spell.cast(53601, tank)
 			return true
-		end         
+		end
 		-- Heal Boss with Holy Light --
 		if not ni.player.ismoving()
-		 and ni.members[1].hp > 80        
+		 and ni.members[1].hp > 80
 		 and ni.spell.available(48782)
 		 and not ni.player.ismoving()
 		 and GetTime() - data.paladin.LastHoly > 6
 		 and ni.spell.valid("boss1", 48782, false, true, true) then
 			ni.spell.cast(48782, "boss1")
-			data.paladin.LastHoly = GetTime()        
+			data.paladin.LastHoly = GetTime()
 			return true
 		end
-		-- Heal Boss with Flash of Light --    
+		-- Heal Boss with Flash of Light --
 		if not ni.player.ismoving()
-		 and ni.members[1].hp > 80        
+		 and ni.members[1].hp > 80
 		 and ni.spell.available(48785)
 		 and not ni.player.ismoving()
 		 and ni.unit.buffremaining("boss1", 66922, "player") < ni.spell.casttime(48785)
 		 and ni.spell.valid("boss1", 48785, false, true, true) then
-			ni.spell.cast(48785, "boss1")    
+			ni.spell.cast(48785, "boss1")
 			return true
 		end
 			end
@@ -578,8 +605,8 @@ local abilities = {
 -----------------------------------
 	["Holy Light (Glyph)"] = function()
 		local value, enabled = GetSetting("lightglyph");
-		local friends = ni.members.inrangebelow(ni.members[1].unit, 7, 85) 
-		if enabled 
+		local friends = ni.members.inrangebelow(ni.members[1].unit, 7, 85)
+		if enabled
 		 and ni.player.hasglyph(54937)
 		 and ni.spell.available(48782)
 		 and ni.members.averageof(3) < 85
@@ -627,7 +654,7 @@ local abilities = {
 		local value, enabled = GetSetting("flash");
 		if enabled
 		 and ni.spell.available(48785)
-		 and not ni.player.ismoving() 
+		 and not ni.player.ismoving()
 		 or ni.unit.buff("player", 54149) then
 		-- Lowest member Tank but one member more need heal
 		 if ni.members[1].hp < value
@@ -656,7 +683,7 @@ local abilities = {
 -----------------------------------
 	["Cleanse (Member)"] = function()
 		local _, enabled = GetSetting("cleans")
-		if enabled		
+		if enabled
 		 and ni.spell.available(4987) then
 		  for i = 1, #ni.members do
 		  if ni.unit.debufftype(ni.members[i].unit, "Magic|Disease|Poison")
@@ -688,9 +715,9 @@ local abilities = {
 		end
 	end,
 -----------------------------------
-	["Turn Evil (Auto Use)"] = function()        
+	["Turn Evil (Auto Use)"] = function()
 		local _, enabled = GetSetting("turn")
-		if enabled 
+		if enabled
 		 and ni.unit.exists("target")
 		 and ni.spell.available(10326)
 		 and UnitCanAttack("player", "target") then
@@ -698,7 +725,7 @@ local abilities = {
 		  enemies = ni.unit.enemiesinrange("player", 25)
 		  local dontTurn = false
 		  for i = 1, #enemies do
-		   local tar = enemies[i].guid; 
+		   local tar = enemies[i].guid;
 		   if (ni.unit.creaturetype(enemies[i].guid) == 3
 		    or ni.unit.creaturetype(enemies[i].guid) == 6
 		    or ni.unit.aura(enemies[i].guid, 49039))
@@ -709,7 +736,7 @@ local abilities = {
         end
 		if not dontTurn then
 		 for i = 1, #enemies do
-		 local tar = enemies[i].guid; 
+		 local tar = enemies[i].guid;
 		  if (ni.unit.creaturetype(enemies[i].guid) == 3
 		   or ni.unit.creaturetype(enemies[i].guid) == 6
 		   or ni.unit.aura(enemies[i].guid, 49039))
@@ -742,7 +769,7 @@ local abilities = {
 					ni.spell.cast(48806, executetar)
 					return true
 				end
-			end					
+			end
 		end
 	end,
 -----------------------------------
@@ -764,10 +791,10 @@ local abilities = {
 -----------------------------------
 	["Window"] = function()
 		if not popup_shown then
-		 ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a", 
-		 "Welcome to Holy Paladin Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main")	
+		 ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a",
+		 "Welcome to Holy Paladin Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main")
 		popup_shown = true;
-		end 
+		end
 	end,
 }
 
