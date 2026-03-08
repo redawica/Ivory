@@ -37,6 +37,16 @@ local items = {
 		{ selected = false, value = 48263, text = "Frost Presence" },
 		{ selected = false, value = 48265, text = "Unholy Presence" },
 	}, key = "Presence" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -82,9 +92,10 @@ local queue = {
 	"Pet Attack/Follow",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
-	"Use enginer gloves",
-	"Trinkets",
+		"Use enginer gloves",
+		"Trinkets",
 	"Cancel Shadowmourne",
 	"Mind Freeze (Interrupt)",
 	"Icebound Fortitude",
@@ -253,6 +264,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.dk.InRange() then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 			return true
 		end
 	end,
