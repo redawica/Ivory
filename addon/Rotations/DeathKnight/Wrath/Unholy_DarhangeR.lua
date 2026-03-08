@@ -1,18 +1,10 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = { };
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
 local ScourgeStrike = IsSpellKnown(55271)
 local function ActiveEnemies()
-	table.wipe(enemies);
-	enemies = ni.unit.enemiesinrange("target", 10);
-	for k, v in ipairs(enemies) do
-		if ni.player.threat(v.guid) == -1 then
-			table.remove(enemies, k);
-		end
-	end
-	return #enemies;
+	return data.GetActiveEnemies("target", 10, true, 0.15)
 end
 if build == 30300 and level == 80 and data and ScourgeStrike then
 local items = {
@@ -22,10 +14,11 @@ local items = {
 	{ type = "title", text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
-	{ type = "entry", text = "\124T"..data.dk.deathIcon()..":26:26\124t Death Strike (Lich)", tooltip = "Use spell when player HP < %. Only in open world", enabled = true, value = 50, key = "deathstrike" },	
-	{ type = "entry", text = "\124T"..data.dk.nothIcon()..":26:26\124t Noth's Special Brew", tooltip = "Enable for quick get Runic Power", enabled = false, key = "noth" },	
-	{ type = "entry", text = "\124T"..data.dk.interIcon()..":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells", enabled = true, key = "autointerrupt" },	
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },		
+	{ type = "entry", text = "\124T"..data.dk.deathIcon()..":26:26\124t Death Strike (Lich)", tooltip = "Use spell when player HP < %. Only in open world", enabled = true, value = 50, key = "deathstrike" },
+	{ type = "entry", text = "\124T"..data.dk.nothIcon()..":26:26\124t Noth's Special Brew", tooltip = "Enable for quick get Runic Power", enabled = false, key = "noth" },
+	{ type = "entry", text = "\124T"..data.dk.interIcon()..":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells", enabled = true, key = "autointerrupt" },
+	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },
+		{ type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
 	{ type = "separator" },
 	{ type = "title", text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
@@ -66,12 +59,12 @@ end;
 local function OnLoad()
 	ni.GUI.AddFrame("Unholy_DarhangeR", items);
 end
-local function OnUnLoad()  
+local function OnUnLoad()
 	ni.GUI.DestroyFrame("Unholy_DarhangeR");
 end
 
 local queue = {
-	
+
 	"Universal pause",
 	"AutoTarget",
 	"Use Presence",
@@ -86,14 +79,15 @@ local queue = {
 	"Racial Stuff",
 	"Use enginer gloves",
 	"Trinkets",
+	"Cancel Shadowmourne",
 	"Noth's Special Brew (Use)",
 	"Mind Freeze (Interrupt)",
 	"Icebound Fortitude",
 	"Death and Decay",
-	"Empower Rune Weapon",	
+	"Empower Rune Weapon",
 	"Icy Touch",
 	"Plague Strike",
-	"Pestilence (Renew)",	
+	"Pestilence (Renew)",
 	"Pestilence (AoE)",
 	"Summon Gargoyle",
 	"Rune Strike",
@@ -117,14 +111,14 @@ local abilities = {
 		if UnitAffectingCombat("player")
 		 and ((ni.unit.exists("target")
 		 and UnitIsDeadOrGhost("target")
-		 and not UnitCanAttack("player", "target")) 
+		 and not UnitCanAttack("player", "target"))
 		 or not ni.unit.exists("target")) then
 			ni.player.runtext("/targetenemy")
 		end
 	end,
 -----------------------------------
 	["Use Presence"] = function()
-		local presence = GetSetting("Presence");		
+		local presence = GetSetting("Presence");
 		if not ni.player.buff(presence)
 		 and ni.spell.available(presence) then
 			ni.spell.cast(presence)
@@ -133,8 +127,8 @@ local abilities = {
 	end,
 -----------------------------------
 	["Horn of Winter"] = function()
-		if not ni.player.buff(57623) 
-		 and ni.spell.available(57623) then 		
+		if not ni.player.buff(57623)
+		 and ni.spell.available(57623) then
 			ni.spell.cast(57623)
 			return true
 		end
@@ -153,7 +147,7 @@ local abilities = {
 		 and not ni.player.buff(61431)
 		 and ni.spell.available(46584)
 		 and IsUsableSpell(GetSpellInfo(46584))
-		 and ( ni.player.hasitem(37201) 
+		 and ( ni.player.hasitem(37201)
 		 or	ni.player.hasglyph(60200) ) then
 			ni.spell.cast(46584)
 			return true
@@ -173,7 +167,7 @@ local abilities = {
 		 and ni.unit.hp("playerpet") > 60
 		 and ni.unit.exists("target")
 		 and not UnitIsUnit("target", "pettarget")
-		 and not UnitIsDeadOrGhost("playerpet") then 
+		 and not UnitIsDeadOrGhost("playerpet") then
 			data.petAttack()
 			end
 		end
@@ -196,9 +190,9 @@ local abilities = {
 		if data.meleeStop("target")
 		 or data.PlayerDebuffs("player")
 		 or UnitCanAttack("player","target") == nil
-		 or (UnitAffectingCombat("target") == nil 
-		 and ni.unit.isdummy("target") == nil 
-		 and UnitIsPlayer("target") == nil) then 
+		 or (UnitAffectingCombat("target") == nil
+		 and ni.unit.isdummy("target") == nil
+		 and UnitIsPlayer("target") == nil) then
 			return true
 		end
 	end,
@@ -216,7 +210,7 @@ local abilities = {
 		 and ni.unit.hp("playerpet") > 60
 		 and ni.unit.exists("target")
 		 and not UnitIsUnit("target", "pettarget")
-		 and not UnitIsDeadOrGhost("playerpet") then 
+		 and not UnitIsDeadOrGhost("playerpet") then
 			data.petAttack()
 			end
 		end
@@ -228,12 +222,12 @@ local abilities = {
 		for i = 1, #hstones do
 			if enabled
 			 and ni.player.hp() < value
-			 and ni.player.hasitem(hstones[i]) 
+			 and ni.player.hasitem(hstones[i])
 			 and ni.player.itemcd(hstones[i]) == 0 then
 				ni.player.useitem(hstones[i])
 				return true
 			end
-		end	
+		end
 	end,
 -----------------------------------
 	["Heal Potions (Use)"] = function()
@@ -254,7 +248,7 @@ local abilities = {
 		local hracial = { 33697, 20572, 33702, 26297 }
 		local bloodelf = { 25046, 28730, 50613 }
 		local alracial = { 20594, 28880 }
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		--- Undead
 		if data.forsaken("player")
 		 and IsSpellKnown(7744)
@@ -267,7 +261,7 @@ local abilities = {
 		if data.CDorBoss("target", 5, 35, 5, enabled)
 		 and IsSpellKnown(hracial[i])
 		 and ni.spell.available(hracial[i])
-		 and data.dk.InRange() then 
+		 and data.dk.InRange() then
 					ni.spell.cast(hracial[i])
 					return true
 			end
@@ -275,10 +269,10 @@ local abilities = {
 		--- Blood Elf
 		for i = 1, #bloodelf do
 		if data.CDorBoss("target", 5, 35, 5, enabled)
-		 and ni.player.power() < 60 
+		 and ni.player.power() < 60
 		 and IsSpellKnown(bloodelf[i])
 		 and ni.spell.available(bloodelf[i])
-		 and data.dk.InRange() then 
+		 and data.dk.InRange() then
 					ni.spell.cast(bloodelf[i])
 					return true
 			end
@@ -288,7 +282,7 @@ local abilities = {
 		if data.dk.InRange()
 		 and ni.player.hp() < 20
 		 and IsSpellKnown(alracial[i])
-		 and ni.spell.available(alracial[i]) then 
+		 and ni.spell.available(alracial[i]) then
 					ni.spell.cast(alracial[i])
 					return true
 				end
@@ -298,7 +292,7 @@ local abilities = {
 	["Use enginer gloves"] = function()
 		local _, enabled = GetSetting("detect")
 		if ni.player.slotcastable(10)
-		 and ni.player.slotcd(10) == 0 
+		 and ni.player.slotcd(10) == 0
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.dk.InRange() then
 			ni.player.useinventoryitem(10)
@@ -307,16 +301,16 @@ local abilities = {
 	end,
 -----------------------------------
 	["Trinkets"] = function()
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		if data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.player.slotcastable(13)
-		 and ni.player.slotcd(13) == 0 
+		 and ni.player.slotcd(13) == 0
 		 and data.dk.InRange() then
 			ni.player.useinventoryitem(13)
 		else
 		 if data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.player.slotcastable(14)
-		 and ni.player.slotcd(14) == 0 
+		 and ni.player.slotcd(14) == 0
 		 and data.dk.InRange() then
 			ni.player.useinventoryitem(14)
 			return true
@@ -326,7 +320,7 @@ local abilities = {
 -----------------------------------
 	["Noth's Special Brew (Use)"] = function()
 		local _, enabled1 = GetSetting("noth")
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		if enabled1
 		 and ni.player.power() < 80
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
@@ -339,22 +333,16 @@ local abilities = {
 -----------------------------------
 	["Mind Freeze (Interrupt)"] = function()
 		local _, enabled = GetSetting("autointerrupt")
-		if enabled	
-		 and ni.spell.shouldinterrupt("target")
-		 and ni.spell.available(47528)
-		 and GetTime() - data.LastInterrupt > 9
-		 and ni.spell.valid("target", 47528, true, true)  then
-			ni.spell.castinterrupt("target")
-			data.LastInterrupt = GetTime()
+		if data.TryInterrupt("target", enabled, 47528, 0.35) then
 			return true
 		end
 	end,
------------------------------------	
+-----------------------------------
 	["Icebound Fortitude"] = function()
 		local value, enabled = GetSetting("iceboundfort");
 		if enabled
 		 and ni.player.hp() < value
-		 and ni.spell.available(48792) 
+		 and ni.spell.available(48792)
 		 and not ni.player.buff(48792) then
 			ni.spell.cast(48792)
 			return true
@@ -370,7 +358,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Empower Rune Weapon"] = function()
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		if data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.rune.available() == 0
 		 and ni.spell.available(47568) then
@@ -382,7 +370,7 @@ local abilities = {
 	["Icy Touch"] = function()
 		local icy = data.dk.icy()
 		if ( not icy or ( icy < 2.5 ) )
-		 and ni.spell.available(49909)		
+		 and ni.spell.available(49909)
 		 and ni.spell.valid("target", 49909, true, true) then
 			ni.spell.cast(49909, "target")
 			return true
@@ -433,7 +421,7 @@ local abilities = {
 		 and ( ( icy ~= nil and icy < 4.5 )
 		 or ( plague ~= nil and plague < 4.5 ) ) then
 			if BR == 0 and DR == 0
-			and ni.spell.cd(45529) == 0 then  
+			and ni.spell.cd(45529) == 0 then
 				ni.spell.cast(45529)
 				ni.spell.cast(50842, "target")
 			return true
@@ -445,7 +433,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Summon Gargoyle"] = function()
-		local _, enabled = GetSetting("detect")		
+		local _, enabled = GetSetting("detect")
 		if ni.spell.available(49206)
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.dk.InRange() then
@@ -499,7 +487,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Death Strike (Lich)"] = function()
-		local value, enabled = GetSetting("deathstrike"); 
+		local value, enabled = GetSetting("deathstrike");
 		local _, FR = ni.rune.frostrunecd()
 		local _, UR = ni.rune.unholyrunecd()
 		local _, DR = ni.rune.deathrunecd()
@@ -559,12 +547,26 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Cancel Shadowmourne"] = function()
+		local _, enabled = GetSetting("cancelshadow")
+		if enabled then
+			local p = "player"
+			for i = 1, 40 do
+				local _, _, _, _, _, _, _, u, _, _, spellId = UnitBuff(p, i)
+				if u == p and spellId == 73422 then
+					CancelUnitBuff(p, i)
+					break
+				end
+			end
+		end
+	end,
+-----------------------------------
 	["Window"] = function()
 		if not popup_shown then
-		 ni.debug.popup("Unholy Death Knight by DarhangeR for 3.3.5a", 
+		 ni.debug.popup("Unholy Death Knight by DarhangeR for 3.3.5a",
 	       "Welcome to Unholy Death Knight Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For use Death and Decay configure AoE Toggle key.\n-For better experience make Pet passive.")
 		popup_shown = true;
-		end 
+		end
 	end,
 }
 
@@ -583,9 +585,9 @@ else
             elseif data == nil then
               ni.frames.floatingtext:message("Data file is missing or corrupted!");
             elseif not ScourgeStrike then
-              ni.frames.floatingtext:message("Go and learn all spells from trainer!");			
+              ni.frames.floatingtext:message("Go and learn all spells from trainer!");
             end
         end,
     }
     ni.bootstrap.profile("Unholy_DarhangeR", queue, abilities);
-end	
+end

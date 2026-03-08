@@ -196,7 +196,7 @@ ni.loadstuff = function()
 		if ni.vars.profiles.interrupt then
 			float:message(Local.InterruptOn);
 		else
-			loat:message(Local.InterruptOff);
+			float:message(Local.InterruptOff);
 		end
 	end;
 
