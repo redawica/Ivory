@@ -49,6 +49,16 @@ if build == 30300 and level == 80 and data then
 			enabled = false,
 			key = "rend"
 		},
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -371,7 +381,8 @@ if build == 30300 and level == 80 and data then
 		"Heal Potions (Use)",
 		-- "Racial Stuff",
 		"Use enginer gloves",
-		"Trinkets",
+		"Trinkets (Config)",
+	"Trinkets",
 		"Cancel Shadowmourne",
 		"Bombs",
 		"Heroic Throw",
@@ -708,6 +719,12 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 		-----------------------------------
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+				return true
+			end
+		end,
 		["Trinkets"] = function()
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)

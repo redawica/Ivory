@@ -23,6 +23,16 @@ local items = {
         { selected = true, value = 1, text = "Eviscerate Build" },
         { selected = false, value = 2, text = "Rapture Build" },
     }, key = "builds" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -64,6 +74,7 @@ local EviscerateBuild = {
 	"Heal Potions (Use)",
 	"Racial Stuff",
 	"Use enginer gloves",
+	"Trinkets (Config)",
 	"Trinkets",
 	"Kick (Interrupt)",
 	"Tricks of the Trade",
@@ -235,6 +246,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.rogue.InRange() then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 			return true
 		end
 	end,

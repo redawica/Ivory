@@ -35,6 +35,16 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "\124T" .. data.warrior.rendIcon() .. ":26:26\124t Rend",                                                                           tooltip = "Work only on bosses",                                               enabled = true,      key = "rend" },
 		{ type = "entry",    text = "\124T" .. data.warrior.thundIcon() .. ":26:26\124t Thunder Clap (AoE)",                                                            enabled = true,                                                                key = "thunder" },
 		{ type = "entry",    text = "\124T" .. data.warrior.heroIcon() .. ":26:26\124t  /  \124T" .. data.warrior.cleaveIcon() .. ":26:26\124t Heroic Strike/Cleave",   tooltip = "Minimal rage threshold for use spells",                             value = 35,          key = "heroiccleave" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -79,6 +89,8 @@ if build == 30300 and level == 80 and data then
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
 		"Racial Stuff",
+		"Trinkets (Config)",
+		"Trinkets",
 		"Shield Bash (Interrupt)",
 		"Last Stand",
 		"Enraged Regeneration",
@@ -254,6 +266,30 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 		-----------------------------------
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, 47488, "target") then
+				return true
+			end
+		end,
+		-----------------------------------
+		["Trinkets"] = function()
+			local _, enabled = GetSetting("detect")
+			if data.CDorBoss("target", 5, 35, 5, enabled)
+				and ni.player.slotcastable(13)
+				and ni.player.slotcd(13) == 0
+				and data.warrior.InRange() then
+				ni.player.useinventoryitem(13)
+			else
+				if data.CDorBoss("target", 5, 35, 5, enabled)
+					and ni.player.slotcastable(14)
+					and ni.player.slotcd(14) == 0
+					and data.warrior.InRange() then
+					ni.player.useinventoryitem(14)
+					return true
+				end
+			end
+		end,
 		["Shield Bash (Interrupt)"] = function()
 			local _, enabled = GetSetting("autointerrupt")
 		if data.TryInterrupt("target", enabled, 72, 0.35) then
