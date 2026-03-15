@@ -272,6 +272,7 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function OnLoad()
+		ni.GUI.DestroyFrame("Fury_DarhangeR");
 		if DBM and not ni.vars.fury_dbm_callbacks then
 			DBM:RegisterCallback("DBM_TimerStart", DBMEventHandler)
 			DBM:RegisterCallback("DBM_TimerStop", DBMEventHandler)

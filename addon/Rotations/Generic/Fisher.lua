@@ -16,8 +16,9 @@ end
 local functionSent = 0
 local failedBobberReads = 0
 local lastCast = 0
-local recastAfter = 1.2
-local maxFailedReads = 4
+local castStart = 0
+local recastAfter = 2.0
+local maxFailedReads = 10
 
 local localeBobbers = {
     ["Fishing Bobber"] = true,
@@ -60,7 +61,10 @@ local abilities = {
         end
 
         if UnitChannelInfo("player") then
-            if GetTime() - functionSent > 0.2 then
+            if castStart == 0 then
+                castStart = GetTime()
+            end
+            if GetTime() - functionSent > 0.35 then
                 local guid = FindMyBobber()
                 if guid then
                     local ptr = ni.memory.objectpointer(guid)
@@ -70,23 +74,30 @@ local abilities = {
                             failedBobberReads = 0
                             ni.player.interact(guid)
                             functionSent = GetTime()
+                            castStart = 0
                             return true
                         end
                     end
-                    failedBobberReads = failedBobberReads + 1
+                    if GetTime() - castStart >= 4 then
+                        failedBobberReads = failedBobberReads + 1
+                    end
                 else
-                    failedBobberReads = failedBobberReads + 1
+                    if GetTime() - castStart >= 4 then
+                        failedBobberReads = failedBobberReads + 1
+                    end
                 end
 
-                if failedBobberReads >= maxFailedReads and GetTime() - lastCast > recastAfter then
+                if failedBobberReads >= maxFailedReads and GetTime() - castStart > 6 and GetTime() - lastCast > recastAfter then
                     failedBobberReads = 0
                     ni.spell.stopchanneling()
                     lastCast = GetTime()
+                    castStart = 0
                     return true
                 end
             end
             return
         end
+        castStart = 0
 
         if FindMyBobber() then
             return
@@ -97,6 +108,8 @@ local abilities = {
         end
 
         lastCast = GetTime()
+        castStart = 0
+        failedBobberReads = 0
         ni.spell.delaycast(Fishing, nil, 1.5)
         ni.utils.resetlasthardwareaction()
     end,
