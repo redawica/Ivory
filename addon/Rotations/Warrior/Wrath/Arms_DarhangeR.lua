@@ -15,10 +15,8 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",     enabled = true,                                                                key = "battleshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout", enabled = false,                                                               key = "commandshout" },
 		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
-				{ selected = true, value = "Auto" },
-				{ selected = false, value = "Battle" },
+				{ selected = true, value = "Battle" },
 				{ selected = false, value = "Commanding" },
-				{ selected = false, value = "Off" },
 			}
 		},
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",         tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
@@ -125,6 +123,7 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function OnLoad()
+		ni.GUI.DestroyFrame("Arms_DarhangeR");
 		ni.combatlog.registerhandler("Arms_DarhangeR", CombatEventCatcher);
 		ni.GUI.AddFrame("Arms_DarhangeR", items);
 	end
@@ -394,32 +393,28 @@ if build == 30300 and level == 80 and data then
 		end,
 		-----------------------------------
 		["Battle Shout"] = function()
-			local _, enabled = GetSetting("battleshout")
 			local shoutMode = GetSetting("shoutmode")
-			if shoutMode == "Off" or shoutMode == "Commanding" then
+			if shoutMode ~= "Battle" then
 				return false
 			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if (enabled or shoutMode == "Auto" or shoutMode == "Battle")
-					and ni.spell.available(47436) then
+			if ni.spell.available(47436) then
 				ni.spell.cast(47436)
 				return true
 			end
 		end,
 		-----------------------------------
 		["Commanding Shout"] = function()
-			local _, enabled = GetSetting("commandshout")
 			local shoutMode = GetSetting("shoutmode")
-			if shoutMode == "Off" or shoutMode == "Battle" then
+			if shoutMode ~= "Commanding" then
 				return false
 			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if (enabled or shoutMode == "Auto" or shoutMode == "Commanding")
-					and ni.spell.available(47440) then
+			if ni.spell.available(47440) then
 				ni.spell.cast(47440)
 				return true
 			end
@@ -615,13 +610,13 @@ if build == 30300 and level == 80 and data then
 			local rend = data.warrior.rend()
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss("target", 5, 35, 5, enabled)
-					and rend
-					and ni.unit.debuffstacks("target", 7386) == 5
+					and (rend or ni.unit.hp("target") > 35)
+					and (ni.unit.debuffstacks("target", 7386) >= 3 or ni.unit.isboss("target"))
 					and not ni.player.buff(65156)
 					and ni.spell.available(spells.bladestorm.id)
 					and ni.spell.valid("target", 47465, true, true)
 			then
-				if ni.unit.debuffremaining("target", 7386) > 8
+					if ni.unit.debuffremaining("target", 7386) > 4
 				then
 					if ni.spell.cd(spells.shatteringThrow.id) == 0
 					then

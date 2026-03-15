@@ -17,10 +17,8 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",                                                                    enabled = false,                                                               key = "battleshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",                                                                enabled = true,                                                                key = "commandshout" },
 		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
-				{ selected = false, value = "Auto" },
-				{ selected = true, value = "Commanding" },
 				{ selected = false, value = "Battle" },
-				{ selected = false, value = "Off" },
+				{ selected = true, value = "Commanding" },
 			}
 		},
 		{ type = "entry",    text = "\124T" .. data.warrior.inter2Icon() .. ":26:26\124t Auto Interrupt",                                                               tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
@@ -77,6 +75,7 @@ if build == 30300 and level == 80 and data then
 		end
 	end;
 	local function OnLoad()
+		ni.GUI.DestroyFrame("Protection_Warrior_DarhangeR");
 		ni.GUI.AddFrame("Protection_Warrior_DarhangeR", items);
 	end
 	local function OnUnLoad()
@@ -145,32 +144,28 @@ if build == 30300 and level == 80 and data then
 		end,
 		-----------------------------------
 		["Battle Shout"] = function()
-			local _, enabled = GetSetting("battleshout")
 			local shoutMode = GetSetting("shoutmode")
-			if shoutMode == "Off" or shoutMode == "Commanding" then
+			if shoutMode ~= "Battle" then
 				return false
 			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if (enabled or shoutMode == "Auto" or shoutMode == "Battle")
-					and ni.spell.available(47436) then
+			if ni.spell.available(47436) then
 				ni.spell.cast(47436)
 				return true
 			end
 		end,
 		-----------------------------------
 		["Commanding Shout"] = function()
-			local _, enabled = GetSetting("commandshout")
 			local shoutMode = GetSetting("shoutmode")
-			if shoutMode == "Off" or shoutMode == "Battle" then
+			if shoutMode ~= "Commanding" then
 				return false
 			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if (enabled or shoutMode == "Auto" or shoutMode == "Commanding")
-					and ni.spell.available(47440) then
+			if ni.spell.available(47440) then
 				ni.spell.cast(47440)
 				return true
 			end
