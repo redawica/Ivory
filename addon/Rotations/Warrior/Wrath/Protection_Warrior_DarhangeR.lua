@@ -73,6 +73,7 @@ if build == 30300 and level == 80 and data then
 		end
 	end;
 	local function OnLoad()
+		ni.GUI.DestroyFrame("Protection_Warrior_DarhangeR");
 		ni.GUI.AddFrame("Protection_Warrior_DarhangeR", items);
 	end
 	local function OnUnLoad()
