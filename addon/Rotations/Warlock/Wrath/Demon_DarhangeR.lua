@@ -47,6 +47,16 @@ local items = {
         { selected = true, value = 30146, text = "\124T"..data.warlock.felguardIcon()..":20:20\124t Summon Felguard" },
         { selected = false, value = 0, text = "|cffFF0303No pets" },	
     }, key = "Pet" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -96,9 +106,10 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",		
+	"Trinkets (Config)",
 	"Racial Stuff",
-	"Use enginer gloves",
-	"Trinkets",
+		"Use enginer gloves",
+		"Trinkets",
 	"Spell Lock (Interrupt)",
 	"Soulshatter",
 	"Shadowflame",		
@@ -436,6 +447,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.spell.valid("target", 47809) then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, 47809, "target") then
 			return true
 		end
 	end,

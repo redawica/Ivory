@@ -31,10 +31,10 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = true, key = "trinketenabled" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
-		{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
-		{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 
 	local function GetSetting(name)
@@ -65,9 +65,9 @@ if build == 30300 and level == 80 and data then
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
+		"Trinkets (Config)",
 		"Racial Stuff",
 		"Use engineer gloves",
-		"Trinkets (Config)",
 		"Trinkets",
 		"Barkskin",
 		"Survival Instincts",
