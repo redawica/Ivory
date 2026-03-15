@@ -11,6 +11,10 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..ni.spell.icon(6603, 26, 26)..":26:26\124t Auto Target", tooltip = "Auto target nearest enemy in combat", enabled = true, key = "autotarget" },
+        { type = "entry", text = "Arena Assist (Smart Target)", tooltip = "Auto target arena healer/lowest HP when target is invalid", enabled = true, key = "arenaassist" },
+        { type = "entry", text = "PvP Trinket/Break CC", tooltip = "Use racial/trinket to break hard control", enabled = true, value = 2.0, key = "trinketcc" },
+        { type = "entry", text = "Arena Focus Interrupt", tooltip = "Try focus interrupt if spell ID is configured", enabled = false, key = "arenafocusinterrupt" },
+        { type = "input", value = "", width = 80, height = 15, key = "focusinterruptspell" },
 	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, value = 1.5, key = "Debug" },
 	{ type = "separator" },
 	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
@@ -59,7 +63,10 @@ end
 local queue = {
 	"Universal pause",
 	"AutoTarget",
+        "Arena Cache",
+        "Arena Assist",
 	"Combat specific Pause",
+        "PvP Trinket Break",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
@@ -86,10 +93,31 @@ local abilities = {
 		end
 	end,
 -----------------------------------
+	["Arena Cache"] = function()
+		data.UpdateArenaCache()
+	end,
+-----------------------------------
+	["Arena Assist"] = function()
+		if data.TryArenaAutoTarget(GetSetting) then
+			return true
+		end
+		local sid = tonumber(GetSetting("focusinterruptspell") or "")
+		if sid and sid > 0 and data.TryArenaFocusInterrupt(GetSetting, sid) then
+			return true
+		end
+	end,
+-----------------------------------
 	["Combat specific Pause"] = function()
 		if UnitCanAttack("player", "target") == nil
 		 or UnitIsDeadOrGhost("player")
 		 or UnitIsDeadOrGhost("target") then
+			return true
+		end
+	end,
+-----------------------------------
+	["PvP Trinket Break"] = function()
+		local _, enabled = GetSetting("trinketcc")
+		if enabled and data.TryPvPTrinketBreak(GetSetting) then
 			return true
 		end
 	end,

@@ -75,6 +75,10 @@ if build == 30300 and level == 80 and data then
         { type = "page", number = 5, text = "|cffEE4000Weapons and other things" },
         { type = "separator" },
         { type = "entry", text = "Autotarget", enabled = true, key = "autotarget" },
+        { type = "entry", text = "Arena Assist (Smart Target)", tooltip = "Auto target arena healer/lowest HP when target is invalid", enabled = true, key = "arenaassist" },
+        { type = "entry", text = "PvP Trinket/Break CC", tooltip = "Use racial/trinket to break hard control", enabled = true, value = 2.0, key = "trinketcc" },
+        { type = "entry", text = "Arena Focus Interrupt", tooltip = "Try focus interrupt if spell ID is configured", enabled = false, key = "arenafocusinterrupt" },
+        { type = "input", value = "", width = 80, height = 15, key = "focusinterruptspell" },
         { type = "entry", text = "Healthstone, use when you have %HP or less", enabled = true, value = 20, key = "healthstoneuse" },
         { type = "entry", text = "Healing Potion, use when you have %HP or less", enabled = true, value = 25, key = "healpotionuse" },
         { type = "entry", text = "Mana Potion, use when you have %MP or less", enabled = true, value = 25, key = "manapotionuse" },
@@ -149,8 +153,11 @@ if build == 30300 and level == 80 and data then
     local queue = {
         "Universal pause",
         "AutoTarget",
+        "Arena Cache",
+        "Arena Assist",
         "Main Seal",
         "Combat specific Pause",
+        "PvP Trinket Break",
         "Healthstone (Use)",
         "Heal Potions (Use)",
         "Mana Potions (Use)",
@@ -211,6 +218,21 @@ if build == 30300 and level == 80 and data then
             end
         end,
         -----------------------------------
+        ["Arena Cache"] = function()
+            data.UpdateArenaCache()
+        end,
+-----------------------------------
+        ["Arena Assist"] = function()
+            if data.TryArenaAutoTarget(GetSetting) then
+                return true
+            end
+            local sid = tonumber(GetSetting("focusinterruptspell") or "")
+            if sid and sid > 0 and data.TryArenaFocusInterrupt(GetSetting, sid) then
+                return true
+            end
+        end,
+-----------------------------------
+-----------------------------------
         ["Combat specific Pause"] = function()
             if UnitCanAttack("player", "target") == nil
                     or UnitIsDeadOrGhost("player")
@@ -219,6 +241,14 @@ if build == 30300 and level == 80 and data then
             end
         end,
         -----------------------------------
+        ["PvP Trinket Break"] = function()
+            local _, enabled = GetSetting("trinketcc")
+            if enabled and data.TryPvPTrinketBreak(GetSetting) then
+                return true
+            end
+        end,
+-----------------------------------
+-----------------------------------
         ["Healthstone (Use)"] = function()
             local value, enabled = GetSetting("healthstoneuse");
             local hstones = { 36892, 36893, 36894 }
