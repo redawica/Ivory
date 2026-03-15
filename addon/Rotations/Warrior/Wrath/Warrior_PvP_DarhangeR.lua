@@ -7,7 +7,15 @@ local items = {
 	settingsfile = "DarhangeR_Warrior_PvP.xml",
 	{ type = "title", text = "Warrior PvP by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "entry", text = "Pause", tooltip = "Profile pause/debug", enabled = false, value = 1.5, key = "Debug" },
+	{ type = "entry", text = "Racial Abilities (PvP)", enabled = true, key = "racialpvp" },
+	{ type = "dropdown", menu = {
+		{ selected = true, value = 1, text = "Auto" },
+		{ selected = false, value = 2, text = "Offensive" },
+		{ selected = false, value = 3, text = "Defensive" },
+	}, key = "racialmode" },
+	{ type = "separator" },
+	{ type = "page", number = 1, text = "|cffEE4000Weapons and other things" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..ni.spell.icon(6603, 26, 26)..":26:26\124t Auto Target", tooltip = "Auto target nearest enemy in combat", enabled = true, key = "autotarget" },
@@ -15,15 +23,14 @@ local items = {
         { type = "entry", text = "PvP Trinket/Break CC", tooltip = "Use racial/trinket to break hard control", enabled = true, value = 2.0, key = "trinketcc" },
         { type = "entry", text = "Arena Focus Interrupt", tooltip = "Try focus interrupt if spell ID is configured", enabled = false, key = "arenafocusinterrupt" },
         { type = "input", value = "", width = 80, height = 15, key = "focusinterruptspell" },
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, value = 1.5, key = "Debug" },
 	{ type = "separator" },
-	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
+	{ type = "page", number = 2, text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.stoneIcon()..":26:26\124t Healthstone", tooltip = "Use Warlock Healthstone (if you have) when player HP < %", enabled = true, value = 35, key = "healthstoneuse" },
 	{ type = "entry", text = "\124T"..data.hpotionIcon()..":26:26\124t Heal Potion", tooltip = "Use Heal Potions (if you have) when player HP < %", enabled = true, value = 30, key = "healpotionuse" },
 	{ type = "entry", text = "\124T"..data.mpotionIcon()..":26:26\124t Mana Potion", tooltip = "Use Mana Potions (if you have) when player mana < %", enabled = true, value = 25, key = "manapotionuse" },
 	{ type = "separator" },
-	{ type = "page", number = 2, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
 	{ type = "separator" },
 	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
@@ -53,6 +60,7 @@ local function GetSetting(name)
 end;
 
 local function OnLoad()
+	ni.GUI.DestroyFrame("Warrior_PvP_DarhangeR");
 	ni.GUI.AddFrame("Warrior_PvP_DarhangeR", items);
 end
 
@@ -67,6 +75,7 @@ local queue = {
         "Arena Assist",
 	"Combat specific Pause",
         "PvP Trinket Break",
+	"Racial PvP",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
@@ -119,6 +128,21 @@ local abilities = {
 		local _, enabled = GetSetting("trinketcc")
 		if enabled and data.TryPvPTrinketBreak(GetSetting) then
 			return true
+		end
+	end,
+-----------------------------------
+	["Racial PvP"] = function()
+		local _, enabled = GetSetting("racialpvp")
+		if not enabled then return false end
+		local mode = tonumber(GetSetting("racialmode") or 1)
+		if mode == 3 and ni.player.hp() > 70 then return false end
+		if mode == 2 and ni.player.hp() < 45 then return false end
+		local racial = {20572, 26297, 33697, 33702, 20594, 28880}
+		for i = 1, #racial do
+			if IsSpellKnown(racial[i]) and ni.spell.available(racial[i]) then
+				ni.spell.cast(racial[i])
+				return true
+			end
 		end
 	end,
 -----------------------------------
