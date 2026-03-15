@@ -16,9 +16,7 @@ if build == 30300 and level == 80 and data then
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",              tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,      key = "detect" },
 		{ type = "entry",    text = "Auto Stence",                                                        tooltip = "Auto use proper stence",                                            enabled = false,     key = "stence" },
-		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",      enabled = true,                                                                key = "battleshout" },
-		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",  enabled = false,                                                               key = "commandshout" },
-		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+		{ type = "dropdown", text = "Shout Buff (Battle/Commanding)", key = "shoutmode", menu = {
 				{ selected = true, value = "Battle" },
 				{ selected = false, value = "Commanding" },
 			}
@@ -274,7 +272,6 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function OnLoad()
-		ni.GUI.DestroyFrame("Fury_DarhangeR");
 		if DBM and not ni.vars.fury_dbm_callbacks then
 			DBM:RegisterCallback("DBM_TimerStart", DBMEventHandler)
 			DBM:RegisterCallback("DBM_TimerStop", DBMEventHandler)
@@ -284,14 +281,14 @@ if build == 30300 and level == 80 and data then
 		ni.GUI.AddFrame("Fury_DarhangeR", items);
 	end
 	local function OnUnLoad()
+		ni.GUI.DestroyFrame("Fury_DarhangeR");
 		if DBM and DBM.UnregisterCallback and ni.vars.fury_dbm_callbacks then
-			DBM:UnregisterCallback("DBM_TimerStart", DBMEventHandler)
-			DBM:UnregisterCallback("DBM_TimerStop", DBMEventHandler)
+			pcall(function() DBM:UnregisterCallback("DBM_TimerStart", DBMEventHandler) end)
+			pcall(function() DBM:UnregisterCallback("DBM_TimerStop", DBMEventHandler) end)
 			ni.vars.fury_dbm_callbacks = false
 		end
 		pullInTimer = nil
-		ni.combatlog.unregisterhandler("Fury_DarhangeR", CombatEventCatcher);
-		ni.GUI.DestroyFrame("Fury_DarhangeR");
+		pcall(function() ni.combatlog.unregisterhandler("Fury_DarhangeR", CombatEventCatcher); end)
 	end
 
 	local lastGCDStart = 0

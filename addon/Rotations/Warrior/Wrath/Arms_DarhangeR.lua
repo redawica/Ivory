@@ -12,9 +12,7 @@ if build == 30300 and level == 80 and data then
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",             tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,      key = "detect" },
 		{ type = "entry",    text = "Auto Stence",                                                       tooltip = "Auto use proper stence",                                            enabled = false,     key = "stence" },
-		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",     enabled = true,                                                                key = "battleshout" },
-		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout", enabled = false,                                                               key = "commandshout" },
-		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+		{ type = "dropdown", text = "Shout Buff (Battle/Commanding)", key = "shoutmode", menu = {
 				{ selected = true, value = "Battle" },
 				{ selected = false, value = "Commanding" },
 			}
@@ -40,6 +38,7 @@ if build == 30300 and level == 80 and data then
 		{ type = "page",     number = 2,                                                                                                                              text = "|cffEE4000Rotation Settings" },
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.warrior.shatIcon() .. ":26:26\124t Shattering Throw",                                                             enabled = true,                                                       key = "shattering" },
+		{ type = "entry",    text = "\124T" .. select(3, GetSpellInfo(46924)) .. ":26:26\124t Bladestorm",                                                             enabled = true,                                                       key = "bladestormuse" },
 		{ type = "entry",    text = "\124T" .. data.warrior.sweepIcon() .. ":26:26\124t Sweeping Strikes (AoE)",                                                      enabled = true,                                                       key = "sweeping" },
 		{ type = "entry",    text = "\124T" .. data.warrior.thundIcon() .. ":26:26\124t Thunder Clap (AoE)",                                                          enabled = true,                                                       key = "thunder" },
 		{ type = "entry",    text = "\124T" .. data.warrior.hamIcon() .. ":26:26\124t Hamstring (Player only)",                                                       enabled = true,                                                       key = "hams" },
@@ -129,8 +128,8 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function OnUnLoad()
-		ni.combatlog.unregisterhandler("Arms_DarhangeR", CombatEventCatcher);
 		ni.GUI.DestroyFrame("Arms_DarhangeR");
+		pcall(function() ni.combatlog.unregisterhandler("Arms_DarhangeR", CombatEventCatcher); end)
 	end
 
 	local spells                = {
@@ -607,6 +606,10 @@ if build == 30300 and level == 80 and data then
 		end,
 		-----------------------------------
 		["Bladestorm"] = function()
+			local _, bsEnabled = GetSetting("bladestormuse")
+			if not bsEnabled then
+				return false
+			end
 			local rend = data.warrior.rend()
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss("target", 5, 35, 5, enabled)

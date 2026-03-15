@@ -14,9 +14,7 @@ if build == 30300 and level == 80 and data then
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",                                                                            tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,      key = "detect" },
 		{ type = "entry",    text = "Auto Stence",                                                                                                                      tooltip = "Auto use proper stence",                                            enabled = true,      key = "stence" },
-		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",                                                                    enabled = false,                                                               key = "battleshout" },
-		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",                                                                enabled = true,                                                                key = "commandshout" },
-		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+		{ type = "dropdown", text = "Shout Buff (Battle/Commanding)", key = "shoutmode", menu = {
 				{ selected = false, value = "Battle" },
 				{ selected = true, value = "Commanding" },
 			}
