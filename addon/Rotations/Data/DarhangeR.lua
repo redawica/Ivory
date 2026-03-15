@@ -228,6 +228,109 @@ data.UseConfiguredTrinkets = function(GetSetting, fallbackSpell, fallbackUnit)
 	end
 	return false
 end
+
+
+data.ArenaUnits = function()
+	local arr = {}
+	for i = 1, 5 do
+		local unit = "arena" .. i
+		if ni.unit.exists(unit) and not UnitIsDeadOrGhost(unit) then
+			table.insert(arr, unit)
+		end
+	end
+	return arr
+end
+
+data.UpdateArenaCache = function()
+	data._arenaCache = data.ArenaUnits()
+	data._arenaStamp = GetTime()
+	return data._arenaCache
+end
+
+local function IsHealerClass(unit)
+	local _, class = UnitClass(unit)
+	return class == "PRIEST" or class == "PALADIN" or class == "SHAMAN" or class == "DRUID"
+end
+
+data.GetArenaKillTarget = function()
+	local enemies = data._arenaCache
+	if not enemies or (GetTime() - (data._arenaStamp or 0)) > 0.4 then
+		enemies = data.UpdateArenaCache()
+	end
+	local healer, low, lowhp = nil, nil, 101
+	for i = 1, #enemies do
+		local u = enemies[i]
+		if ni.unit.exists(u) and UnitCanAttack("player", u) then
+			local hp = ni.unit.hp(u) or 100
+			if IsHealerClass(u) and (not healer or hp < (ni.unit.hp(healer) or 101)) then
+				healer = u
+			end
+			if hp < lowhp then
+				lowhp = hp
+				low = u
+			end
+		end
+	end
+	return healer or low
+end
+
+data.TryArenaAutoTarget = function(GetSetting)
+	if not GetSetting then return false end
+	local _, enabled = GetSetting("arenaassist")
+	if not enabled then return false end
+	if UnitAffectingCombat("player") and (not ni.unit.exists("target") or UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target")) then
+		local kill = data.GetArenaKillTarget()
+		if kill then
+			TargetUnit(kill)
+			return true
+		end
+	end
+	return false
+end
+
+data.TryPvPTrinketBreak = function(GetSetting)
+	if not GetSetting then return false end
+	local duration = GetSetting("trinketcc") or 2.0
+	if not ni.player.isstunned() and not ni.player.isfleeing() and not ni.player.isconfused() then
+		return false
+	end
+	if IsSpellKnown(59752) and ni.spell.available(59752) then
+		ni.spell.cast(59752)
+		return true
+	end
+	if IsSpellKnown(7744) and ni.spell.available(7744) then
+		ni.spell.cast(7744)
+		return true
+	end
+	local trinkets = {37864,37865,42122,42123,18859,18864,18854,18857}
+	for i=1,#trinkets do
+		if ni.player.hasitem(trinkets[i]) and ni.player.itemcd(trinkets[i]) == 0 then
+			ni.player.useitem(trinkets[i])
+			return true
+		end
+	end
+	if ni.player.slotcastable(13) and ni.player.slotcd(13) == 0 then
+		ni.player.useinventoryitem(13)
+		return true
+	end
+	if ni.player.slotcastable(14) and ni.player.slotcd(14) == 0 then
+		ni.player.useinventoryitem(14)
+		return true
+	end
+	return false
+end
+
+data.TryArenaFocusInterrupt = function(GetSetting, spellId)
+	if not GetSetting then return false end
+	local _, enabled = GetSetting("arenafocusinterrupt")
+	if not enabled then return false end
+	if ni.unit.exists("focus") and UnitCanAttack("player", "focus") and not UnitIsDeadOrGhost("focus") then
+		if data.TryInterrupt("focus", true, spellId or 1, 0.2) then
+			return true
+		end
+	end
+	return false
+end
 data.TryInterrupt = function(unit, enabled, spellId, lockout)
 	unit = unit or "target"
 	lockout = lockout or 0.35

@@ -1,6 +1,7 @@
 local select, GetSpellInfo, ipairs, pairs, GetZoneText, GetInstanceInfo, GetTime, tonumber, IsUsableSpell, IsSpellKnown, IsSpellInRange, UnitExists, UnitCanAttack, GetTotemInfo, wipe, IsMounted, UnitInVehicle, UnitIsDeadOrGhost, UnitChannelInfo, UnitCastingInfo, IsCurrentSpell, GetWeaponEnchantInfo, GetInventoryItemID, BindEnchant, GetItemInfo, IsEquippedItemType, GetItemSpell, GetActionInfo, GetTotemTimeLeft, UnitName, UnitIsEnemy = select, GetSpellInfo, ipairs, pairs, GetZoneText, GetInstanceInfo, GetTime, tonumber, IsUsableSpell, IsSpellKnown, IsSpellInRange, UnitExists, UnitCanAttack, GetTotemInfo, wipe, IsMounted, UnitInVehicle, UnitIsDeadOrGhost, UnitChannelInfo, UnitCastingInfo, IsCurrentSpell, GetWeaponEnchantInfo, GetInventoryItemID, BindEnchant, GetItemInfo, IsEquippedItemType, GetItemSpell, GetActionInfo, GetTotemTimeLeft, UnitName, UnitIsEnemy;
 local spellCast, spellValid, spellInstant, playerHP, playerPow, playerBuff, playerBuffSta, playerDistance, playerSlot, playerInventory, playerItemR, playerUseIt, unitDebuff, unitDebuffRem, unitBuffType, unitEnemiesRange, unitDistance, unitBoss, drTrack = ni.spell.cast, ni.spell.valid, ni.spell.isinstant, ni.player.hp, ni.player.power, ni.player.buff, ni.player.buffstacks, ni.player.distance, ni.player.slotusable, ni.player.useinventoryitem, ni.player.itemready, ni.player.useitem, ni.unit.debuff, ni.unit.debuffremaining, ni.unit.bufftype, ni.unit.enemiesinrange, ni.unit.distance, ni.unit.isboss, ni.drtracker.get;
 local cata = ni.vars.build == 40300 or false;
+local data = ni.utils.require("DarhangeR");
 if cata then
 local KnowEngineer = ni.player.getskillinfo(GetSpellInfo(4036)) > 500 or false;
 local AntiAFKTime, LastReset, LastPurge, LastCure = 0, 0, 0, 0;
@@ -97,6 +98,16 @@ local items = {
 	{ type = "entry", text = ni.player.itemicon(5512, 20, 20).." Healthstone", tooltip = "Use Warlock Healthstone (if you have) when player |cff00D700HP|r < %.", enabled = true, value = 35, min = 25, max = 65, step = 1, width = 40, key = "healthstoneuse" },	
 	{ type = "entry", text = ni.player.itemicon(57191, 20, 20).." Heal Potion", tooltip = "Use Heal Potions (if you have) when player |cff00D700HP|r < %.",  enabled = true, value = 30, min = 20, max = 60, step = 1, width = 40, key = "healpotionuse" },
 	{ type = "entry", text = ni.player.itemicon(57192, 20, 20).." Mana Potion", tooltip = "Use Mana Potions (if you have) when player |cff0082FFMP|r < %.", enabled = true, value = 25, min = 15, max = 65, step = 1, width = 40, key = "manapotionuse" },
+	{ type = "separator" },
+	{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 -- Get Setting from GUI -- 
 local function GetSetting(name)
@@ -376,6 +387,7 @@ local AoEQueu = {
 	"Stoneclaw Totem",
 	"Use Pots",
 	"Combat specific Pause",
+	"Trinkets (Config)",
 	"Use Castable Items",
 	"Racial Stuff",
 	"Wind Shear (Interrupt)",
@@ -414,6 +426,7 @@ local SoloQueu = {
 	"Stoneclaw Totem",
 	"Use Pots",
 	"Combat specific Pause",
+	"Trinkets (Config)",
 	"Use Castable Items",
 	"Racial Stuff",
 	"Wind Shear (Interrupt)",
@@ -709,6 +722,12 @@ local abilities = {
 			end
 		end
 	end,	
+-----------------------------------		
+	["Trinkets (Config)"] = function()
+		if data and data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true;
+		end
+	end,
 -----------------------------------		
 	["Use Castable Items"] = function()
 		if cache.PlayerControled
