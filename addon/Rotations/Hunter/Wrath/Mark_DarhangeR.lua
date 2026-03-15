@@ -33,6 +33,16 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.hunter.scareIcon()..":26:26\124t Scare Beast (Auto Use)", tooltip = "Auto check and use spell on proper enemies", enabled = false, key = "scare" },
 	{ type = "entry", text = "\124T"..data.hunter.killIcon()..":26:26\124t Kill Shot (Auto Check)", tooltip = "Auto check ''execute'' target in this spell range and use it.", enabled = true, key = "masskill" },		
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -81,9 +91,10 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
-	"Use enginer gloves",
-	"Trinkets",
+		"Use enginer gloves",
+		"Trinkets",
 	"Silencing Shot (Interrupt)",
 	"Deterrence",
 	"Wing Clip",
@@ -328,6 +339,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.hunter.InRange() then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 			return true
 		end
 	end,

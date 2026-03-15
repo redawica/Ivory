@@ -47,10 +47,10 @@ local items = {
 	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
-	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket13unit" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
-	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket14unit" },
 };
 local function ui(name)
     return ni.bootstrap.getseting(name, items)
@@ -215,7 +215,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Trinkets (Config)"] = function()
-		if data and data.UseConfiguredTrinkets and data.UseConfiguredTrinkets(TrinketSetting, nil, "target") then
+		if data.UseConfiguredTrinkets(GetSetting, nil, "player") then
 			return true
 		end
 	end,

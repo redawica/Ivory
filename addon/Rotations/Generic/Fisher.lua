@@ -1,71 +1,105 @@
 local queue = {
-	"pause",
-    --"open",
-	--"buff",
-	"fish"
-
+    "pause",
+    "fish",
 }
-local functionsent = 0
+
 local Fishing = GetSpellInfo(7620)
-local offset = 0xBC
+local offset
+if ni.vars.build == 40300 then
+    offset = 0xD4
+elseif ni.vars.build > 40300 then
+    offset = 0xCC
+else
+    offset = 0xBC
+end
+
+local functionSent = 0
+local failedBobberReads = 0
+local lastCast = 0
+local recastAfter = 1.2
+local maxFailedReads = 4
+
+local localeBobbers = {
+    ["Fishing Bobber"] = true,
+    ["Поплавок"] = true,
+    ["Corcho de pesca"] = true,
+}
+
+local function IsBobberName(name)
+    return name and localeBobbers[name] == true
+end
+
+local function FindMyBobber()
+    local playerguid = UnitGUID("player")
+    for _, v in pairs(ni.objects) do
+        if type(v) == "table" and IsBobberName(v.name) then
+            local creator = v:creator()
+            if creator == playerguid then
+                return v.guid
+            end
+        end
+    end
+    return nil
+end
+
 local abilities = {
-	["pause"] = function()
-		if IsMounted()
-		 or UnitInVehicle("player")
-		 or UnitIsDeadOrGhost("player")
-		 or UnitCastingInfo("player")
-		 or UnitAffectingCombat("player")
-		 or ni.player.ismoving() then
-			return true;
-		end
-	end,
-	["open"] = function()
-        if ni.player.hasitem(135581) then
-			ni.player.useitem(135581)
-		end
-	end,
-	["buff"] = function()
-        if IsEquippedItem(33820)
-        and IsEquippedItem(135597) then
-			local lure_enchant = GetWeaponEnchantInfo()
-			if not lure_enchant
-			and not UnitChannelInfo("player")
-			and ni.player.itemcd(33820) == 0 then
-				ni.player.useitem(33820)
-				ni.player.useinventoryitem(16)
-			end
-		end
-	end,
-	["fish"] = function()
-        local lure_enchant = GetWeaponEnchantInfo()
-        --if lure_enchant then
+    ["pause"] = function()
+        if IsMounted()
+            or UnitInVehicle("player")
+            or UnitIsDeadOrGhost("player")
+            or UnitCastingInfo("player")
+            or UnitAffectingCombat("player")
+            or ni.player.ismoving() then
+            return true
+        end
+    end,
+
+    ["fish"] = function()
+        if ni.player.islooting() then
+            return
+        end
+
         if UnitChannelInfo("player") then
-            if GetTime() - functionsent > 4 then
-                local playerguid = UnitGUID("player")
-                for k, v in pairs(ni.objects) do
-                    if type(k) ~= "function" and (type(k) == "string" and type(v) == "table") then
-                        if v.name == "Поплавок" then
-                            local creator = v:creator()
-                            if creator == playerguid then
-                                local ptr = ni.memory.objectpointer(v.guid)
-                                if ptr then
-                                    local result = ni.memory.read("byte", ptr, offset)
-                                    if result == 1 then
-                                        ni.player.interact(v.guid)
-                                        functionsent = GetTime()
-                                        return true
-                                        end
-                                    end
-                                end
-                            end
+            if GetTime() - functionSent > 0.2 then
+                local guid = FindMyBobber()
+                if guid then
+                    local ptr = ni.memory.objectpointer(guid)
+                    if ptr then
+                        local result = ni.memory.read("byte", ptr, offset)
+                        if result == 1 then
+                            failedBobberReads = 0
+                            ni.player.interact(guid)
+                            functionSent = GetTime()
+                            return true
                         end
                     end
+                    failedBobberReads = failedBobberReads + 1
+                else
+                    failedBobberReads = failedBobberReads + 1
                 end
-            else
-                ni.spell.delaycast(Fishing, nil, math.random(5, 12))
-                ni.utils.resetlasthardwareaction()
+
+                if failedBobberReads >= maxFailedReads and GetTime() - lastCast > recastAfter then
+                    failedBobberReads = 0
+                    ni.spell.stopchanneling()
+                    lastCast = GetTime()
+                    return true
+                end
             end
-        --end
-	end,
+            return
+        end
+
+        if FindMyBobber() then
+            return
+        end
+
+        if GetTime() - lastCast < recastAfter then
+            return
+        end
+
+        lastCast = GetTime()
+        ni.spell.delaycast(Fishing, nil, 1.5)
+        ni.utils.resetlasthardwareaction()
+    end,
 }
+
 ni.bootstrap.profile("Fisher", queue, abilities)
