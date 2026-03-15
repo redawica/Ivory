@@ -12,16 +12,24 @@ if select(2, UnitFactionGroup("player")) == "Alliance" then
 end
 local items = {
 	settingsfile = "DarhangeR_ProtoPaladin.xml",
-	{ type = "title", text = "Protection Paladin by |c0000CED1DarhangeR" },
+	{ type = "title", text = "Protection Paladin PvE" },
+	{ type = "title", text = "Core Files |cff00D700v2.0.7" },
+	{ type = "title", text = "|cffFF69B4Profile version 2.0.5" },
 	{ type = "separator" },
 	{ type = "title", text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },	
-	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.paladin.pleaIcon()..":26:26\124t Divine Plea", tooltip = "Enable/Disable spell", enabled = true, key = "plea" },
 	{ type = "entry", text = "\124T"..data.paladin.sacredIcon()..":26:26\124t Sacred Shield", tooltip = "Enable/Disable spell for cast on player", enabled = true, key = "sacred" },
-	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Debug Printing", tooltip = "Enable for debug if you have problems", enabled = false, key = "Debug" },	
+	{ type = "entry", text = "Only in Combat", tooltip = "Use Sacred Shield only in combat", enabled = false, key = "sacredcombat" },
+	{ type = "entry", text = "Crusader Aura", tooltip = "Use Crusader Aura when out of combat", enabled = false, key = "crusaderaura" },
 	{ type = "separator" },
-	{ type = "page", number = 1, text = "|cff00C957Defensive Settings" },
+	{ type = "title", text = "|cffFFFF00Important Settings" },
+	{ type = "separator" },
+	{ type = "entry", text = "Auto Target", tooltip = "Auto target nearest enemy in combat", enabled = true, key = "autotarget" },
+	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
+	{ type = "entry", text = "\124T"..data.debugIcon()..":26:26\124t Profile Pause", tooltip = "Enable for debug if you have problems", enabled = false, value = 1.5, key = "Debug" },
+	{ type = "separator" },
+	{ type = "page", number = 1, text = "|cff00C957Self/Party/Raid" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.paladin.layIcon()..":26:26\124t Lay on Hands (Self)", tooltip = "Use spell when player HP < %", enabled = true, value = 20, key = "layon" },
 	{ type = "entry", text = "\124T"..data.paladin.divinePrIcon()..":26:26\124t Divine Protection", tooltip = "Use spell when player HP < %", enabled = true, value = 35, key = "divineprot" },
@@ -31,11 +39,14 @@ local items = {
 	{ type = "entry", text = "\124T"..data.paladin.handProIcon()..":26:26\124t Hand of Protection (Member)", tooltip = "Use spell when member HP < %. Work only on caster clases", enabled = true, value = 25, key = "handofprot" },
 	{ type = "entry", text = "\124T"..data.paladin.handSacrIcon()..":26:26\124t Hand of Sacrifice (Member)", tooltip = "Use spell when member HP < %", enabled = true, value = 18, key = "handsacrifice" },	
 	{ type = "entry", text = "\124T"..data.paladin.handSalIcon()..":26:26\124t Hand of Salvation (Member)", tooltip = "Auto check member agro and use spell", enabled = true, key = "salva" },
+	{ type = "separator" },
+	{ type = "page", number = 3, text = "|cff00C957Defensive Settings" },
+	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.stoneIcon()..":26:26\124t Healthstone", tooltip = "Use Warlock Healthstone (if you have) when player HP < %", enabled = true, value = 35, key = "healthstoneuse" },
 	{ type = "entry", text = "\124T"..data.hpotionIcon()..":26:26\124t Heal Potion", tooltip = "Use Heal Potions (if you have) when player HP < %",  enabled = true, value = 30, key = "healpotionuse" },
 	{ type = "entry", text = "\124T"..data.mpotionIcon()..":26:26\124t Mana Potion", tooltip = "Use Mana Potions (if you have) when player mana < %", enabled = true, value = 25, key = "manapotionuse" },
 	{ type = "separator" },
-	{ type = "page", number = 2, text = "|cffEE4000Rotation Settings" },
+	{ type = "page", number = 2, text = "|cffEE4000Rotation Settings #2" },
 	{ type = "separator" },
 	{ type = "title", text = "Active Seals" },
     { type = "dropdown", menu = {
@@ -61,7 +72,8 @@ local items = {
 	{ type = "entry", text = "\124T"..data.paladin.cleanIcon()..":26:26\124t Cleanse (Self)", tooltip = "Auto dispel debuffs from player", enabled = true, key = "cleans" },
 	{ type = "entry", text = "\124T"..data.paladin.handFreeIcon()..":26:26\124t Hand of Freedom (Self)", tooltip = "Auto cast on player when you have criteria for spell", enabled = true, key = "freedom" },
 	{ type = "separator" },
-	{ type = "page", number = 3, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "page", number = 4, text = "|cff00BFFFTrinkets Settings" },
+	{ type = "title", text = "Using Trinkets" },
 	{ type = "separator" },
 	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
@@ -70,6 +82,11 @@ local items = {
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
 	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
+	{ type = "separator" },
+	{ type = "page", number = 5, text = "|cffFFFF00Expert Settings" },
+	{ type = "separator" },
+	{ type = "input", value = "rebuff", width = 140, height = 15, key = "macro1" },
+	{ type = "input", value = "usewrath", width = 140, height = 15, key = "macro2" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -109,6 +126,7 @@ local queue = {
 	"Seal of Command",
 	"Righteous Fury",
 	"Sacred Shield",
+	"Crusader Aura",
 	"Auto Track Undeads",	
 	"Combat specific Pause",
 	"Healthstone (Use)",
@@ -150,7 +168,9 @@ local abilities = {
 	end,
 -----------------------------------
 	["AutoTarget"] = function()
-		if UnitAffectingCombat("player")
+		local _, enabled = GetSetting("autotarget")
+		if enabled
+		 and UnitAffectingCombat("player")
 		 and ((ni.unit.exists("target")
 		 and UnitIsDeadOrGhost("target")
 		 and not UnitCanAttack("player", "target")) 
@@ -217,10 +237,23 @@ local abilities = {
 -----------------------------------
 	["Sacred Shield"] = function()
 		local _, enabled = GetSetting("sacred")
+		local _, onlycombat = GetSetting("sacredcombat")
 		if enabled
-		 and not ni.player.buff(53601)  
+		 and (not onlycombat or UnitAffectingCombat("player"))
+		 and not ni.player.buff(53601)
 		 and ni.spell.available(53601) then
 			ni.spell.cast(53601, "player")
+			return true
+		end
+	end,
+-----------------------------------
+	["Crusader Aura"] = function()
+		local _, enabled = GetSetting("crusaderaura")
+		if enabled
+		 and not UnitAffectingCombat("player")
+		 and not ni.player.buff(32223)
+		 and ni.spell.available(32223) then
+			ni.spell.cast(32223)
 			return true
 		end
 	end,
