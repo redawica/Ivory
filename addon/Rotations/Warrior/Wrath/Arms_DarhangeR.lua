@@ -14,6 +14,13 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "Auto Stence",                                                       tooltip = "Auto use proper stence",                                            enabled = false,     key = "stence" },
 		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",     enabled = true,                                                                key = "battleshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout", enabled = false,                                                               key = "commandshout" },
+		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+				{ selected = true, value = "Auto" },
+				{ selected = false, value = "Battle" },
+				{ selected = false, value = "Commanding" },
+				{ selected = false, value = "Off" },
+			}
+		},
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",         tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
 		{ type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
 		{
@@ -21,7 +28,7 @@ if build == 30300 and level == 80 and data then
 			text = "|cFFFF0000\124T" ..
 					GetItemIcon(42641) .. ":26:26\124t Use Bomb|r",
 			tooltip = "It will use Bombs on CD!",
-			enabled = "bombs",
+			enabled = true,
 			key = "bombs"
 		},
 		{ type = "separator" },
@@ -262,9 +269,9 @@ if build == 30300 and level == 80 and data then
 		-- "enemies",
 		"Battle Stance",
 		"Battle Shout",
+		"AutoTarget",
 		"Universal pause",
 		"StartAttack",
-		"AutoTarget",
 		"Commanding Shout",
 		"Enraged Regeneration",
 		"Berserker Rage",
@@ -336,7 +343,6 @@ if build == 30300 and level == 80 and data then
 		["Universal pause"] = function()
 			if IsMounted()
 					-- or UnitInVehicle("player")
-					or UnitIsDeadOrGhost("target")
 					or UnitIsDeadOrGhost("player")
 					or UnitChannelInfo("player") ~= nil
 					or UnitCastingInfo("player") ~= nil
@@ -389,10 +395,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Battle Shout"] = function()
 			local _, enabled = GetSetting("battleshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Commanding" then
+				return false
+			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Battle")
 					and ni.spell.available(47436) then
 				ni.spell.cast(47436)
 				return true
@@ -401,10 +411,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Commanding Shout"] = function()
 			local _, enabled = GetSetting("commandshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Battle" then
+				return false
+			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Commanding")
 					and ni.spell.available(47440) then
 				ni.spell.cast(47440)
 				return true
@@ -586,8 +600,8 @@ if build == 30300 and level == 80 and data then
 			local rend = data.warrior.rend()
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss("target", 5, 35, 5, enabled)
-					and rend
-					and ni.unit.debuffstacks("target", spells.sunderArmor.id) == 5
+					and (rend or ni.unit.hp("target") > 40)
+					and (ni.unit.debuffstacks("target", spells.sunderArmor.id) >= 3 or ni.unit.isboss("target"))
 					and ni.spell.cd(spells.recklessness.id) == 0
 					and data.warrior.InRange() then
 				--Berserk Stance
@@ -658,6 +672,7 @@ if build == 30300 and level == 80 and data then
 					and ni.spell.valid("target", spells.heroicthrow.id, true, true, false)
 			then
 				ni.spell.cast(spells.heroicthrow.id, "target")
+				return true
 			end
 		end,
 		-----------------------------------
@@ -685,6 +700,7 @@ if build == 30300 and level == 80 and data then
 						-- and ni.spell.cd(47486) ~= 0 -- No sé porque prefiere tirar mortal
 						and ni.spell.valid("target", 47471, true, true) then
 					ni.spell.cast(47471)
+					return true
 				end
 			end
 		end,
@@ -813,7 +829,7 @@ if build == 30300 and level == 80 and data then
 					and (ActiveEnemies() < 2 or ni.player.buff(spells.sweepingStrikes.id))
 			then
 				if ni.spell.available(47486, true)
-						and ni.player.power() > 70
+						and ni.player.power() > 30
 						and ni.spell.valid("target", 47486, true, true) then
 					castBattle(47486)
 					return true
@@ -821,7 +837,7 @@ if build == 30300 and level == 80 and data then
 			else
 				if not ni.vars.combat.aoe
 						and ni.spell.available(47486, true)
-						and ni.player.power() > 70
+						and ni.player.power() > 30
 						and ni.spell.valid("target", 47486, true, true) then
 					castBattle(47486)
 					return true

@@ -3,18 +3,22 @@ local queue = {
 	"combat check",
 	"lure check",
 	"pause",
-	"fish"
+	"fish",
 }
+
 local enables = {
-	lure = false,
+	lure = true,
 	weapon_swap = false,
 	pole_check = false,
 }
+
 local values = {
-	lure = 6532,
-	failed_attempts = 3,
+	lure = 6532, -- Bright Baubles
+	failed_attempts = 4,
 	cast_delay = 1.5,
+	recast_after = 1.2,
 }
+
 local inputs = {
 	pole = "6256",
 	main = "",
@@ -22,61 +26,51 @@ local inputs = {
 	bobber = "Fishing Bobber",
 	pool = "School"
 }
+
 local menus = {
 	full_bags = "AFK",
 }
+
 local function GUICallback(key, item_type, value)
 	if item_type == "enabled" then
-		enables[key] = value;
+		enables[key] = value
 	elseif item_type == "value" then
-		values[key] = value;
+		values[key] = value
 	elseif item_type == "input" then
-		inputs[key] = value;
+		inputs[key] = value
 	elseif item_type == "menu" then
-		menus[key] = value;
+		menus[key] = value
 	end
 end
+
 local items = {
 	settingsfile = "ni_fishing.xml",
 	callback = GUICallback,
-	{ type = "title", text = "Fish Bot" },
+	{ type = "title", text = "Fish Bot (Automated)" },
 	{ type = "separator" },
-	{ 
+	{
 		type = "entry",
-		text = "Auto Lure",
+		text = "Auto Lure (Bright Baubles by default)",
 		enabled = enables["lure"],
-		tooltip = "Enable/Disable to automatically use the lure id specified",
+		tooltip = "Automatically apply lure before fishing",
 		value = values["lure"],
 		width = 50,
 		key = "lure",
 	},
-	{ 
-		type = "entry", 
+	{
+		type = "entry",
 		text = "Auto Swap Weapons for Combat",
 		enabled = enables["weapon_swap"],
-		tooltip = "Enable/Disable this for the profile to swap weapons to the id's you specifiy below",
+		tooltip = "Swap to combat weapons in combat and back to pole out of combat",
 		key = "weapon_swap"
 	},
 	{ type = "title", text = "Fishing Pool/School Name" },
-	{
-		type = "input",
-		value = inputs["pool"],
-		width = 140,
-		height = 15,
-		key = "pool"
-	},
+	{ type = "input", value = inputs["pool"], width = 140, height = 15, key = "pool" },
 	{ type = "title", text = "Fishing Bobber Name" },
-	{
-		type = "input",
-		value = inputs["bobber"],
-		width = 140,
-		height = 15,
-		key = "bobber"
-	},
+	{ type = "input", value = inputs["bobber"], width = 140, height = 15, key = "bobber" },
 	{
 		type = "entry",
-		text = "Failed attempts",
-		tooltip = "How many unreadable bobber checks before forcing recast",
+		text = "Failed bobber reads before recast",
 		enabled = true,
 		value = values["failed_attempts"],
 		width = 50,
@@ -85,7 +79,6 @@ local items = {
 	{
 		type = "entry",
 		text = "Delay between casts",
-		tooltip = "Delay in seconds before casting fishing again",
 		enabled = true,
 		value = values["cast_delay"],
 		width = 50,
@@ -93,35 +86,24 @@ local items = {
 	},
 	{
 		type = "entry",
+		text = "Minimum recast delay",
+		enabled = true,
+		value = values["recast_after"],
+		width = 50,
+		key = "recast_after",
+	},
+	{
+		type = "entry",
 		text = "Check if pole equipped",
-		tooltip = "This is for checking if you have the pole equipped before trying to cast the fishing spell",
 		enabled = enables["pole_check"],
 		key = "pole_check"
 	},
 	{ type = "title", text = "Fishing Pole ID" },
-	{
-		type = "input",
-		value = inputs["pole"],
-		widht = 100,
-		height = 15,
-		key = "pole"
-	},
+	{ type = "input", value = inputs["pole"], width = 100, height = 15, key = "pole" },
 	{ type = "title", text = "Main Hand ID" },
-	{
-		type = "input",
-		value = inputs["main"],
-		widht = 100,
-		height = 15,
-		key = "main"
-	},
+	{ type = "input", value = inputs["main"], width = 100, height = 15, key = "main" },
 	{ type = "title", text = "Off Hand ID" },
-	{
-		type = "input",
-		value = inputs["off"],
-		widht = 100,
-		height = 15,
-		key = "off"
-	},
+	{ type = "input", value = inputs["off"], width = 100, height = 15, key = "off" },
 	{ type = "title", text = "What to do on full bags?" },
 	{
 		type = "dropdown",
@@ -133,8 +115,9 @@ local items = {
 		key = "full_bags",
 	},
 }
+
 local function FullBags()
-	local fullbags = 0;
+	local fullbags = 0
 	for i = 0, 4 do
 		if GetContainerNumFreeSlots(i) == 0 then
 			fullbags = fullbags + 1
@@ -150,7 +133,6 @@ local localeDefaults = {
 	esMX = { bobber = "Corcho de pesca", pool = "Banco" },
 }
 
-
 local function IsKnownLocaleValue(value, field)
 	for _, defaults in pairs(localeDefaults) do
 		if defaults[field] == value then
@@ -159,6 +141,7 @@ local function IsKnownLocaleValue(value, field)
 	end
 	return false
 end
+
 local function ResolveLocaleInputs()
 	local locale = GetLocale()
 	local defaults = localeDefaults[locale] or localeDefaults.enUS
@@ -171,12 +154,8 @@ local function ResolveLocaleInputs()
 end
 
 local function IsBobberName(name)
-	if not name then
-		return false
-	end
-	if name == inputs["bobber"] then
-		return true
-	end
+	if not name then return false end
+	if name == inputs["bobber"] then return true end
 	for _, defaults in pairs(localeDefaults) do
 		if name == defaults.bobber then
 			return true
@@ -184,169 +163,186 @@ local function IsBobberName(name)
 	end
 	return false
 end
+
 local function OnLoad()
 	ResolveLocaleInputs()
-	ni.GUI.AddFrame("Fishing", items);
+	ni.GUI.AddFrame("Fishing", items)
 end
+
 local function OnUnload()
-	ni.GUI.DestroyFrame("Fishing");
+	ni.GUI.DestroyFrame("Fishing")
 end
-local Fishing = GetSpellInfo(7620);
-local offset;
+
+local Fishing = GetSpellInfo(7620)
+local offset
 if ni.vars.build == 40300 then
-	offset = 0xD4;
+	offset = 0xD4
 elseif ni.vars.build > 40300 then
-	offset = 0xCC;
+	offset = 0xCC
 else
-	offset = 0xBC;
+	offset = 0xBC
 end
-local functionsent = 0;
-local lure_applied = 0;
-local failed_bobber_reads = 0;
-local last_recast = 0;
+
+local functionSent = 0
+local lureApplied = 0
+local failedBobberReads = 0
+local lastCast = 0
+
+local function FindMyBobber()
+	local playerguid = UnitGUID("player")
+	for k, v in pairs(ni.objects) do
+		if type(k) == "string" and type(v) == "table" and IsBobberName(v.name) then
+			local creator = v:creator()
+			if creator == playerguid then
+				return v.guid
+			end
+		end
+	end
+	return nil
+end
+
 local abilities = {
 	["action check"] = function()
 		if FullBags() then
-			local action = menus["full_bags"];
+			local action = menus["full_bags"]
 			if action == "AFK" then
-				ni.frames.floatingtext:message("Bags are full, time to AFK!");
-				ni.vars.profiles.enabled = false;
+				ni.frames.floatingtext:message("Bags are full, time to AFK!")
+				ni.vars.profiles.enabled = false
 			elseif action == "Hearthstone" then
-				if not UnitAffectingCombat("player")
-				 and not UnitCastingInfo("player")
-				 and not UnitChannelInfo("player") then
-					ni.player.useitem(6948);
-					ni.frames.floatingtext:message("Bags are full, time to go home!");
-					ni.vars.profiles.enabled = false;
+				if not UnitAffectingCombat("player") and not UnitCastingInfo("player") and not UnitChannelInfo("player") then
+					ni.player.useitem(6948)
+					ni.frames.floatingtext:message("Bags are full, time to go home!")
+					ni.vars.profiles.enabled = false
 				end
 			elseif action == "Logout" then
 				if not UnitAffectingCombat("player") then
-					ni.player.runtext("/logout");
-					ni.frames.floatingtext:message("Bags are full, time to logout!");
-					ni.vars.profiles.enabled = false;
+					ni.player.runtext("/logout")
+					ni.frames.floatingtext:message("Bags are full, time to logout!")
+					ni.vars.profiles.enabled = false
 				end
 			end
 		end
 	end,
+
 	["combat check"] = function()
 		if enables["weapon_swap"] and not UnitIsDeadOrGhost("player") then
-			local pole = tonumber(inputs["pole"]);
-			local mh = tonumber(inputs["main"]);
-			local oh = tonumber(inputs["off"]);
+			local pole = tonumber(inputs["pole"])
+			local mh = tonumber(inputs["main"])
+			local oh = tonumber(inputs["off"])
 			if pole and mh then
 				if UnitAffectingCombat("player") then
 					if IsEquippedItem(pole) then
-						EquipItemByName(mh);
-						if oh then
-							EquipItemByName(oh);
-						end
-						return true;
+						EquipItemByName(mh)
+						if oh then EquipItemByName(oh) end
+						return true
 					end
 				else
-					if not IsEquippedItem(pole) then
-						EquipItemByName(pole);
-						return true;
+					if not IsEquippedItem(pole) and not IsEquippedItem(mh) and not ni.player.ismoving() then
+						EquipItemByName(pole)
+						return true
 					end
 				end
 			end
 		end
 	end,
+
 	["lure check"] = function()
-		local pole = tonumber(inputs["pole"]);
-		if enables["lure"] and pole then
-			if GetTime() - lure_applied < 4 then
-				return false;
-			end
-			local lure_enchant = GetWeaponEnchantInfo();
-			if IsEquippedItem(pole)
-			 and not lure_enchant
-			 and not UnitAffectingCombat("player")
-			 and ni.player.hasitem(values["lure"]) then
-				lure_applied = GetTime();
-				ni.spell.stopcasting();
-				ni.spell.stopchanneling();
-				ni.player.useitem(values["lure"]);
-				ni.player.useinventoryitem(16);
-				ni.player.runtext("/click StaticPopup1Button1");
-				return true;
+		if not enables["lure"] then return end
+		if GetTime() - lureApplied <= 2 then return end
+
+		local pole = tonumber(inputs["pole"])
+		if pole and IsEquippedItem(pole) and not UnitAffectingCombat("player") then
+			local hasEnchant = GetWeaponEnchantInfo()
+			local lureId = tonumber(values["lure"]) or 6532
+			if not hasEnchant and ni.player.hasitem(lureId) and ni.player.itemcd(lureId) == 0 then
+				lureApplied = GetTime()
+				ni.spell.stopcasting()
+				ni.spell.stopchanneling()
+				ni.player.useitem(lureId)
+				ni.player.useinventoryitem(16)
+				ni.player.runtext("/click StaticPopup1Button1")
+				return true
 			end
 		end
 	end,
+
 	["pause"] = function()
 		if IsMounted()
-		 or UnitInVehicle("player")
-		 or UnitIsDeadOrGhost("player")
-		 or UnitCastingInfo("player")
-		 or UnitAffectingCombat("player")
-		 or ni.player.ismoving() then
-			return true;
+			or UnitInVehicle("player")
+			or UnitIsDeadOrGhost("player")
+			or UnitCastingInfo("player")
+			or UnitAffectingCombat("player")
+			or ni.player.ismoving() then
+			return true
 		end
 	end,
+
 	["fish"] = function()
 		if enables["pole_check"] then
-			local pole = tonumber(inputs["pole"]);
-			if not IsEquippedItem(pole) then
-				return;
+			local pole = tonumber(inputs["pole"])
+			if pole and not IsEquippedItem(pole) then
+				return
 			end
 		end
-		if ni.player.islooting() then
-			return
-		end
+		if ni.player.islooting() then return end
+
+		local castDelay = tonumber(values["cast_delay"]) or 1.5
+		local recastAfter = tonumber(values["recast_after"]) or 1.2
+		if castDelay < 0 then castDelay = 0 end
+		if recastAfter < 0.4 then recastAfter = 0.4 end
+
 		if UnitChannelInfo("player") then
-			if GetTime() - functionsent > 1 then
-				local playerguid = UnitGUID("player");
-				local foundBobber = false
-				for k, v in pairs(ni.objects) do
-					if type(k) ~= "function" and (type(k) == "string" and type(v) == "table") then
-						if IsBobberName(v.name) then
-							local creator = v:creator();
-							if creator == playerguid then
-								foundBobber = true
-								local ptr = ni.memory.objectpointer(v.guid);
-								if ptr then
-									local result = ni.memory.read("byte", ptr, offset);
-									if result == 1 then
-										failed_bobber_reads = 0
-										ni.player.interact(v.guid);
-										functionsent = GetTime();
-										return true;
-									end
-								end
-							end 
+			if GetTime() - functionSent > 0.2 then
+				local guid = FindMyBobber()
+				if guid then
+					local ptr = ni.memory.objectpointer(guid)
+					if ptr then
+						local result = ni.memory.read("byte", ptr, offset)
+						if result == 1 then
+							failedBobberReads = 0
+							ni.player.interact(guid)
+							functionSent = GetTime()
+							return true
 						end
 					end
+					failedBobberReads = failedBobberReads + 1
+				else
+					failedBobberReads = failedBobberReads + 1
 				end
-				if foundBobber then
-					failed_bobber_reads = failed_bobber_reads + 1
-				end
-				local recastAfter = tonumber(values["failed_attempts"]) or 3
-				if recastAfter < 1 then
-					recastAfter = 1
-				end
-				if failed_bobber_reads >= recastAfter and GetTime() - last_recast > 2 then
-					failed_bobber_reads = 0
-					last_recast = GetTime()
+				local maxReads = tonumber(values["failed_attempts"]) or 4
+				if maxReads < 1 then maxReads = 1 end
+				if failedBobberReads >= maxReads and GetTime() - lastCast > recastAfter then
+					failedBobberReads = 0
 					ni.spell.stopchanneling()
+					lastCast = GetTime()
 					return true
 				end
 			end
-		else
-			for k, v in pairs(ni.objects) do
-				if type(v) ~= "function" and v.name ~= nil and string.match(v.name, inputs["pool"]) then
-					local dist = ni.player.distance(k);
-					if dist ~= nil and dist < 20 then
-						ni.player.lookat(k);
-						break;
-					end
+			return
+		end
+
+		local activeBobber = FindMyBobber()
+		if activeBobber then
+			return
+		end
+
+		for k, v in pairs(ni.objects) do
+			if type(v) == "table" and v.name ~= nil and string.match(v.name, inputs["pool"]) then
+				local dist = ni.player.distance(k)
+				if dist and dist < 20 then
+					ni.player.lookat(k)
+					break
 				end
 			end
-			local castDelay = tonumber(values["cast_delay"]) or 1.5
-			if castDelay < 0 then
-				castDelay = 0
-			end
-			ni.spell.delaycast(Fishing, nil, castDelay);
-			ni.utils.resetlasthardwareaction();
 		end
+
+		if GetTime() - lastCast < recastAfter then
+			return
+		end
+		lastCast = GetTime()
+		ni.spell.delaycast(Fishing, nil, castDelay)
+		ni.utils.resetlasthardwareaction()
 	end,
 }
-ni.bootstrap.profile("Fishing", queue, abilities, OnLoad, OnUnload);
+
+ni.bootstrap.profile("Fishing", queue, abilities, OnLoad, OnUnload)

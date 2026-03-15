@@ -7,7 +7,7 @@ local function ActiveEnemies()
 end
 if build == 30300 and level == 80 and data then
 	local items = {
-		settingsfile = "DarhangeR_ProtоWarrior.xml",
+		settingsfile = "DarhangeR_ProtoWarrior.xml",
 		{ type = "title",    text = "Protection Warrior by |c0000CED1DarhangeR" },
 		{ type = "separator" },
 		{ type = "title",    text = "|cffFFFF00Main Settings" },
@@ -16,6 +16,13 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "Auto Stence",                                                                                                                      tooltip = "Auto use proper stence",                                            enabled = true,      key = "stence" },
 		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",                                                                    enabled = false,                                                               key = "battleshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",                                                                enabled = true,                                                                key = "commandshout" },
+		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+				{ selected = false, value = "Auto" },
+				{ selected = true, value = "Commanding" },
+				{ selected = false, value = "Battle" },
+				{ selected = false, value = "Off" },
+			}
+		},
 		{ type = "entry",    text = "\124T" .. data.warrior.inter2Icon() .. ":26:26\124t Auto Interrupt",                                                               tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",                                                                        tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
 		{ type = "separator" },
@@ -139,10 +146,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Battle Shout"] = function()
 			local _, enabled = GetSetting("battleshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Commanding" then
+				return false
+			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Battle")
 					and ni.spell.available(47436) then
 				ni.spell.cast(47436)
 				return true
@@ -151,10 +162,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Commanding Shout"] = function()
 			local _, enabled = GetSetting("commandshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Battle" then
+				return false
+			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Commanding")
 					and ni.spell.available(47440) then
 				ni.spell.cast(47440)
 				return true
@@ -337,7 +352,6 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Taunt"] = function()
 			local _, enabled = GetSetting("tau")
-			table.wipe(enemies);
 			if (data.youInInstance()
 						or enabled)
 					and ni.unit.exists("targettarget")
@@ -358,7 +372,6 @@ if build == 30300 and level == 80 and data then
 			if ni.spell.available(355)
 					and (data.youInInstance()
 						or enabled) then
-				table.wipe(enemies);
 				local enemies = ni.unit.enemiesinrange("player", 30)
 				for i = 1, #enemies do
 					local threatUnit = enemies[i].guid
@@ -375,7 +388,6 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Mocking Blow"] = function()
 			local _, enabled = GetSetting("mocking")
-			table.wipe(enemies);
 			if (data.youInInstance()
 						or enabled)
 					and ni.unit.exists("targettarget")
@@ -468,8 +480,7 @@ if build == 30300 and level == 80 and data then
 			if ni.unit.exists("target")
 					and data.warrior.InRange()
 					and UnitCanAttack("player", "target") then
-				table.wipe(enemies);
-				enemies = ni.unit.enemiesinrange("target", 8)
+				local enemies = ni.unit.enemiesinrange("target", 8)
 				for i = 1, # enemies do
 					local tar = enemies[i].guid;
 					if ni.unit.creaturetype(enemies[i].guid) ~= 8

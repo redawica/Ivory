@@ -18,6 +18,13 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "Auto Stence",                                                        tooltip = "Auto use proper stence",                                            enabled = false,     key = "stence" },
 		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",      enabled = true,                                                                key = "battleshout" },
 		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",  enabled = false,                                                               key = "commandshout" },
+		{ type = "dropdown", text = "Shout Buff Mode", key = "shoutmode", menu = {
+				{ selected = true, value = "Auto" },
+				{ selected = false, value = "Battle" },
+				{ selected = false, value = "Commanding" },
+				{ selected = false, value = "Off" },
+			}
+		},
 		{ type = "entry",    text = "\124T" .. data.warrior.inter1Icon() .. ":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",          tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
 		{ type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
@@ -386,8 +393,8 @@ if build == 30300 and level == 80 and data then
 		"Cancel Shadowmourne",
 		"Bombs",
 		"Heroic Throw",
-		-- "Death Wish",
-		-- "Recklessness",
+		"Death Wish",
+		"Recklessness",
 		"Pummel (Interrupt)",
 		"AutoAtack",
 		"Heroic Strike + Cleave (Filler)",
@@ -572,10 +579,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Battle Shout"] = function()
 			local _, enabled = GetSetting("battleshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Commanding" then
+				return false
+			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Battle")
 					and ni.spell.available(spells.battleShout.id) then
 				ni.spell.cast(spells.battleShout.id)
 				return true
@@ -584,10 +595,14 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Commanding Shout"] = function()
 			local _, enabled = GetSetting("commandshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode == "Off" or shoutMode == "Battle" then
+				return false
+			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if enabled
+			if (enabled or shoutMode == "Auto" or shoutMode == "Commanding")
 					and ni.spell.available(spells.commandingShout.id) then
 				ni.spell.cast(spells.commandingShout.id)
 				return true
@@ -669,6 +684,9 @@ if build == 30300 and level == 80 and data then
 			local bloodelf = { 25046, 28730, 50613 }
 			local alracial = { 20594, 28880 }
 			local _, enabled = GetSetting("detect")
+			if not UnitAffectingCombat(p) then
+				return false
+			end
 			--- Undead
 			if data.forsaken(p)
 					and IsSpellKnown(7744)
@@ -678,7 +696,7 @@ if build == 30300 and level == 80 and data then
 			end
 			--- Horde race
 			for i = 1, #hracial do
-				if data.CDorBoss(t, 5, 35, 5, enabled)
+				if (data.CDorBoss(t, 5, 35, 5, enabled) or ni.unit.hp(t) > 20)
 						and IsSpellKnown(hracial[i])
 						and ni.spell.available(hracial[i])
 						and data.warrior.InRange() then
@@ -753,12 +771,13 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		-----------------------------------
 		["Heroic Throw"] = function()
-			if not data.warrior.InRange()
+			if (not data.warrior.InRange() or ni.player.ismoving())
 					and UnitAffectingCombat(p)
-					and ni.spell.cd(spells.heroicthrow.id) == 0
+					and ni.spell.available(spells.heroicthrow.id)
 					and ni.spell.valid(t, spells.heroicthrow.id, true, true)
 			then
 				ni.spell.cast(spells.heroicthrow.id, t)
+				return true
 			end
 		end,
 
@@ -767,8 +786,7 @@ if build == 30300 and level == 80 and data then
 			local sunder, _, _, count = ni.unit.debuff(t, spells.sunderArmor.id)
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)
-					and sunder
-					and count > 4
+					and (not sunder or count > 2)
 					and ni.spell.available(spells.deathWish.id)
 					and data.warrior.InRange() then
 				ni.spell.cast(spells.deathWish.id)
@@ -781,8 +799,8 @@ if build == 30300 and level == 80 and data then
 
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)
-					and sunder
-					and count > 4
+					and (not sunder or count > 2)
+					and (ni.player.buff(spells.deathWish.id) or ni.spell.cd(spells.deathWish.id) > 0)
 					and ni.spell.available(spells.recklessness.id)
 					and data.warrior.InRange() then
 				ni.spell.cast(spells.recklessness.id)
