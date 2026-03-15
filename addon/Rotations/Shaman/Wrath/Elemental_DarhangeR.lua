@@ -44,6 +44,16 @@ if build == 30300 and level == 80 and data then
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.shaman.cureIcon() .. ":26:26\124t Cure Toxins",                tooltip = "Auto dispel debuffs from player",                            enabled = true,  key = "toxins" },
 		{ type = "entry",    text = "\124T" .. data.shaman.cureIcon() .. ":26:26\124t Cure Toxins (Member)",       tooltip = "Auto dispel debuffs from members",                           enabled = false, key = "toxinsmemb" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -86,6 +96,7 @@ if build == 30300 and level == 80 and data then
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
 		"Mana Potions (Use)",
+		"Trinkets (Config)",
 		"Racial Stuff",
 		"Use enginer gloves",
 		"Trinkets",
@@ -259,6 +270,12 @@ if build == 30300 and level == 80 and data then
 					and data.CDorBoss("target", 5, 35, 5, enabled)
 					and ni.spell.valid("target", 49238) then
 				ni.player.useinventoryitem(10)
+				return true
+			end
+		end,
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 				return true
 			end
 		end,
