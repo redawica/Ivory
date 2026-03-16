@@ -16,7 +16,7 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Feral_DPS.xml",
 		{ type = "title", text = "Feral Druid DPS by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title", text = "|cffFFFF00Main Settings" },
+		{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry", text = "|T" .. icon(33876) .. ":26:26|t Boss Detect", tooltip = "Auto detect bosses for cooldown usage", enabled = true, key = "detect" },
 		{ type = "entry", text = "|T" .. icon(768) .. ":26:26|t Auto Cat Form", tooltip = "Auto switch to Cat Form in combat", enabled = true, key = "autoform" },

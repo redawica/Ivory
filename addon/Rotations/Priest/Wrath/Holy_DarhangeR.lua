@@ -8,7 +8,7 @@ local items = {
 	settingsfile = "DarhangeR_HolyPriest.xml",
 	{ type = "title", text = "Holy Priest by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Self)", tooltip = "Use spell on player", enabled = false, key = "fearward" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Focus)", tooltip = "Use spell on focus target", enabled = false, key = "fearwardmemb" },

@@ -10,7 +10,7 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Elemental.xml",
 		{ type = "title",    text = "Elemental Shaman by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title",    text = "|cffFFFF00Main Settings" },
+		{ type = "page",     number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "title",    text = "Lightning/Water Shields" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },

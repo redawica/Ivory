@@ -11,7 +11,7 @@ local items = {
 	settingsfile = "DarhangeR_Destruction.xml",
 	{ type = "title", text = "Destruction Warlock by |cff00CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "title", text = "Main Armor" },

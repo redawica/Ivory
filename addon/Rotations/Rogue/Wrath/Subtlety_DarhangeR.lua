@@ -12,7 +12,7 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Subtlety.xml",
 		{ type = "title", text = "Subtlety Rogue by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title", text = "|cffFFFF00Main Settings" },
+		{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry", text = "|T" .. icon(14185) .. ":26:26|t Auto Stealth", tooltip = "Auto stealth out of combat", enabled = true, key = "autostealth" },
 		{ type = "entry", text = "|T" .. icon(1766) .. ":26:26|t Auto Interrupt", tooltip = "Auto Kick interrupts", enabled = true, key = "autointerrupt" },

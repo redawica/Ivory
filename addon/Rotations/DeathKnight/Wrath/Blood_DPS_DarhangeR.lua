@@ -10,7 +10,7 @@ local items = {
 	settingsfile = "DarhangeR_DPS_Blood.xml",
 	{ type = "title", text = "Blood DPS DK by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.dk.raiseIcon()..":26:26\124t Raise Dead", tooltip = "Use spell on bosses or on cd active", enabled = false, key = "raisedead" },

@@ -12,7 +12,7 @@ local items = {
 	settingsfile = "DarhangeR_Frost2W.xml",
 	{ type = "title", text = "Frost 2-wield DK by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.dk.deathIcon()..":26:26\124t Death Strike (Lich)", tooltip = "Use spell when player HP < %. Only in open world", enabled = true, value = 50, key = "deathstrike" },

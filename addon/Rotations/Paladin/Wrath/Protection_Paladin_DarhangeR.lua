@@ -16,7 +16,7 @@ local items = {
 	{ type = "title", text = "Core Files |cff00D700v2.0.7" },
 	{ type = "title", text = "|cffFF69B4Profile version 2.0.5" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },	
 	{ type = "entry", text = "\124T"..data.paladin.pleaIcon()..":26:26\124t Divine Plea", tooltip = "Enable/Disable spell", enabled = true, key = "plea" },
 	{ type = "entry", text = "\124T"..data.paladin.sacredIcon()..":26:26\124t Sacred Shield", tooltip = "Enable/Disable spell for cast on player", enabled = true, key = "sacred" },

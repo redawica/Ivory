@@ -16,7 +16,7 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Feral_Tank.xml",
 		{ type = "title", text = "Feral Druid Tank by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title", text = "|cffFFFF00Main Settings" },
+		{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry", text = "|T" .. icon(9634) .. ":26:26|t Auto Bear Form", tooltip = "Auto switch to Dire Bear Form", enabled = true, key = "autoform" },
 		{ type = "entry", text = "|T" .. icon(22812) .. ":26:26|t Barkskin", tooltip = "Use when HP < %", enabled = true, value = 55, key = "barkskin" },
