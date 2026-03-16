@@ -8,7 +8,7 @@ if build == 30300 and level == 80 and data and Muti then
 		settingsfile = "DarhangeR_Assasin.xml",
 		{ type = "title",    text = "Assassination Rogue by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title",    text = "|cffFFFF00Main Settings" },
+		{ type = "page",     number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",           tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,  key = "detect" },
 		{ type = "entry",    text = "\124T" .. data.rogue.interIcon() .. ":24:24\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,  key = "autointerrupt" },
@@ -18,6 +18,16 @@ if build == 30300 and level == 80 and data and Muti then
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.stoneIcon() .. ":24:24\124t Healthstone",          tooltip = "Use Warlock Healthstone (if you have) when player HP < %",          enabled = true,  value = 35,           key = "healthstoneuse" },
 		{ type = "entry",    text = "\124T" .. data.hpotionIcon() .. ":24:24\124t Heal Potion",        tooltip = "Use Heal Potions (if you have) when player HP < %",                 enabled = true,  value = 30,           key = "healpotionuse" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -58,6 +68,7 @@ if build == 30300 and level == 80 and data and Muti then
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
+		"Trinkets (Config)",
 		"Racial Stuff",
 		"Use enginer gloves",
 		"Trinkets",
@@ -217,6 +228,12 @@ if build == 30300 and level == 80 and data and Muti then
 					and data.CDorBoss("target", 5, 35, 5, enabled)
 					and data.rogue.InRange() then
 				ni.player.useinventoryitem(10)
+				return true
+			end
+		end,
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 				return true
 			end
 		end,

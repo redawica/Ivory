@@ -8,7 +8,7 @@ local items = {
 	settingsfile = "DarhangeR_HolyPriest.xml",
 	{ type = "title", text = "Holy Priest by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Self)", tooltip = "Use spell on player", enabled = false, key = "fearward" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Focus)", tooltip = "Use spell on focus target", enabled = false, key = "fearwardmemb" },
@@ -64,10 +64,10 @@ local items = {
 	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
-	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket13unit" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
-	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -314,7 +314,7 @@ local abilities = {
 	end,
 -----------------------------------
 	["Trinkets (Config)"] = function()
-		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+		if data.UseConfiguredTrinkets(GetSetting, nil, "player") then
 			return true
 		end
 	end,
