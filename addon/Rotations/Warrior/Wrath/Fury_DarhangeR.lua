@@ -12,12 +12,15 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Fury.xml",
 		{ type = "title",    text = "Fury Warrior by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title",    text = "|cffFFFF00Main Settings" },
+		{ type = "page",     number = 0,                                                                                                                              text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",              tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,      key = "detect" },
 		{ type = "entry",    text = "Auto Stence",                                                        tooltip = "Auto use proper stence",                                            enabled = false,     key = "stence" },
-		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",      enabled = true,                                                                key = "battleshout" },
-		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",  enabled = false,                                                               key = "commandshout" },
+		{ type = "dropdown", text = "Shout Buff (Battle/Commanding)", key = "shoutmode", menu = {
+				{ selected = true, value = "Battle" },
+				{ selected = false, value = "Commanding" },
+			}
+		},
 		{ type = "entry",    text = "\124T" .. data.warrior.inter1Icon() .. ":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",          tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
 		{ type = "entry", text = "Cancel Shadowmourne (Chaos Bane)", tooltip = "Cancel Chaos Bane buff (Shadowmourne) when enabled", enabled = false, key = "cancelshadow" },
@@ -49,6 +52,16 @@ if build == 30300 and level == 80 and data then
 			enabled = false,
 			key = "rend"
 		},
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -259,16 +272,24 @@ if build == 30300 and level == 80 and data then
 	end
 
 	local function OnLoad()
-		if DBM then
+		ni.GUI.DestroyFrame("Fury_DarhangeR");
+		if DBM and not ni.vars.fury_dbm_callbacks then
 			DBM:RegisterCallback("DBM_TimerStart", DBMEventHandler)
 			DBM:RegisterCallback("DBM_TimerStop", DBMEventHandler)
+			ni.vars.fury_dbm_callbacks = true
 		end
 		ni.combatlog.registerhandler("Fury_DarhangeR", CombatEventCatcher);
 		ni.GUI.AddFrame("Fury_DarhangeR", items);
 	end
 	local function OnUnLoad()
-		ni.combatlog.unregisterhandler("Fury_DarhangeR", CombatEventCatcher);
 		ni.GUI.DestroyFrame("Fury_DarhangeR");
+		if DBM and DBM.UnregisterCallback and ni.vars.fury_dbm_callbacks then
+			pcall(function() DBM:UnregisterCallback("DBM_TimerStart", DBMEventHandler) end)
+			pcall(function() DBM:UnregisterCallback("DBM_TimerStop", DBMEventHandler) end)
+			ni.vars.fury_dbm_callbacks = false
+		end
+		pullInTimer = nil
+		pcall(function() ni.combatlog.unregisterhandler("Fury_DarhangeR", CombatEventCatcher); end)
 	end
 
 	local lastGCDStart = 0
@@ -369,14 +390,15 @@ if build == 30300 and level == 80 and data then
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
-		-- "Racial Stuff",
+		"Trinkets (Config)",
+		"Racial Stuff",
 		"Use enginer gloves",
 		"Trinkets",
 		"Cancel Shadowmourne",
 		"Bombs",
 		"Heroic Throw",
-		-- "Death Wish",
-		-- "Recklessness",
+		"Death Wish",
+		"Recklessness",
 		"Pummel (Interrupt)",
 		"AutoAtack",
 		"Heroic Strike + Cleave (Filler)",
@@ -560,24 +582,28 @@ if build == 30300 and level == 80 and data then
 		end,
 		-----------------------------------
 		["Battle Shout"] = function()
-			local _, enabled = GetSetting("battleshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode ~= "Battle" then
+				return false
+			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if enabled
-					and ni.spell.available(spells.battleShout.id) then
+			if ni.spell.available(spells.battleShout.id) then
 				ni.spell.cast(spells.battleShout.id)
 				return true
 			end
 		end,
 		-----------------------------------
 		["Commanding Shout"] = function()
-			local _, enabled = GetSetting("commandshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode ~= "Commanding" then
+				return false
+			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if enabled
-					and ni.spell.available(spells.commandingShout.id) then
+			if ni.spell.available(spells.commandingShout.id) then
 				ni.spell.cast(spells.commandingShout.id)
 				return true
 			end
@@ -658,6 +684,9 @@ if build == 30300 and level == 80 and data then
 			local bloodelf = { 25046, 28730, 50613 }
 			local alracial = { 20594, 28880 }
 			local _, enabled = GetSetting("detect")
+			if not UnitAffectingCombat(p) then
+				return false
+			end
 			--- Undead
 			if data.forsaken(p)
 					and IsSpellKnown(7744)
@@ -667,7 +696,7 @@ if build == 30300 and level == 80 and data then
 			end
 			--- Horde race
 			for i = 1, #hracial do
-				if data.CDorBoss(t, 5, 35, 5, enabled)
+				if (data.CDorBoss(t, 5, 35, 5, enabled) or ni.unit.hp(t) > 20)
 						and IsSpellKnown(hracial[i])
 						and ni.spell.available(hracial[i])
 						and data.warrior.InRange() then
@@ -708,6 +737,12 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 		-----------------------------------
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+				return true
+			end
+		end,
 		["Trinkets"] = function()
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)
@@ -736,12 +771,13 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		-----------------------------------
 		["Heroic Throw"] = function()
-			if not data.warrior.InRange()
+			if (not data.warrior.InRange() or ni.player.ismoving())
 					and UnitAffectingCombat(p)
-					and ni.spell.cd(spells.heroicthrow.id) == 0
+					and ni.spell.available(spells.heroicthrow.id)
 					and ni.spell.valid(t, spells.heroicthrow.id, true, true)
 			then
 				ni.spell.cast(spells.heroicthrow.id, t)
+				return true
 			end
 		end,
 
@@ -750,8 +786,7 @@ if build == 30300 and level == 80 and data then
 			local sunder, _, _, count = ni.unit.debuff(t, spells.sunderArmor.id)
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)
-					and sunder
-					and count > 4
+					and (not sunder or count > 2)
 					and ni.spell.available(spells.deathWish.id)
 					and data.warrior.InRange() then
 				ni.spell.cast(spells.deathWish.id)
@@ -764,8 +799,8 @@ if build == 30300 and level == 80 and data then
 
 			local _, enabled = GetSetting("detect")
 			if data.CDorBoss(t, 5, 35, 5, enabled)
-					and sunder
-					and count > 4
+					and (not sunder or count > 2)
+					and (ni.player.buff(spells.deathWish.id) or ni.spell.cd(spells.deathWish.id) > 0)
 					and ni.spell.available(spells.recklessness.id)
 					and data.warrior.InRange() then
 				ni.spell.cast(spells.recklessness.id)

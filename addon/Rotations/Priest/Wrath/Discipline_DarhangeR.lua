@@ -8,7 +8,7 @@ local items = {
 	settingsfile = "DarhangeR_Disc.xml",
 	{ type = "title", text = "Discipline Priest by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.priest.fearIcon()..":26:26\124t Fear Ward (Self)", tooltip = "Use spell on player", enabled = false, key = "fearward" },
@@ -53,10 +53,10 @@ local items = {
 	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
-	{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket13unit" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
-	{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
+	{ type = "input", value = "player", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -102,8 +102,8 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
-	"Racial Stuff",
 	"Trinkets (Config)",
+	"Racial Stuff",
 	"Use enginer gloves",
 	"Shadowfiend",
 	"Fade",
@@ -371,7 +371,7 @@ local abilities = {
 		end,
 -----------------------------------
 	["Trinkets (Config)"] = function()
-		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+		if data.UseConfiguredTrinkets(GetSetting, nil, "player") then
 			return true
 		end
 	end,
