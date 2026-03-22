@@ -63,7 +63,7 @@ local items = {
 		{ selected = false, value = 53408, text = "|T"..(select(3, GetSpellInfo(53408)) or "")..":20:20|t Judgement of Wisdom" },
 		{ selected = false, value = 53407, text = "|T"..(select(3, GetSpellInfo(53407)) or "")..":20:20|t Judgement of Justice" },
 	}, key = "JudgementType" },
-	{ type = "entry", text = "|T"..data.paladin.exorIcon()..":26:26|t Exorcism (75)", tooltip = "Use spell when player mana > 75%", enabled = false, value = 75, key = "exorc" },
+	{ type = "entry", text = "|T"..data.paladin.exorIcon()..":26:26|t Exorcism (75)", tooltip = "Use spell when player mana is above 75%", enabled = false, value = 75, key = "exorc" },
 	{ type = "entry", text = "|T"..data.paladin.hamWraIcon()..":26:26|t Hammer of Wrath", tooltip = "Auto check execute target and use it.", enabled = false, key = "masswrath" },
 	{ type = "entry", text = "|T"..data.paladin.turnIcon()..":26:26|t Turn Evil (Auto Use)", tooltip = "Auto check and use spell on proper enemies", enabled = false, key = "turn" },
 	{ type = "entry", text = "|T"..data.controlIcon()..":26:26|t Auto Control (Allys)", tooltip = "Checking for a buff and using a spell in combat.", enabled = true, key = "control" },
@@ -78,8 +78,8 @@ local items = {
 	{ type = "entry", text = "Allys Count", tooltip = "Allies count threshold for trinket usage", enabled = true, value = 3, key = "trinketsallycount" },
 	{ type = "separator" },
 	{ type = "title", text = "Using Other Trinkets" },
-	{ type = "entry", text = "Mana Regeneration", tooltip = "Use mana trinkets when MP < %", enabled = true, value = 60, key = "manaregtrinket" },
-	{ type = "entry", text = "Health Regeneration", tooltip = "Use health trinkets when HP < %", enabled = true, value = 50, key = "healthregtrinket" },
+	{ type = "entry", text = "Mana Regeneration", tooltip = "Use mana trinkets when MP is below %", enabled = true, value = 60, key = "manaregtrinket" },
+	{ type = "entry", text = "Health Regeneration", tooltip = "Use health trinkets when HP is below %", enabled = true, value = 50, key = "healthregtrinket" },
 	{ type = "separator" },
 	{ type = "title", text = "Mass Healing" },
 	{ type = "entry", text = "Allys HP", tooltip = "Mass healing trinket HP threshold", enabled = true, value = 55, key = "masshealtrinkethp" },
@@ -89,7 +89,7 @@ local items = {
 	{ type = "entry", text = "Hands", tooltip = "Use engineering gloves", enabled = true, key = "enghands" },
 	{ type = "entry", text = "Allys HP", tooltip = "Engineering gloves HP threshold", enabled = true, value = 37, key = "enghandshp" },
 	{ type = "entry", text = "Allys Count", tooltip = "Engineering gloves allies count", enabled = true, value = 3, key = "enghandscount" },
-	{ type = "title", text = "Using the following Trinkets (if equipped) when MP < % character:" },
+	{ type = "title", text = "Using the following Trinkets (if equipped) when MP is below %:" },
 	{ type = "title", text = "• Sliver of Pure Ice • Meteorite Crystal • Spirit-World Glass • Figurine - Sapphire Owl" },
 	{ type = "separator" },
 	{ type = "title", text = "Custom Trinkets (ID/Spell/Unit)" },
@@ -107,7 +107,7 @@ local items = {
 	{ type = "separator" },
 	{ type = "title", text = "Racial Abilities" },
 	{ type = "entry", text = "Use racial abilities", tooltip = "Enable racial spells/items", enabled = true, key = "racial" },
-	{ type = "entry", text = "|T"..data.paladin.pleaIcon()..":26:26|t Divine Plea (60 seconds)", tooltip = "Use spell when player mana < %", enabled = true, value = 60, key = "plea" },
+	{ type = "entry", text = "|T"..data.paladin.pleaIcon()..":26:26|t Divine Plea (60 seconds)", tooltip = "Use spell when player mana is below %", enabled = true, value = 60, key = "plea" },
 	{ type = "separator" },
 	{ type = "title", text = "Bursts" },
 	{ type = "dropdown", menu = {
@@ -117,20 +117,20 @@ local items = {
 	{ type = "entry", text = "|T"..data.paladin.favorIcon()..":26:26|t Divine Favor (40 seconds)", tooltip = "Use spell with burst conditions.", enabled = true, value = 40, key = "divinefavor" },
 	{ type = "entry", text = "|T"..(select(3, GetSpellInfo(633)) or "")..":26:26|t Lay on Hands (20 seconds)", tooltip = "Cast on Ally + Self", enabled = true, value = 20, key = "layon" },
 	{ type = "entry", text = "Lay on Hands (Ally + Self)", tooltip = "Allow using Lay on Hands on allies", enabled = true, key = "layonally" },
-	{ type = "entry", text = "|T"..data.paladin.aveWrathIcon()..":26:26|t Avenging Wrath", tooltip = "Use when Ally HP < 30%, Ally Count >= 4", enabled = true, key = "aven" },
-	{ type = "entry", text = "|T"..data.paladin.illumIcon()..":26:26|t Divine Illumination", tooltip = "Use when Ally HP < 30%, Ally Count >= 4", enabled = true, value = 35, key = "illumination" },
+	{ type = "entry", text = "|T"..data.paladin.aveWrathIcon()..":26:26|t Avenging Wrath", tooltip = "Use when ally HP is below 30% and ally count is at least 4", enabled = true, key = "aven" },
+	{ type = "entry", text = "|T"..data.paladin.illumIcon()..":26:26|t Divine Illumination", tooltip = "Use when ally HP is below 30% and ally count is at least 4", enabled = true, value = 35, key = "illumination" },
 	{ type = "entry", text = "During Divine Plea use Avenging Wrath", tooltip = "Sync Avenging Wrath during Divine Plea", enabled = true, key = "pleaburstaw" },
-	{ type = "entry", text = "During Divine Plea use Divine Illumination (2T10)", tooltip = "Sync Divine Illumination during Divine Plea when 2T10", enabled = true, key = "pleaburstillum" },
+	{ type = "entry", text = "During Divine Plea use Divine Illumination (2T10)", tooltip = "Sync Divine Illumination during Divine Plea when using 2T10", enabled = true, key = "pleaburstillum" },
 
 	-- 4) CD's and important spells #2
 	{ type = "separator" },
 	{ type = "page", number = 4, text = "|cff95f900CD's and important spells #2" },
 	{ type = "separator" },
 	{ type = "entry", text = "|T"..data.paladin.handSalIcon()..":26:26|t Hand of Salvation (Allys)", tooltip = "Auto check ally agro and use spell.", enabled = true, key = "salva" },
-	{ type = "entry", text = "|T"..data.paladin.handSacrIcon()..":26:26|t Hand of Sacrifice (Allys)", tooltip = "Use spell when ally HP < %", enabled = true, value = 25, key = "handsacrifice" },
+	{ type = "entry", text = "|T"..data.paladin.handSacrIcon()..":26:26|t Hand of Sacrifice (Allys)", tooltip = "Use spell when ally HP is below %", enabled = true, value = 25, key = "handsacrifice" },
 	{ type = "entry", text = "|T"..data.paladin.handProIcon()..":26:26|t Hand of Protection (Allys)", tooltip = "Spell ignoring Tanks.", enabled = true, value = 25, key = "handofprot" },
 	{ type = "entry", text = "|T"..data.paladin.masteryIcon()..":26:26|t Aura Mastery", tooltip = "Enable spell", enabled = true, key = "auramastery" },
-	{ type = "entry", text = "Allys HP", tooltip = "Use spell when member HP < %", enabled = true, value = 30, key = "auramasteryhp" },
+	{ type = "entry", text = "Allys HP", tooltip = "Use spell when member HP is below %", enabled = true, value = 30, key = "auramasteryhp" },
 	{ type = "entry", text = "Allys Count", tooltip = "Use spell when ally count have low hp", enabled = true, value = 4, key = "auramasterycount" },
 	{ type = "separator" },
 	{ type = "title", text = "Dispel Section" },
@@ -164,11 +164,11 @@ local items = {
 	{ type = "separator" },
 	{ type = "page", number = 6, text = "|cff95f900Party/Raid Healing Settings" },
 	{ type = "separator" },
-	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal ally if you or them not in combat, ally HP < %. If not moving use Flash of Light.", enabled = true, value = 95, key = "noncombatheal" },
-	{ type = "entry", text = "|T"..data.paladin.hsockIcon()..":26:26|t Holy Shock", tooltip = "Use spell when member HP < %", enabled = true, value = 86, key = "shock" },
-	{ type = "entry", text = "|T"..data.paladin.flashIcon()..":26:26|t Flash of Light", tooltip = "Use spell when member HP < %", enabled = true, value = 84, key = "flash" },
-	{ type = "entry", text = "|T"..data.paladin.lightIcon()..":26:26|t Holy Light", tooltip = "Use spell when member HP < %", enabled = true, value = 60, key = "light" },
-	{ type = "entry", text = "|T"..data.paladin.lightIcon()..":26:26|t Holy Light (Glyph)", tooltip = "Use spell when you have glyph and member HP < %", enabled = true, value = 68, key = "lightglyph" },
+	{ type = "entry", text = "Non Combat Healing", tooltip = "Heal ally if you or them are not in combat and ally HP is below %. If not moving use Flash of Light.", enabled = true, value = 95, key = "noncombatheal" },
+	{ type = "entry", text = "|T"..data.paladin.hsockIcon()..":26:26|t Holy Shock", tooltip = "Use spell when member HP is below %", enabled = true, value = 86, key = "shock" },
+	{ type = "entry", text = "|T"..data.paladin.flashIcon()..":26:26|t Flash of Light", tooltip = "Use spell when member HP is below %", enabled = true, value = 84, key = "flash" },
+	{ type = "entry", text = "|T"..data.paladin.lightIcon()..":26:26|t Holy Light", tooltip = "Use spell when member HP is below %", enabled = true, value = 60, key = "light" },
+	{ type = "entry", text = "|T"..data.paladin.lightIcon()..":26:26|t Holy Light (Glyph)", tooltip = "Use spell when you have glyph and member HP is below %", enabled = true, value = 68, key = "lightglyph" },
 	{ type = "entry", text = "Allys HP", tooltip = "Mass healing hp threshold", enabled = true, value = 85, key = "healallyhp" },
 	{ type = "entry", text = "Allys Count", tooltip = "Mass healing ally count", enabled = true, value = 2, key = "healallycount" },
 
@@ -189,7 +189,7 @@ local items = {
 	{ type = "page", number = 8, text = "|cff95f900Valithria Healing Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "Enable Healing", tooltip = "Enable Valithria healing in ICC.", enabled = false, key = "valithria" },
-	{ type = "entry", text = "Allys HP %", tooltip = "Valithria/Raid hp threshold", enabled = true, value = 80, key = "valithriahp" },
+	{ type = "entry", text = "Allys HP %", tooltip = "Valithria or raid HP threshold", enabled = true, value = 80, key = "valithriahp" },
 	{ type = "title", text = "Healing Mode Settings" },
 	{ type = "dropdown", menu = {
 		{ selected = true, value = 1, text = "Heal Boss Only" },
@@ -200,11 +200,11 @@ local items = {
 	{ type = "separator" },
 	{ type = "page", number = 9, text = "|cff00C957Defensive Settings" },
 	{ type = "separator" },
-	{ type = "entry", text = "|T"..data.paladin.divineShIcon()..":26:26|t Divine Shield [22]", tooltip = "Use spell when player HP < %", enabled = true, value = 22, key = "divineshield" },
-	{ type = "entry", text = "|T"..data.stoneIcon()..":26:26|t Healthstone [35]", tooltip = "Use Warlock Healthstone when player HP < %", enabled = true, value = 35, key = "healthstoneuse" },
+	{ type = "entry", text = "|T"..data.paladin.divineShIcon()..":26:26|t Divine Shield [22]", tooltip = "Use spell when player HP is below %", enabled = true, value = 22, key = "divineshield" },
+	{ type = "entry", text = "|T"..data.stoneIcon()..":26:26|t Healthstone [35]", tooltip = "Use Warlock Healthstone when player HP is below %", enabled = true, value = 35, key = "healthstoneuse" },
 	{ type = "entry", text = "Healthstone (Pick-up)", tooltip = "Auto pick-up Healthstones when possible", enabled = true, key = "healthstonepickup" },
-	{ type = "entry", text = "|T"..data.hpotionIcon()..":26:26|t Heal Potion [30]", tooltip = "Use Heal Potions when player HP < %", enabled = true, value = 30, key = "healpotionuse" },
-	{ type = "entry", text = "|T"..data.mpotionIcon()..":26:26|t Mana Potion [25]", tooltip = "Use Mana Potions when player mana < %", enabled = true, value = 25, key = "manapotionuse" },
+	{ type = "entry", text = "|T"..data.hpotionIcon()..":26:26|t Heal Potion [30]", tooltip = "Use Heal Potions when player HP is below %", enabled = true, value = 30, key = "healpotionuse" },
+	{ type = "entry", text = "|T"..data.mpotionIcon()..":26:26|t Mana Potion [25]", tooltip = "Use Mana Potions when player mana is below %", enabled = true, value = 25, key = "manapotionuse" },
 
 	-- 10) Expert Settings
 	{ type = "separator" },
@@ -1092,78 +1092,68 @@ local abilities = {
 			break
 		end
         end
-      end
-    end
-  end,
-
-  -- FIX: Turn Evil - evaluación por unidad individual, sin flag global
-  ["Turn Evil (Auto Use)"] = function()
-    local _, enabled = GetSetting("turn")
-    if enabled
-      and ni.unit.exists("target")
-      and ni.spell.available(10326)
-      and UnitCanAttack("player", "target") then
-      table.wipe(enemies)
-      enemies = ni.unit.enemiesinrange("player", 25)
-      for i = 1, #enemies do
-        local tar = enemies[i].guid
-        local isUndead = ni.unit.creaturetype(tar) == 3
-        local isDemon  = ni.unit.creaturetype(tar) == 6
-        if (isUndead or isDemon or ni.unit.aura(tar, 49039))
-          and not ni.unit.isboss(tar)
-          and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
-          and not ni.unit.debuff(tar, 10326, "player")
-          and ni.spell.valid(tar, 10326, false, true, true)
-          and GetTime() - data.paladin.LastTurn > 1.5 then
-          ni.spell.cast(10326, tar)
-          data.paladin.LastTurn = GetTime()
-          return true
-        end
-      end
-    end
-  end,
-
-  ["Hammer of Wrath (Auto Target)"] = function()
-    local _, enabled = GetSetting("masswrath")
-    if enabled
-      and ni.player.power() > 60
-      and ni.spell.available(48806)
-      and UnitCanAttack("player", "target") then
-      table.wipe(enemies)
-      enemies = ni.unit.enemiesinrange("player", 29)
-      for i = 1, #enemies do
-        local executetar = enemies[i].guid
-        if ni.unit.hp(executetar) < 20
-          and ni.spell.valid(executetar, 48806, true, true) then
-          ni.spell.cast(48806, executetar)
-          return true
-        end
-      end
-    end
-  end,
-
-  ["Control (Member)"] = function()
-    local _, enabled = GetSetting("control")
-    if enabled and ni.spell.available(10308) then
-      for i = 1, #ni.members do
-        local ally = ni.members[i].unit
-        if data.ControlMember(ally)
-          and not data.UnderControlMember(ally)
-          and ni.spell.valid(ally, 10308, false, true, true) then
-          ni.spell.cast(10308, ally)
-          return true
-        end
-      end
-    end
-  end,
-
-  ["Window"] = function()
-    if not popup_shown then
-      ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a",
-        "Welcome to Holy Paladin Profile! Support: https://discord.gg/TEQEJYS\n\n--Profile Features--\n✓ 10 pages GUI\n✓ Sacred Shield automático en TODOS los tanks (excluye Paladines)\n✓ Beacon of Light en main tank\n✓ Flash of Light proc Infusion of Light corregido\n✓ Avenging Wrath y Divine Illumination con HP/Count configurables\n✓ Valithria ICC con check de setting\n✓ Turn Evil por unidad individual\n✓ Blessings para todo el grupo/raid\n✓ Expert Settings con macros configurables")
-      popup_shown = true
-    end
-  end,
+		if not dontTurn then
+		 for i = 1, #enemies do
+		 local tar = enemies[i].guid;
+		  if (ni.unit.creaturetype(enemies[i].guid) == 3
+		   or ni.unit.creaturetype(enemies[i].guid) == 6
+		   or ni.unit.aura(enemies[i].guid, 49039))
+		   and not ni.unit.isboss(tar)
+		   and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
+		   and not ni.unit.debuff(tar, 10326, "player")
+		   and ni.spell.valid(enemies[i].guid, 10326, false, true, true)
+		   and GetTime() - data.paladin.LastTurn > 1.5 then
+				ni.spell.cast(10326, tar)
+				data.paladin.LastTurn = GetTime()
+                        return true
+					end
+				end
+			end
+		end
+	end,
+-----------------------------------
+	["Hammer of Wrath (Auto Target)"] = function()
+		local _, enabled = GetSetting("masswrath")
+		if enabled
+		 and ni.player.power() > 60
+		 and ni.spell.available(48806)
+		 and UnitCanAttack("player", "target") then
+		 table.wipe(enemies);
+		  enemies = ni.unit.enemiesinrange("player", 29)
+		  for i = 1, #enemies do
+		   local executetar = enemies[i].guid;
+		    if ni.unit.hp(executetar) < 20
+			and ni.spell.valid(executetar, 48806, true, true) then
+					ni.spell.cast(48806, executetar)
+					return true
+				end
+			end
+		end
+	end,
+-----------------------------------
+	["Control (Member)"] = function()
+		local _, enabled = GetSetting("control")
+		if enabled
+		 and ni.spell.available(10308) then
+		  for i = 1, #ni.members do
+		   local ally = ni.members[i].unit
+		    if data.ControlMember(ally)
+			and not data.UnderControlMember(ally)
+			and ni.spell.valid(ally, 10308, false, true, true) then
+				ni.spell.cast(10308, ally)
+				return true
+				end
+			end
+		end
+	end,
+-----------------------------------
+	["Window"] = function()
+		if not popup_shown then
+		 ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a",
+		 "Welcome to Holy Paladin Profile! Support and more in Discord: https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main")
+		popup_shown = true;
+		end
+	end,
 }
 
   ni.bootstrap.profile("Holy_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
