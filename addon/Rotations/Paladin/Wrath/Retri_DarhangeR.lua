@@ -247,26 +247,12 @@ if build == 30300 and level == 80 and data then
     { type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
     { type = "separator" },
     { type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
-    { type = "input", value = "",       width = 80, height = 15, key = "trinket13id" },
-    { type = "input", value = "",       width = 80, height = 15, key = "trinket13spell" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
     { type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
-    { type = "input", value = "",       width = 80, height = 15, key = "trinket14id" },
-    { type = "input", value = "",       width = 80, height = 15, key = "trinket14spell" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+    { type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
     { type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
-
-    -- =========================================================
-    -- PAGE 7: EXPERT SETTINGS (NUEVO - igual que screenshots)
-    -- =========================================================
-    { type = "separator" },
-    { type = "page", number = 7, text = "|cffFFD700Expert Settings" },
-    { type = "separator" },
-
-    { type = "title", text = "Change macro #1" },
-    { type = "input", value = "usepot", width = 120, height = 15, key = "macro1" },
-
-    { type = "separator" },
-    { type = "title", text = "Change macro #2" },
-    { type = "input", value = "rebuff", width = 120, height = 15, key = "macro2" },
   };
 
   -- =========================================================
