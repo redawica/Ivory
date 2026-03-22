@@ -5,12 +5,12 @@ local enemies = {};
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
 
--- Icon helper (estable y sin dependencia del data.*Icon)
+-- Icon helper
 local function icon(spellID)
   return select(3, GetSpellInfo(spellID)) or ""
 end
 
--- Contar enemigos alrededor del target (legado)
+-- Contar enemigos alrededor del target
 local function ActiveEnemiesOnTarget(range)
   range = range or 7
   table.wipe(enemies);
@@ -23,7 +23,7 @@ local function ActiveEnemiesOnTarget(range)
   return #enemies;
 end
 
--- Contar enemigos alrededor del jugador (más robusto para AoE)
+-- Contar enemigos alrededor del jugador
 local function ActiveEnemiesAroundPlayer(range)
   range = range or 10
   table.wipe(enemies);
@@ -51,16 +51,23 @@ if build == 30300 and level == 80 and data then
     { type = "title", text = "Retribution Paladin by |c0000CED1DarhangeR" },
     { type = "separator" },
 
-    -- PAGE 1: MAIN SETTINGS #1
+    -- =========================================================
+    -- PAGE 1: MAIN SETTINGS
+    -- =========================================================
     { type = "separator" },
-    { type = "page", number = 1, text = "|cffEE4000Rotation Settings #1" },
+    { type = "page", number = 1, text = "|cffEE4000Main Settings" },
     { type = "separator" },
 
     { type = "entry", text = "|T" .. icon(54428) .. ":26:26|t Divine Plea", tooltip = "Use Divine Plea when player mana < %", enabled = true, value = 50, key = "plea" },
-    { type = "entry", text = "|T" .. icon(53601) .. ":26:26|t Sacred Shield", tooltip = "Cast Sacred Shield in combat when missing (optional HP threshold)", enabled = true, value = 60, key = "sacred" },
+    { type = "entry", text = "|T" .. icon(53601) .. ":26:26|t Sacred Shield", tooltip = "Cast Sacred Shield in combat when missing", enabled = true, value = 60, key = "sacred" },
     { type = "entry", text = "|T" .. icon(32223) .. ":26:26|t Crusader Aura", tooltip = "Auto keep Crusader Aura out of combat", enabled = true, key = "crusaderaura" },
-    { type = "entry", text = "|T" .. icon(48785) .. ":26:26|t Flash of Light (Self)", tooltip = "Use Flash of Light with Art of War proc when HP < %", enabled = true, value = 90, key = "flashoflight" },
+
+    { type = "entry", text = "|T" .. icon(48785) .. ":26:26|t Flash of Light (Self)", tooltip = "Use spell when player HP < %. Work only with [Art of War] buff. And if [Exorcism] on cd.", enabled = true, value = 90, key = "flashoflight" },
     { type = "entry", text = "Ignore Exorcism CD", tooltip = "Allow Flash of Light with Art of War even if Exorcism is ready", enabled = false, key = "ignoreexocd" },
+    { type = "dropdown", menu = {
+      { selected = true,  value = "self",  text = "Cast on Self only" },
+      { selected = false, value = "ally",  text = "Cast on Allies" },
+    }, key = "flashtarget" },
 
     { type = "separator" },
     { type = "title", text = "Important settings" },
@@ -71,18 +78,20 @@ if build == 30300 and level == 80 and data then
     { type = "entry", text = "Profile Pause", tooltip = "Custom profile pause throttle in seconds", enabled = true, value = 1.5, key = "profilepause" },
     { type = "entry", text = "|T" .. icon(2382) .. ":26:26|t Debug Printing", tooltip = "Enable debug output", enabled = false, value = 1.5, key = "Debug" },
 
-    -- PAGE 2: Rotation Settings #2
+    -- =========================================================
+    -- PAGE 2: ROTATION SETTINGS #1
+    -- =========================================================
     { type = "separator" },
-    { type = "page", number = 2, text = "|cffEE4000Rotation Settings #2" },
+    { type = "page", number = 2, text = "|cffEE4000Rotation Settings #1" },
     { type = "separator" },
 
     { type = "title", text = "Blessings settings" },
     { type = "separator" },
 
     { type = "dropdown", menu = {
-      { selected = true, value = 25898, text = "|T"..icon(25898)..":20:20|t Greater Blessing of Kings" }, 
-      { selected = false, value = 48934, text = "|T"..icon(48934)..":20:20|t Greater Blessing of Might" }, 
-      { selected = false, value = 48938, text = "|T"..icon(48938)..":20:20|t Greater Blessing of Wisdom" },
+      { selected = true,  value = 25898, text = "|T" .. icon(25898) .. ":20:20|t Greater Blessing of Kings" },
+      { selected = false, value = 48934, text = "|T" .. icon(48934) .. ":20:20|t Greater Blessing of Might" },
+      { selected = false, value = 48938, text = "|T" .. icon(48938) .. ":20:20|t Greater Blessing of Wisdom" },
     }, key = "BlessingType" },
     { type = "entry", text = "Use blessings in combat", tooltip = "Allow casting blessings during combat", enabled = false, key = "blesscombat" },
 
@@ -91,7 +100,7 @@ if build == 30300 and level == 80 and data then
     { type = "separator" },
 
     { type = "dropdown", menu = {
-      { selected = true, value = factionseal, text = "|T" .. icon(factionseal) .. ":20:20|t Seal of Corruption/Vengeance" },
+      { selected = true,  value = factionseal, text = "|T" .. icon(factionseal) .. ":20:20|t Seal of Corruption/Vengeance" },
       { selected = false, value = 20375, text = "|T" .. icon(20375) .. ":20:20|t Seal of Command" },
       { selected = false, value = 21084, text = "|T" .. icon(21084) .. ":20:20|t Seal of Righteousness" },
       { selected = false, value = 20166, text = "|T" .. icon(20166) .. ":20:20|t Seal of Wisdom" },
@@ -104,13 +113,9 @@ if build == 30300 and level == 80 and data then
 
     { type = "dropdown", menu = {
       { selected = false, value = 20271, text = "|T" .. icon(20271) .. ":20:20|t Judgement of Light" },
-      { selected = true, value = 53408, text = "|T" .. icon(53408) .. ":20:20|t Judgement of Wisdom" },
+      { selected = true,  value = 53408, text = "|T" .. icon(53408) .. ":20:20|t Judgement of Wisdom" },
       { selected = false, value = 53407, text = "|T" .. icon(53407) .. ":20:20|t Judgement of Justice" },
     }, key = "JudgementType" },
-
-    { type = "separator" },
-    { type = "entry", text = "|T" .. icon(53385) .. ":26:26|t Divine Storm", tooltip = "Use Divine Storm in rotation", enabled = true, key = "divinestorm" },
-    { type = "entry", text = "AoE auto enemies threshold", tooltip = "Enemies needed to switch to AoE rotation", enabled = true, value = 2, key = "AoE" },
 
     { type = "separator" },
     { type = "title", text = "Bursts" },
@@ -122,18 +127,37 @@ if build == 30300 and level == 80 and data then
     { type = "entry", text = "|T" .. icon(31884) .. ":26:26|t Avenging Wrath", tooltip = "Use Avenging Wrath on boss with seal stacks", enabled = true, key = "avengingwrath" },
     { type = "entry", text = "Engineering bombs", tooltip = "Use engineering bombs in combat", enabled = false, key = "engineeringbombs" },
 
-    -- PAGE 3: Rotation Settings #3
     { type = "separator" },
-    { type = "page", number = 3, text = "|cffEE4000Rotation Settings #3" },
+    { type = "title", text = "AoE Settings" },
+    { type = "separator" },
+
+    { type = "entry", text = "AoE Seals", tooltip = "Enemies needed to switch to AoE seal rotation", enabled = true, value = 1, key = "AoE" },
+    -- FIX: AoE seal ahora configurable via dropdown en lugar de hardcodeado
+    { type = "dropdown", menu = {
+      { selected = true,  value = 20375, text = "|T" .. icon(20375) .. ":20:20|t Seal of Command" },
+      { selected = false, value = 0,     text = "No AoE seal switch" },
+    }, key = "AoESeal" },
+    { type = "entry", text = "|T" .. icon(53385) .. ":26:26|t Divine Storm", tooltip = "Use Divine Storm in rotation", enabled = true, key = "divinestorm" },
+    { type = "entry", text = "Keep - Seal of Corruption/Vengeance", tooltip = "Keep faction seal during AoE (no seal switch)", enabled = false, key = "keepmainseal" },
+
+    -- =========================================================
+    -- PAGE 3: ROTATION SETTINGS #2
+    -- =========================================================
+    { type = "separator" },
+    { type = "page", number = 3, text = "|cffEE4000Rotation Settings #2" },
     { type = "separator" },
 
     { type = "title", text = "Righteous Fury settings" },
     { type = "separator" },
 
-    { type = "entry", text = "Cancel Righteous Fury", tooltip = "Automatically cancel Righteous Fury", enabled = true, key = "cancelrf" },
+    -- FIX: Cambiado de checkbox a dropdown (igual que screenshots)
+    { type = "dropdown", menu = {
+      { selected = true,  value = "cancel", text = "Cancel Buff" },
+      { selected = false, value = "keep",   text = "Keep Buff" },
+    }, key = "rfmode" },
 
     { type = "separator" },
-    { type = "entry", text = "Exorcism (Art of War only)", tooltip = "Use Exorcism when Art of War proc is active", enabled = true, key = "exorcism" },
+    { type = "entry", text = "|T" .. icon(48801) .. ":26:26|t Exorcism (Art of War only)", tooltip = "Use Exorcism when Art of War proc is active", enabled = true, key = "exorcism" },
     { type = "entry", text = "|T" .. icon(48819) .. ":26:26|t Consecration", tooltip = "Enable Consecration (smart usage)", enabled = true, value = 35, key = "concentrat" },
     { type = "entry", text = "|T" .. icon(48817) .. ":26:26|t Holy Wrath (Auto)", tooltip = "Use Holy Wrath vs Undead/Demon", enabled = false, value = 20, key = "holywrath" },
     { type = "entry", text = "|T" .. icon(48806) .. ":26:26|t Hammer of Wrath", tooltip = "Use Hammer of Wrath on targets below 20% HP", enabled = true, key = "hammerwrath" },
@@ -145,63 +169,109 @@ if build == 30300 and level == 80 and data then
     { type = "title", text = "Dispel" },
     { type = "separator" },
 
-    { type = "entry", text = "Dispels delay (seconds)", tooltip = "Delay between dispels in seconds", enabled = true, value = 1.5, key = "dispeldelay" },
-    { type = "entry", text = "|T" .. icon(4987) .. ":26:26|t Cleanse (Self)", tooltip = "Auto cleanse yourself", enabled = true, key = "cleans" },
-    { type = "entry", text = "|T" .. icon(4987) .. ":26:26|t Cleanse (Allys)", tooltip = "Auto cleanse group members", enabled = false, key = "cleansmemb" },
+    { type = "entry", text = "Delay for dispeling (seconds)", tooltip = "Delay between dispels in seconds", enabled = true, value = 1.5, key = "dispeldelay" },
+
+    -- FIX: Cleanse consolidado en 1 entry + dropdown de modo (igual que screenshots)
+    { type = "entry", text = "|T" .. icon(4987) .. ":26:26|t Cleanse", tooltip = "Auto cleanse Magic/Disease/Poison debuffs", enabled = true, key = "cleans" },
+    { type = "dropdown", menu = {
+      { selected = false, value = "auto_self",   text = "Auto (Self only)" },
+      { selected = false, value = "auto_allies",  text = "Auto (Self + Allies)" },
+      { selected = true,  value = "manual",       text = "Manual Mode" },
+    }, key = "cleanse_mode" },
     { type = "entry", text = "Disable Cleanse", tooltip = "Completely disable cleansing", enabled = false, key = "disablecleans" },
 
     { type = "separator" },
-    { type = "entry", text = "|T" .. icon(1044) .. ":26:26|t Hand of Freedom (Self)", tooltip = "Use Hand of Freedom on yourself", enabled = true, key = "freedom" },
-    { type = "entry", text = "|T" .. icon(1044) .. ":26:26|t Hand of Freedom (Allys)", tooltip = "Use Hand of Freedom on allies", enabled = true, key = "freedommemb" },
+    -- FIX: Hand of Freedom consolidado en 1 entry + dropdown de modo (igual que screenshots)
+    { type = "entry", text = "|T" .. icon(1044) .. ":26:26|t Hand of Freedom", tooltip = "Use Hand of Freedom on rooted/snared units", enabled = true, key = "freedom" },
+    { type = "dropdown", menu = {
+      { selected = false, value = "auto_self",  text = "Auto (Self only)" },
+      { selected = false, value = "auto_allies", text = "Auto (Self + Allies)" },
+      { selected = true,  value = "manual",      text = "Manual Mode" },
+    }, key = "freedom_mode" },
     { type = "entry", text = "Disable Hand of Freedom", tooltip = "Completely disable Hand of Freedom", enabled = false, key = "disablefreedom" },
 
-    -- PAGE 4: Defensive Settings #4
+    -- =========================================================
+    -- PAGE 4: DEFENSIVE SETTINGS
+    -- =========================================================
     { type = "separator" },
-    { type = "page", number = 4, text = "|cff00C957Defensive Settings #4" },
+    { type = "page", number = 4, text = "|cff00C957Defensive Settings" },
     { type = "separator" },
 
-    { type = "entry", text = "|T" .. icon(642) .. ":26:26|t Divine Shield", tooltip = "Use Divine Shield when HP < %", enabled = true, value = 10, key = "divineshield" },
-    { type = "entry", text = "|T" .. icon(498) .. ":26:26|t Divine Protection", tooltip = "Use Divine Protection when HP < %", enabled = true, value = 30, key = "divineprot" },
+    { type = "entry", text = "|T" .. icon(642)  .. ":26:26|t Divine Shield",     tooltip = "Use Divine Shield when HP < %",     enabled = true, value = 10, key = "divineshield" },
+    { type = "entry", text = "|T" .. icon(498)  .. ":26:26|t Divine Protection", tooltip = "Use Divine Protection when HP < %", enabled = true, value = 30, key = "divineprot" },
 
     { type = "separator" },
     { type = "entry", text = "|T" .. icon(36894) .. ":26:26|t Healthstone", tooltip = "Use Healthstone when HP < %", enabled = true, value = 35, key = "healthstoneuse" },
+    -- NUEVO: Healthstone Pick-up (igual que screenshots)
+    { type = "entry", text = "Healthstone (Pick-up)", tooltip = "Auto loot Healthstone from nearby Soulwell", enabled = true, key = "hstonepickup" },
 
     { type = "separator" },
-    { type = "entry", text = "|T" .. icon(43185) .. ":26:26|t Heal Potion", tooltip = "Use Healing Potions when HP < %", enabled = false, value = 30, key = "healpotionuse" },
-    { type = "entry", text = "|T" .. icon(43186) .. ":26:26|t Mana Potion", tooltip = "Use Mana Potions when mana < %", enabled = false, value = 25, key = "manapotionuse" },
+    { type = "entry", text = "|T" .. icon(43185) .. ":26:26|t Heal Potion",  tooltip = "Use Healing Potions when HP < %",   enabled = false, value = 30, key = "healpotionuse" },
+    { type = "entry", text = "|T" .. icon(43186) .. ":26:26|t Mana Potion",  tooltip = "Use Mana Potions when mana < %",    enabled = false, value = 25, key = "manapotionuse" },
 
-    -- PAGE 5: Self/Party/Raid #5
+    -- =========================================================
+    -- PAGE 5: SELF / PARTY / RAID
+    -- =========================================================
     { type = "separator" },
-    { type = "page", number = 5, text = "|cff00C957Self/Party/Raid #5" },
+    { type = "page", number = 5, text = "|cff00C957Self/Party/Raid" },
     { type = "separator" },
 
     { type = "entry", text = "|T" .. icon(48788) .. ":26:26|t Lay on Hands", tooltip = "Use Lay on Hands when HP < %", enabled = true, value = 20, key = "layon" },
-    { type = "entry", text = "Lay on Hands (Ally + Self)", tooltip = "Allow using Lay on Hands on allies", enabled = true, key = "layonally" },
+    -- FIX: Dropdown en lugar de checkbox separado (igual que screenshots)
+    { type = "dropdown", menu = {
+      { selected = true,  value = "self",   text = "Cast on Self only" },
+      { selected = false, value = "allies", text = "Cast on Self + Allies" },
+    }, key = "layon_mode" },
 
     { type = "separator" },
-    { type = "entry", text = "|T" .. icon(1038) .. ":26:26|t Hand of Salvation", tooltip = "Use Hand of Salvation on high threat allies", enabled = true, key = "salva" },
+    { type = "entry", text = "|T" .. icon(1038) .. ":26:26|t Hand of Salvation", tooltip = "Auto check ally agro and use spell. Spell ignoring Tanks.", enabled = true, key = "salva" },
+    -- NUEVO: Dropdown para Hand of Salvation (igual que screenshots)
+    { type = "dropdown", menu = {
+      { selected = true,  value = "self",   text = "Cast on Self only" },
+      { selected = false, value = "allies", text = "Cast on Allies" },
+    }, key = "salva_mode" },
 
     { type = "separator" },
-    { type = "entry", text = "|T" .. icon(6940) .. ":26:26|t Hand of Sacrifice", tooltip = "Use Hand of Sacrifice when ally HP < %", enabled = true, value = 20, key = "sacrifice" },
+    { type = "entry", text = "|T" .. icon(6940)  .. ":26:26|t Hand of Sacrifice",  tooltip = "Use Hand of Sacrifice when ally HP < %",  enabled = true, value = 20, key = "sacrifice" },
     { type = "entry", text = "|T" .. icon(10278) .. ":26:26|t Hand of Protection", tooltip = "Use Hand of Protection when ally HP < %", enabled = true, value = 20, key = "handofprot" },
 
     { type = "separator" },
     { type = "entry", text = "|T" .. icon(31821) .. ":26:26|t Aura Mastery", tooltip = "Use Aura Mastery when allies HP < % (with throttle)", enabled = true, key = "auramastery" },
-    { type = "entry", text = "Aura Mastery HP", tooltip = "HP threshold for Aura Mastery", enabled = true, value = 30, key = "auramasteryhp" },
-    { type = "entry", text = "Aura Mastery Count", tooltip = "Allies below threshold required", enabled = true, value = 4, key = "auramasterycount" },
+    { type = "entry", text = "Allys HP",    tooltip = "HP threshold for Aura Mastery",         enabled = true, value = 30, key = "auramasteryhp" },
+    { type = "entry", text = "Allys Count", tooltip = "Allies below threshold required",        enabled = true, value = 4,  key = "auramasterycount" },
 
+    -- =========================================================
+    -- PAGE 6: TRINKETS (Config)
+    -- =========================================================
     { type = "separator" },
     { type = "page", number = 6, text = "|cff00BFFFTrinkets (Config)" },
     { type = "separator" },
     { type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
-    { type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
-    { type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+    { type = "input", value = "",       width = 80, height = 15, key = "trinket13id" },
+    { type = "input", value = "",       width = 80, height = 15, key = "trinket13spell" },
     { type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
-    { type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
-    { type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+    { type = "input", value = "",       width = 80, height = 15, key = "trinket14id" },
+    { type = "input", value = "",       width = 80, height = 15, key = "trinket14spell" },
     { type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
+
+    -- =========================================================
+    -- PAGE 7: EXPERT SETTINGS (NUEVO - igual que screenshots)
+    -- =========================================================
+    { type = "separator" },
+    { type = "page", number = 7, text = "|cffFFD700Expert Settings" },
+    { type = "separator" },
+
+    { type = "title", text = "Change macro #1" },
+    { type = "input", value = "usepot", width = 120, height = 15, key = "macro1" },
+
+    { type = "separator" },
+    { type = "title", text = "Change macro #2" },
+    { type = "input", value = "rebuff", width = 120, height = 15, key = "macro2" },
   };
 
+  -- =========================================================
+  -- GetSetting helper (soporta entry, dropdown, input)
+  -- =========================================================
   local function GetSetting(name)
     for k, v in ipairs(items) do
       if v.type == "entry" and v.key ~= nil and v.key == name then
@@ -230,16 +300,21 @@ if build == 30300 and level == 80 and data then
 
   local LastAuraMastery = 0
 
+  -- =========================================================
+  -- QUEUE
+  -- FIX #3: Exorcism movido ANTES que Consecration
+  -- =========================================================
   local queue = {
     "Universal pause",
     "AutoTarget",
     "Blessings (Raid/Dungeon)",
     "Crusader Aura",
     "Main Seal",
-    "Seal of Command (AoE)",
+    "Seal AoE (Switch)",
     "Cancel Righteous Fury",
     "Auto Track Undeads",
     "Combat specific Pause",
+    "Healthstone (Pick-up)",
     "Healthstone (Use)",
     "Heal Potions (Use)",
     "Mana Potions (Use)",
@@ -255,8 +330,7 @@ if build == 30300 and level == 80 and data then
     "Hand of Protection (Member)",
     "Hand of Salvation (Member)",
     "Hand of Sacrifice (Member)",
-    "Hand of Freedom (Member)",
-    "Hand of Freedom (Self)",
+    "Hand of Freedom",
     "Divine Plea",
     "Sacred Shield (In Combat)",
     "Avenging Wrath",
@@ -272,14 +346,16 @@ if build == 30300 and level == 80 and data then
     "Judgement (Selected Type)",
     "Divine Storm",
     "Holy Wrath (Auto Use)",
+    "Exorcism (Art of War)",      -- FIX: antes de Consecration (mayor DPS)
     "Consecration (Optimized)",
-    "Exorcism (Art of War)",
-    "Cleanse (Member)",
-    "Cleanse (Self)",
+    "Cleanse",
     "Cancel Shadowmourne",
     "Window",
   }
 
+  -- =========================================================
+  -- ABILITIES
+  -- =========================================================
   local abilities = {
 
     ["Universal pause"] = function()
@@ -302,9 +378,9 @@ if build == 30300 and level == 80 and data then
     ["Blessings (Raid/Dungeon)"] = function()
       local blessing = GetSetting("BlessingType");
       local _, combatEnabled = GetSetting("blesscombat")
-      
-      if (IsInRaid() or IsInGroup() or not IsInGroup())
-        and (not UnitAffectingCombat("player") or combatEnabled)
+      -- FIX: condición siempre-true eliminada; ahora comprueba grupo correctamente
+      local inGroup = IsInRaid() or IsInGroup()
+      if (not UnitAffectingCombat("player") or combatEnabled)
         and IsSpellKnown(blessing)
         and ni.spell.available(blessing) then
 
@@ -313,12 +389,14 @@ if build == 30300 and level == 80 and data then
           return true
         end
 
-        for i = 1, #ni.members do
-          local member = ni.members[i].unit
-          if ni.spell.valid(member, blessing, false, true, true)
-            and not ni.unit.buff(member, blessing) then   
-            ni.spell.cast(blessing, member)
-            return true
+        if inGroup then
+          for i = 1, #ni.members do
+            local member = ni.members[i].unit
+            if ni.spell.valid(member, blessing, false, true, true)
+              and not ni.unit.buff(member, blessing) then
+              ni.spell.cast(blessing, member)
+              return true
+            end
           end
         end
       end
@@ -352,41 +430,52 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: Main Seal respeta keepmainseal para no ser sobreescrito en AoE
     ["Main Seal"] = function()
       local threshold, enabled = GetSetting("AoE")
+      local _, keepmain = GetSetting("keepmainseal")
       local seal = GetSetting("CurentSeal");
       local enemiesCount = math.max(ActiveEnemiesOnTarget(7), ActiveEnemiesAroundPlayer(10))
 
-      if ((ni.vars.combat.aoe == false and enemiesCount < threshold) or (enabled and enemiesCount < threshold))
+      local shouldUseMainSeal = keepmain
+        or ((ni.vars.combat.aoe == false and enemiesCount < threshold) or (enabled and enemiesCount < threshold))
+
+      if shouldUseMainSeal
         and IsSpellKnown(seal)
-        and ni.spell.available(seal) then
-        if not ni.player.buff(seal)
-          and GetTime() - data.paladin.LastSeal > 3 then
-          ni.spell.cast(seal)
-          data.paladin.LastSeal = GetTime()
-          return true
-        end
-      end
-    end,
-
-    ["Seal of Command (AoE)"] = function()
-      local threshold, enabled = GetSetting("AoE")
-      local enemiesCount = math.max(ActiveEnemiesOnTarget(7), ActiveEnemiesAroundPlayer(10))
-
-      if ((ni.vars.combat.aoe) or (enabled and enemiesCount >= threshold))
-        and IsSpellKnown(20375)
-        and ni.spell.available(20375)
-        and GetTime() - data.paladin.LastSeal > 3
-        and not ni.player.buff(20375) then
-        ni.spell.cast(20375)
+        and ni.spell.available(seal)
+        and not ni.player.buff(seal)
+        and GetTime() - data.paladin.LastSeal > 3 then
+        ni.spell.cast(seal)
         data.paladin.LastSeal = GetTime()
         return true
       end
     end,
 
+    -- FIX: AoE Seal usa el dropdown AoESeal y respeta keepmainseal
+    ["Seal AoE (Switch)"] = function()
+      local threshold, enabled = GetSetting("AoE")
+      local _, keepmain = GetSetting("keepmainseal")
+      local aoeSeal = GetSetting("AoESeal")
+      local enemiesCount = math.max(ActiveEnemiesOnTarget(7), ActiveEnemiesAroundPlayer(10))
+
+      if keepmain then return end
+      if not aoeSeal or aoeSeal == 0 then return end
+
+      if ((ni.vars.combat.aoe) or (enabled and enemiesCount >= threshold))
+        and IsSpellKnown(aoeSeal)
+        and ni.spell.available(aoeSeal)
+        and GetTime() - data.paladin.LastSeal > 3
+        and not ni.player.buff(aoeSeal) then
+        ni.spell.cast(aoeSeal)
+        data.paladin.LastSeal = GetTime()
+        return true
+      end
+    end,
+
+    -- FIX: Ahora usa el dropdown rfmode en lugar de checkbox
     ["Cancel Righteous Fury"] = function()
-      local _, enabled = GetSetting("cancelrf")
-      if not enabled then return end
+      local rfMode = GetSetting("rfmode")
+      if rfMode ~= "cancel" then return end
       local p = "player"
       for i = 1, 40 do
         local _, _, _, _, _, _, _, u, _, _, s = UnitBuff(p, i)
@@ -405,6 +494,26 @@ if build == 30300 and level == 80 and data then
           and ni.unit.isdummy("target") == nil
           and UnitIsPlayer("target") == nil) then
         return true
+      end
+    end,
+
+    -- NUEVO: Healthstone Pick-up - auto loot desde Soulwell cercano
+    ["Healthstone (Pick-up)"] = function()
+      local _, enabled = GetSetting("hstonepickup")
+      if not enabled then return end
+      -- Si ya tenemos un healthstone, no es necesario
+      local hstones = { 36892, 36893, 36894 }
+      for i = 1, #hstones do
+        if ni.player.hasitem(hstones[i]) then return end
+      end
+      -- Soulwell object ID en WotLK: 227900 aprox (varía por tier)
+      local soulwells = { 227900, 187812, 205754, 232374 }
+      for _, oid in ipairs(soulwells) do
+        local obj = ni.object.id(oid)
+        if obj and ni.unit.distance("player", obj) < 10 then
+          InteractUnit(obj)
+          return true
+        end
       end
     end,
 
@@ -498,11 +607,11 @@ if build == 30300 and level == 80 and data then
 
     ["Use engineer gloves"] = function()
       local _, enabled = GetSetting("detect")
-        if ni.player.slotcastable(10)
-          and ni.player.slotcd(10) == 0
-          and data.CDorBoss("target", 5, 35, 5, enabled)
-          and data.paladin.RetriRange() then
-          ni.player.useinventoryitem(10)
+      if ni.player.slotcastable(10)
+        and ni.player.slotcd(10) == 0
+        and data.CDorBoss("target", 5, 35, 5, enabled)
+        and data.paladin.RetriRange() then
+        ni.player.useinventoryitem(10)
         return true
       end
     end,
@@ -513,21 +622,22 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: stacksReady ahora tiene en cuenta cuando NO es faction seal (AoE con SoC)
     ["Trinkets"] = function()
       local _, enabled = GetSetting("detect")
+      local seal = GetSetting("CurentSeal")
       local sealStacks = select(4, ni.unit.debuff("target", 53742)) or 0
+      local stacksReady = (seal ~= factionseal) or sealStacks >= 5
+
       if data.CDorBoss("target", 5, 35, 5, enabled)
-        and sealStacks >= 5
-        and ni.player.slotcastable(13)
-        and ni.player.slotcd(13) == 0
+        and stacksReady
         and data.paladin.RetriRange() then
-        ni.player.useinventoryitem(13)
-      else
-        if data.CDorBoss("target", 5, 35, 5, enabled)
-          and sealStacks >= 5
-          and ni.player.slotcastable(14)
-          and ni.player.slotcd(14) == 0
-          and data.paladin.RetriRange() then
+        -- FIX: slot 13 ahora también retorna true correctamente
+        if ni.player.slotcastable(13) and ni.player.slotcd(13) == 0 then
+          ni.player.useinventoryitem(13)
+          return true
+        end
+        if ni.player.slotcastable(14) and ni.player.slotcd(14) == 0 then
           ni.player.useinventoryitem(14)
           return true
         end
@@ -546,12 +656,13 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: usa layon_mode dropdown en lugar del antiguo checkbox layonally
     ["Lay on Hands (Ally)"] = function()
       local value, enabled = GetSetting("layon");
-      local _, allyEnabled = GetSetting("layonally")
+      local layonMode = GetSetting("layon_mode")
       local forb = data.paladin.forb()
       if enabled
-        and allyEnabled
+        and layonMode == "allies"
         and #ni.members > 1
         and not forb
         and ni.spell.available(48788) then
@@ -590,34 +701,20 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: override de emergencia si HP < 30% ignora el check de Exorcism
     ["Flash of Light (Self)"] = function()
       local value, enabled = GetSetting("flashoflight")
       local _, ignoreExoCD = GetSetting("ignoreexocd")
       local aow = data.paladin.aow()
+      local emergency = ni.player.hp() < 30
       if enabled
         and ni.player.hp() < value
         and aow
         and ni.spell.isinstant(48785)
-        and (ignoreExoCD or not ni.spell.available(48801))
+        and (ignoreExoCD or emergency or not ni.spell.available(48801))
         and ni.spell.available(48785) then
         ni.spell.cast(48785, "player")
         return true
-      end
-    end,
-
-    ["Hand of Salvation (Member)"] = function()
-      local _, enabled = GetSetting("salva")
-      if enabled
-        and #ni.members > 1
-        and ni.spell.available(1038)
-        and data.CombatStart(10) then
-        if ni.members[1].threat >= 2
-          and not ni.members[1].istank
-          and not data.paladin.HandActive(ni.members[1].unit)
-          and ni.spell.valid(ni.members[1].unit, 1038, false, true, true) then
-          ni.spell.cast(1038, ni.members[1].unit)
-          return true
-        end
       end
     end,
 
@@ -645,6 +742,34 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: Hand of Salvation respeta salva_mode dropdown
+    ["Hand of Salvation (Member)"] = function()
+      local _, enabled = GetSetting("salva")
+      local salvaMode = GetSetting("salva_mode")
+      if enabled
+        and #ni.members > 1
+        and ni.spell.available(1038)
+        and data.CombatStart(10) then
+        -- Modo "allies": proteger al miembro con más threat (no tank)
+        if salvaMode == "allies" then
+          if ni.members[1].threat >= 2
+            and not ni.members[1].istank
+            and not data.paladin.HandActive(ni.members[1].unit)
+            and ni.spell.valid(ni.members[1].unit, 1038, false, true, true) then
+            ni.spell.cast(1038, ni.members[1].unit)
+            return true
+          end
+        else
+          -- Modo "self": solo protegerse a uno mismo si tiene mucho threat
+          if ni.player.threat("target") >= 2
+            and ni.spell.valid("player", 1038, false, true, true) then
+            ni.spell.cast(1038, "player")
+            return true
+          end
+        end
+      end
+    end,
+
     ["Hand of Sacrifice (Member)"] = function()
       local value, enabled = GetSetting("sacrifice");
       if enabled
@@ -655,6 +780,37 @@ if build == 30300 and level == 80 and data then
             and not data.paladin.HandActive(ni.members[i].unit)
             and ni.spell.valid(ni.members[i].unit, 6940, false, true, true) then
             ni.spell.cast(6940, ni.members[i].unit)
+            return true
+          end
+        end
+      end
+    end,
+
+    -- FIX: Hand of Freedom consolidado, controlado por freedom_mode dropdown
+    ["Hand of Freedom"] = function()
+      local _, enabled = GetSetting("freedom")
+      local _, disabled = GetSetting("disablefreedom")
+      local freedom_mode = GetSetting("freedom_mode")
+      if disabled or not enabled or freedom_mode == "manual" then return end
+
+      -- Self
+      if ni.player.ismoving()
+        and data.paladin.FreedomUse("player")
+        and not data.paladin.HandActive("player")
+        and ni.spell.available(1044) then
+        ni.spell.cast(1044, "player")
+        return true
+      end
+
+      -- Allies (solo si modo auto_allies)
+      if freedom_mode == "auto_allies" and ni.spell.available(1044) then
+        for i = 1, #ni.members do
+          local ally = ni.members[i].unit
+          if ni.unit.ismoving(ally)
+            and data.paladin.FreedomUse(ally)
+            and not data.paladin.HandActive(ally)
+            and ni.spell.valid(ally, 1044, false, true, true) then
+            ni.spell.cast(1044, ally)
             return true
           end
         end
@@ -672,33 +828,29 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: lógica de Sacred Shield simplificada (rama else redundante eliminada)
     ["Sacred Shield (In Combat)"] = function()
-      local value, enabled = GetSetting("sacred")
+      local _, enabled = GetSetting("sacred")
       if enabled
         and UnitAffectingCombat("player")
         and not ni.player.buff(53601)
         and ni.spell.available(53601) then
-        -- Si hay umbral de vida configurado y aplica, mejor; si no, castear para mantener activo
-        if ni.player.hp() < value or value == nil then
-          ni.spell.cast(53601, "player")
-          return true
-        else
-          -- Mantener activo aunque no se cumpla el umbral, si está ausente
-          ni.spell.cast(53601, "player")
-          return true
-        end
+        ni.spell.cast(53601, "player")
+        return true
       end
     end,
 
+    -- FIX: Avenging Wrath también respeta stacksReady (igual que Trinkets)
     ["Avenging Wrath"] = function()
       local _, enabled = GetSetting("avengingwrath")
       local _, bossDetect = GetSetting("detect")
+      local seal = GetSetting("CurentSeal")
       local sealStacks = select(4, ni.unit.debuff("target", 53742)) or 0
+      local stacksReady = (seal ~= factionseal) or sealStacks >= 5
       if enabled
         and data.CDorBoss("target", 5, 35, 5, bossDetect)
-        and sealStacks >= 5
+        and stacksReady
         and ni.spell.available(31884)
-        and GetTime() - data.paladin.LastAven > 30.5
         and data.paladin.RetriRange() then
         ni.spell.cast(31884)
         data.paladin.LastAven = GetTime()
@@ -716,11 +868,9 @@ if build == 30300 and level == 80 and data then
         or not data.paladin.RetriRange() then
         return
       end
-
       for i = 1, #burstPotions do
         local potion = burstPotions[i]
-        if ni.player.hasitem(potion)
-          and ni.player.itemcd(potion) == 0 then
+        if ni.player.hasitem(potion) and ni.player.itemcd(potion) == 0 then
           ni.player.useitem(potion)
           return true
         end
@@ -737,11 +887,9 @@ if build == 30300 and level == 80 and data then
         or not data.paladin.RetriRange() then
         return
       end
-
       for i = 1, #bombs do
         local bomb = bombs[i]
-        if ni.player.hasitem(bomb)
-          and ni.player.itemcd(bomb) == 0 then
+        if ni.player.hasitem(bomb) and ni.player.itemcd(bomb) == 0 then
           ni.player.useitem(bomb)
           return true
         end
@@ -767,6 +915,95 @@ if build == 30300 and level == 80 and data then
           ni.spell.cast(31821)
           LastAuraMastery = GetTime()
           return true
+        end
+      end
+    end,
+
+    -- FIX: Turn Evil corregido - evalúa cada unidad individualmente (no flag global)
+    ["Turn Evil (Auto Use)"] = function()
+      local _, enabled = GetSetting("turn")
+      if enabled
+        and ni.unit.exists("target")
+        and ni.spell.available(10326)
+        and UnitCanAttack("player", "target") then
+        table.wipe(enemies);
+        enemies = ni.unit.enemiesinrange("player", 25)
+        for i = 1, #enemies do
+          local tar = enemies[i].guid;
+          local isUndead = ni.unit.creaturetype(tar) == 3
+          local isDemon  = ni.unit.creaturetype(tar) == 6
+          if (isUndead or isDemon or ni.unit.aura(tar, 49039))
+            and not ni.unit.isboss(tar)
+            and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
+            and not ni.unit.debuff(tar, 10326, "player")
+            and ni.spell.valid(tar, 10326, false, true, true)
+            and GetTime() - data.paladin.LastTurn > 1.5 then
+            ni.spell.cast(10326, tar)
+            data.paladin.LastTurn = GetTime()
+            return true
+          end
+        end
+      end
+    end,
+
+    ["Hammer of Justice (Interrupt)"] = function()
+      local _, enabled = GetSetting("hojinterrupt")
+      if data.TryInterrupt("target", enabled, 10308, 0.35) then
+        return true
+      end
+    end,
+
+    ["Control (Member)"] = function()
+      local _, enabled = GetSetting("control")
+      if enabled and ni.spell.available(20066) then
+        for i = 1, #ni.members do
+          local ally = ni.members[i].unit
+          if data.ControlMember(ally)
+            and not data.UnderControlMember(ally)
+            and ni.spell.valid(ally, 20066, false, true, true) then
+            ni.spell.cast(20066, ally)
+            return true
+          end
+        end
+      end
+      if not ni.spell.available(20066) and ni.spell.available(10308) then
+        for i = 1, #ni.members do
+          local ally = ni.members[i].unit
+          if data.ControlMember(ally)
+            and not data.UnderControlMember(ally)
+            and ni.spell.valid(ally, 10308, false, true, true) then
+            ni.spell.cast(10308, ally)
+            return true
+          end
+        end
+      end
+    end,
+
+    ["Hammer of Wrath"] = function()
+      local _, enabled = GetSetting("hammerwrath")
+      if enabled
+        and (ni.unit.hp("target") <= 20 or IsUsableSpell(GetSpellInfo(48806)))
+        and ni.spell.available(48806)
+        and ni.spell.valid("target", 48806, true, true) then
+        ni.spell.cast(48806, "target")
+        return true
+      end
+    end,
+
+    ["Hammer of Wrath (Auto Target)"] = function()
+      local _, enabled = GetSetting("hammerwrath")
+      if enabled
+        and ni.spell.available(48806)
+        and UnitCanAttack("player", "target") then
+        table.wipe(enemies);
+        enemies = ni.unit.enemiesinrange("player", 29)
+        for i = 1, #enemies do
+          local executetar = enemies[i].guid;
+          if ni.unit.hp(executetar) < 20
+            and ni.spell.valid(executetar, 48806, true, true) then
+            ni.spell.cast(48806, executetar)
+            return true
+          end
         end
       end
     end,
@@ -811,6 +1048,20 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
+    -- FIX: Exorcism está ANTES de Consecration en queue (mayor DPS)
+    ["Exorcism (Art of War)"] = function()
+      local _, enabled = GetSetting("exorcism")
+      local aow = data.paladin.aow()
+      if enabled
+        and aow
+        and ni.spell.isinstant(48801)
+        and ni.spell.available(48801)
+        and ni.spell.valid("target", 48801, true, true) then
+        ni.spell.cast(48801, "target")
+        return true
+      end
+    end,
+
     ["Consecration (Optimized)"] = function()
       local value, enabled = GetSetting("concentrat")
       local threshold = GetSetting("AoE")
@@ -833,88 +1084,17 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
-    ["Exorcism (Art of War)"] = function()
-      local _, enabled = GetSetting("exorcism")
-      local aow = data.paladin.aow()
-      if enabled
-        and aow
-        and ni.spell.isinstant(48801)
-        and ni.spell.available(48801)
-        and ni.spell.valid("target", 48801, true, true) then
-        ni.spell.cast(48801, "target")
-        return true
-      end
-    end,
-
-    ["Hammer of Wrath"] = function()
-      local _, enabled = GetSetting("hammerwrath")
-      if enabled
-        and (ni.unit.hp("target") <= 20 or IsUsableSpell(GetSpellInfo(48806)))
-        and ni.spell.available(48806)
-        and ni.spell.valid("target", 48806, true, true) then
-        ni.spell.cast(48806, "target")
-        return true
-      end
-    end,
-
-    ["Hammer of Wrath (Auto Target)"] = function()
-      local _, enabled = GetSetting("hammerwrath")
-      if enabled
-        and ni.spell.available(48806)
-        and UnitCanAttack("player", "target") then
-        table.wipe(enemies);
-        enemies = ni.unit.enemiesinrange("player", 29)
-        for i = 1, #enemies do
-          local executetar = enemies[i].guid;
-          if ni.unit.hp(executetar) < 20
-            and ni.spell.valid(executetar, 48806, true, true) then
-            ni.spell.cast(48806, executetar)
-            return true
-          end
-        end
-      end
-    end,
-
-    ["Hand of Freedom (Self)"] = function()
-      local _, enabled = GetSetting("freedom")
-      local _, disabled = GetSetting("disablefreedom")
-      if not disabled
-        and enabled
-        and ni.player.ismoving()
-        and data.paladin.FreedomUse("player")
-        and not data.paladin.HandActive("player")
-        and ni.spell.available(1044) then
-        ni.spell.cast(1044, "player")
-        return true
-      end
-    end,
-
-    ["Hand of Freedom (Member)"] = function()
-      local _, enabled = GetSetting("freedommemb")
-      local _, disabled = GetSetting("disablefreedom")
-      if not disabled
-        and enabled
-        and ni.spell.available(1044) then
-        for i = 1, #ni.members do
-          local ally = ni.members[i].unit
-          if ni.unit.ismoving(ally)
-            and data.paladin.FreedomUse(ally)
-            and not data.paladin.HandActive(ally)
-            and ni.spell.valid(ally, 1044, false, true, true) then
-            ni.spell.cast(1044, ally)
-            return true
-          end
-        end
-      end
-    end,
-
-    ["Cleanse (Self)"] = function()
+    -- FIX: Cleanse consolidado, controlado por cleanse_mode dropdown
+    ["Cleanse"] = function()
       local _, enabled = GetSetting("cleans")
       local _, disabled = GetSetting("disablecleans")
+      local cleanse_mode = GetSetting("cleanse_mode")
       local delay = GetSetting("dispeldelay")
-      if not disabled
-        and enabled
-        and ni.player.debufftype("Magic|Disease|Poison")
+
+      if disabled or not enabled or cleanse_mode == "manual" then return end
+
+      -- Self
+      if ni.player.debufftype("Magic|Disease|Poison")
         and ni.spell.available(4987)
         and ni.healing.candispel("player")
         and GetTime() - data.LastDispel > delay
@@ -923,15 +1103,9 @@ if build == 30300 and level == 80 and data then
         data.LastDispel = GetTime()
         return true
       end
-    end,
 
-    ["Cleanse (Member)"] = function()
-      local _, enabled = GetSetting("cleansmemb")
-      local _, disabled = GetSetting("disablecleans")
-      local delay = GetSetting("dispeldelay")
-      if not disabled
-        and enabled
-        and ni.spell.available(4987) then
+      -- Allies (solo si modo auto_allies)
+      if cleanse_mode == "auto_allies" and ni.spell.available(4987) then
         for i = 1, #ni.members do
           if ni.unit.debufftype(ni.members[i].unit, "Magic|Disease|Poison")
             and ni.healing.candispel(ni.members[i].unit)
@@ -945,88 +1119,13 @@ if build == 30300 and level == 80 and data then
       end
     end,
 
-    ["Turn Evil (Auto Use)"] = function()
-      local _, enabled = GetSetting("turn")
-      if enabled
-        and ni.unit.exists("target")
-        and ni.spell.available(10326)
-        and UnitCanAttack("player", "target") then
-        table.wipe(enemies);
-        enemies = ni.unit.enemiesinrange("player", 25)
-        local dontTurn = false
-        for i = 1, #enemies do
-          local tar = enemies[i].guid;
-          if (ni.unit.creaturetype(enemies[i].guid) == 3
-              or ni.unit.creaturetype(enemies[i].guid) == 6
-              or ni.unit.aura(enemies[i].guid, 49039))
-            and ni.unit.debuff(tar, 10326, "player") then
-            dontTurn = true
-            break
-          end
-        end
-        if not dontTurn then
-          for i = 1, #enemies do
-            local tar = enemies[i].guid;
-            if (ni.unit.creaturetype(enemies[i].guid) == 3
-                or ni.unit.creaturetype(enemies[i].guid) == 6
-                or ni.unit.aura(enemies[i].guid, 49039))
-              and not ni.unit.isboss(tar)
-              and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
-              and not ni.unit.debuff(tar, 10326, "player")
-              and ni.spell.valid(enemies[i].guid, 10326, false, true, true)
-              and GetTime() - data.paladin.LastTurn > 1.5 then
-              ni.spell.cast(10326, tar)
-              data.paladin.LastTurn = GetTime()
-              return true
-            end
-          end
-        end
-      end
-    end,
-
-    ["Hammer of Justice (Interrupt)"] = function()
-      local _, enabled = GetSetting("hojinterrupt")
-      if data.TryInterrupt("target", enabled, 10308, 0.35) then
-        return true
-      end
-    end,
-
-    ["Control (Member)"] = function()
-      local _, enabled = GetSetting("control")
-      if enabled
-        and ni.spell.available(20066) then
-        for i = 1, #ni.members do
-          local ally = ni.members[i].unit
-          if data.ControlMember(ally)
-            and not data.UnderControlMember(ally)
-            and ni.spell.valid(ally, 20066, false, true, true) then
-            ni.spell.cast(20066, ally)
-            return true
-          end
-        end
-      end
-      if not ni.spell.available(20066)
-        and ni.spell.available(10308) then
-        for i = 1, #ni.members do
-          local ally = ni.members[i].unit
-          if data.ControlMember(ally)
-            and not data.UnderControlMember(ally)
-            and ni.spell.valid(ally, 10308, false, true, true) then
-            ni.spell.cast(10308, ally)
-            return true
-          end
-        end
-      end
-    end,
-
     ["Cancel Shadowmourne"] = function()
       local _, enabled = GetSetting("cancelshadow")
       if enabled then
         local p = "player"
         for i = 1, 40 do
           local _, _, _, _, _, _, _, u, _, _, s = UnitBuff(p, i)
-          -- Chaos Bane (Shadowmourne) suele ser 73422
-          if u == p and (s == 73422) then
+          if u == p and s == 73422 then
             CancelUnitBuff(p, i)
             break
           end
@@ -1037,7 +1136,7 @@ if build == 30300 and level == 80 and data then
     ["Window"] = function()
       if not popup_shown then
         ni.debug.popup("Retribution Paladin by DarhangeR for 3.3.5a",
-          "Welcome to Retribution Paladin Profile!\n\nSupport: https://discord.gg/TEQEJYS\n\n--Profile Features--\n✓ Organized multi-page GUI\n✓ Smart seals (Single/AoE)\n✓ Art of War tracking\n✓ Seal stack-based cooldowns\n✓ Auto blessings in party/raid\n✓ Sacred Shield reliable in combat\n✓ AoE switching robust (player+target scan)")
+          "Welcome to Retribution Paladin Profile!\n\nSupport: https://discord.gg/TEQEJYS\n\n--Profile Features--\n✓ 7 pages GUI (Main/Rot1/Rot2/Def/Party/Trinkets/Expert)\n✓ Smart seals (Single/AoE) con dropdown configurable\n✓ Art of War tracking con override de emergencia\n✓ Seal stack-based cooldowns (Trinkets + Avenging Wrath)\n✓ Cleanse y Hand of Freedom con modos Auto/Manual\n✓ Lay on Hands y Hand of Salvation con dropdown modo\n✓ Healthstone Pick-up automático desde Soulwell\n✓ AoE switching robusto (player+target scan)")
         popup_shown = true;
       end
     end,
