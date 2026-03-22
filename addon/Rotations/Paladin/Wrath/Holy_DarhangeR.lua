@@ -1,9 +1,16 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = { };
+local enemies = {};
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
+
+-- Icon helper: usa GetSpellInfo directamente para evitar dependencias de data.*Icon()
+local function icon(spellID)
+  return select(3, GetSpellInfo(spellID)) or ""
+end
+
 if build == 30300 and level == 80 and data then
+
 local items = {
 	settingsfile = "DarhangeR_HolyPaladin.xml",
 	{ type = "title", text = "Holy Paladin PvE" },
@@ -208,27 +215,14 @@ local items = {
 	{ type = "entry", text = "Change macro #3 cleanse [Confirm]", tooltip = "Change cleanse macro on your own.", enabled = false, key = "expertmacro3" },
 	{ type = "entry", text = "Import/Export Settings", tooltip = "Import or export profile settings.", enabled = false, key = "importexport" },
 };
+
+-- =========================================================
+-- GetSetting helper
+-- =========================================================
 local function GetSetting(name)
-    for k, v in ipairs(items) do
-        if v.type == "entry"
-         and v.key ~= nil
-         and v.key == name then
-            return v.value, v.enabled
-        end
-        if v.type == "dropdown"
-         and v.key ~= nil
-         and v.key == name then
-            for k2, v2 in pairs(v.menu) do
-                if v2.selected then
-                    return v2.value
-                end
-            end
-        end
-        if v.type == "input"
-         and v.key ~= nil
-         and v.key == name then
-            return v.value
-        end
+  for k, v in ipairs(items) do
+    if v.type == "entry" and v.key ~= nil and v.key == name then
+      return v.value, v.enabled
     end
 end;
 local function IsIgnoredUnit(unit)
@@ -289,12 +283,15 @@ local function IsValithriaBossOnly()
 	return enabled and mode == 1 and ni.unit.exists("boss1") and ni.unit.id("boss1") == 36789
 end
 local function OnLoad()
-	ni.GUI.AddFrame("Holy_DarhangeR", items);
+  ni.GUI.AddFrame("Holy_DarhangeR", items);
 end
 local function OnUnLoad()
-	ni.GUI.DestroyFrame("Holy_DarhangeR");
+  ni.GUI.DestroyFrame("Holy_DarhangeR");
 end
 
+-- =========================================================
+-- QUEUE
+-- =========================================================
 local queue = {
 
 	"Universal pause",
@@ -336,6 +333,10 @@ local queue = {
 	"Flash of Light",
 	"Hand of Freedom (Member)",
 }
+
+-- =========================================================
+-- ABILITIES
+-- =========================================================
 local abilities = {
 -----------------------------------
 	["Universal pause"] = function()
@@ -1155,7 +1156,8 @@ local abilities = {
 	end,
 }
 
-	ni.bootstrap.profile("Holy_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
+  ni.bootstrap.profile("Holy_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
+
 else
     local queue = {
         "Error",
