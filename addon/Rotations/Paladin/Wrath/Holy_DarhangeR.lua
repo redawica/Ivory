@@ -1,9 +1,16 @@
 local data = ni.utils.require("DarhangeR");
 local popup_shown = false;
-local enemies = { };
+local enemies = {};
 local build = select(4, GetBuildInfo());
 local level = UnitLevel("player");
+
+-- Icon helper: usa GetSpellInfo directamente para evitar dependencias de data.*Icon()
+local function icon(spellID)
+  return select(3, GetSpellInfo(spellID)) or ""
+end
+
 if build == 30300 and level == 80 and data then
+
 local items = {
 	settingsfile = "DarhangeR_HolyPaladin.xml",
 	{ type = "title", text = "Holy Paladin PvE" },
@@ -208,27 +215,14 @@ local items = {
 	{ type = "entry", text = "Change macro #3 cleanse [Confirm]", tooltip = "Change cleanse macro on your own.", enabled = false, key = "expertmacro3" },
 	{ type = "entry", text = "Import/Export Settings", tooltip = "Import or export profile settings.", enabled = false, key = "importexport" },
 };
+
+-- =========================================================
+-- GetSetting helper
+-- =========================================================
 local function GetSetting(name)
-    for k, v in ipairs(items) do
-        if v.type == "entry"
-         and v.key ~= nil
-         and v.key == name then
-            return v.value, v.enabled
-        end
-        if v.type == "dropdown"
-         and v.key ~= nil
-         and v.key == name then
-            for k2, v2 in pairs(v.menu) do
-                if v2.selected then
-                    return v2.value
-                end
-            end
-        end
-        if v.type == "input"
-         and v.key ~= nil
-         and v.key == name then
-            return v.value
-        end
+  for k, v in ipairs(items) do
+    if v.type == "entry" and v.key ~= nil and v.key == name then
+      return v.value, v.enabled
     end
 end;
 local function IsIgnoredUnit(unit)
@@ -289,12 +283,15 @@ local function IsValithriaBossOnly()
 	return enabled and mode == 1 and ni.unit.exists("boss1") and ni.unit.id("boss1") == 36789
 end
 local function OnLoad()
-	ni.GUI.AddFrame("Holy_DarhangeR", items);
+  ni.GUI.AddFrame("Holy_DarhangeR", items);
 end
 local function OnUnLoad()
-	ni.GUI.DestroyFrame("Holy_DarhangeR");
+  ni.GUI.DestroyFrame("Holy_DarhangeR");
 end
 
+-- =========================================================
+-- QUEUE
+-- =========================================================
 local queue = {
 
 	"Universal pause",
@@ -336,6 +333,10 @@ local queue = {
 	"Flash of Light",
 	"Hand of Freedom (Member)",
 }
+
+-- =========================================================
+-- ABILITIES
+-- =========================================================
 local abilities = {
 -----------------------------------
 	["Universal pause"] = function()
@@ -1091,71 +1092,82 @@ local abilities = {
 			break
 		end
         end
-		if not dontTurn then
-		 for i = 1, #enemies do
-		 local tar = enemies[i].guid;
-		  if (ni.unit.creaturetype(enemies[i].guid) == 3
-		   or ni.unit.creaturetype(enemies[i].guid) == 6
-		   or ni.unit.aura(enemies[i].guid, 49039))
-		   and not ni.unit.isboss(tar)
-		   and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
-		   and not ni.unit.debuff(tar, 10326, "player")
-		   and ni.spell.valid(enemies[i].guid, 10326, false, true, true)
-		   and GetTime() - data.paladin.LastTurn > 1.5 then
-				ni.spell.cast(10326, tar)
-				data.paladin.LastTurn = GetTime()
-                        return true
-					end
-				end
-			end
-		end
-	end,
------------------------------------
-	["Hammer of Wrath (Auto Target)"] = function()
-		local _, enabled = GetSetting("masswrath")
-		if enabled
-		 and ni.player.power() > 60
-		 and ni.spell.available(48806)
-		 and UnitCanAttack("player", "target") then
-		 table.wipe(enemies);
-		  enemies = ni.unit.enemiesinrange("player", 29)
-		  for i = 1, #enemies do
-		   local executetar = enemies[i].guid;
-		    if ni.unit.hp(executetar) < 20
-			and ni.spell.valid(executetar, 48806, true, true) then
-					ni.spell.cast(48806, executetar)
-					return true
-				end
-			end
-		end
-	end,
------------------------------------
-	["Control (Member)"] = function()
-		local _, enabled = GetSetting("control")
-		if enabled
-		 and ni.spell.available(10308) then
-		  for i = 1, #ni.members do
-		   local ally = ni.members[i].unit
-		    if data.ControlMember(ally)
-			and not data.UnderControlMember(ally)
-			and ni.spell.valid(ally, 10308, false, true, true) then
-				ni.spell.cast(10308, ally)
-				return true
-				end
-			end
-		end
-	end,
------------------------------------
-	["Window"] = function()
-		if not popup_shown then
-		 ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a",
-		 "Welcome to Holy Paladin Profile! Support and more in Discord > https://discord.gg/TEQEJYS.\n\n--Profile Function--\n-For enable priority healing Main Tank put tank name to Tank Overrides and press Enable Main")
-		popup_shown = true;
-		end
-	end,
+      end
+    end
+  end,
+
+  -- FIX: Turn Evil - evaluación por unidad individual, sin flag global
+  ["Turn Evil (Auto Use)"] = function()
+    local _, enabled = GetSetting("turn")
+    if enabled
+      and ni.unit.exists("target")
+      and ni.spell.available(10326)
+      and UnitCanAttack("player", "target") then
+      table.wipe(enemies)
+      enemies = ni.unit.enemiesinrange("player", 25)
+      for i = 1, #enemies do
+        local tar = enemies[i].guid
+        local isUndead = ni.unit.creaturetype(tar) == 3
+        local isDemon  = ni.unit.creaturetype(tar) == 6
+        if (isUndead or isDemon or ni.unit.aura(tar, 49039))
+          and not ni.unit.isboss(tar)
+          and not ni.unit.debuffs(tar, "23920||35399||69056", "EXACT")
+          and not ni.unit.debuff(tar, 10326, "player")
+          and ni.spell.valid(tar, 10326, false, true, true)
+          and GetTime() - data.paladin.LastTurn > 1.5 then
+          ni.spell.cast(10326, tar)
+          data.paladin.LastTurn = GetTime()
+          return true
+        end
+      end
+    end
+  end,
+
+  ["Hammer of Wrath (Auto Target)"] = function()
+    local _, enabled = GetSetting("masswrath")
+    if enabled
+      and ni.player.power() > 60
+      and ni.spell.available(48806)
+      and UnitCanAttack("player", "target") then
+      table.wipe(enemies)
+      enemies = ni.unit.enemiesinrange("player", 29)
+      for i = 1, #enemies do
+        local executetar = enemies[i].guid
+        if ni.unit.hp(executetar) < 20
+          and ni.spell.valid(executetar, 48806, true, true) then
+          ni.spell.cast(48806, executetar)
+          return true
+        end
+      end
+    end
+  end,
+
+  ["Control (Member)"] = function()
+    local _, enabled = GetSetting("control")
+    if enabled and ni.spell.available(10308) then
+      for i = 1, #ni.members do
+        local ally = ni.members[i].unit
+        if data.ControlMember(ally)
+          and not data.UnderControlMember(ally)
+          and ni.spell.valid(ally, 10308, false, true, true) then
+          ni.spell.cast(10308, ally)
+          return true
+        end
+      end
+    end
+  end,
+
+  ["Window"] = function()
+    if not popup_shown then
+      ni.debug.popup("Holy Paladin by DarhangeR for 3.3.5a",
+        "Welcome to Holy Paladin Profile! Support: https://discord.gg/TEQEJYS\n\n--Profile Features--\n✓ 10 pages GUI\n✓ Sacred Shield automático en TODOS los tanks (excluye Paladines)\n✓ Beacon of Light en main tank\n✓ Flash of Light proc Infusion of Light corregido\n✓ Avenging Wrath y Divine Illumination con HP/Count configurables\n✓ Valithria ICC con check de setting\n✓ Turn Evil por unidad individual\n✓ Blessings para todo el grupo/raid\n✓ Expert Settings con macros configurables")
+      popup_shown = true
+    end
+  end,
 }
 
-	ni.bootstrap.profile("Holy_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
+  ni.bootstrap.profile("Holy_DarhangeR", queue, abilities, OnLoad, OnUnLoad);
+
 else
     local queue = {
         "Error",
