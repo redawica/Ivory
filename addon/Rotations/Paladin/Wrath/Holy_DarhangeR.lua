@@ -434,11 +434,12 @@ local abilities = {
 	["Cancel Righteous Fury"] = function()
 		local _, enabled = GetSetting("cancelrf")
 		if not enabled then return end
-		local p="player" for i = 1,40
-		do local _,_,_,_,_,_,_,u,_,_,s=UnitBuff(p,i)
-			if u==p and s==25780 then
-				CancelUnitBuff(p,i)
-				break;
+		local p = "player"
+		for i = 1, 40 do
+			local _, _, _, _, _, _, _, u, _, _, s = UnitBuff(p, i)
+			if u == p and s == 25780 then
+				CancelUnitBuff(p, i)
+				break
 			end
 		end
 	end,
