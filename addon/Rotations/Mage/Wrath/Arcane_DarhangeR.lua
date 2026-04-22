@@ -187,14 +187,15 @@ local abilities = {
 	end,
 -----------------------------------
 	["Cancel Ice Block"] = function()
-			local p="player" for i = 1,40 
-			do local _,_,_,_,_,_,_,u,_,_,s=UnitBuff(p,i)		
+		local p = "player"
+		for i = 1, 40 do
+			local _, _, _, _, _, _, _, u, _, _, s = UnitBuff(p, i)
 			if ni.player.hp() > 60
-			and u==p and s==45438 then
-				CancelUnitBuff(p,i) 
-				break;
+			 and u == p and s == 45438 then
+				CancelUnitBuff(p, i)
+				break
 			end
-		end 
+		end
 	end,
 -----------------------------------	
 	["Fire Ward"] = function()
