@@ -16,7 +16,7 @@ if build == 30300 and level == 80 and data then
 		settingsfile = "DarhangeR_Feral_DPS.xml",
 		{ type = "title", text = "Feral Druid DPS by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title", text = "|cffFFFF00Main Settings" },
+		{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry", text = "|T" .. icon(33876) .. ":26:26|t Boss Detect", tooltip = "Auto detect bosses for cooldown usage", enabled = true, key = "detect" },
 		{ type = "entry", text = "|T" .. icon(768) .. ":26:26|t Auto Cat Form", tooltip = "Auto switch to Cat Form in combat", enabled = true, key = "autoform" },
@@ -31,10 +31,10 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = true, key = "trinketenabled" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
-		{ type = "input", value = "", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
 		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
-		{ type = "input", value = "", width = 80, height = 15, key = "trinket14unit" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 
 	local function GetSetting(name)
@@ -72,9 +72,9 @@ if build == 30300 and level == 80 and data then
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
+		"Trinkets (Config)",
 		"Racial Stuff",
 		"Use engineer gloves",
-		"Trinkets (Config)",
 		"Trinkets",
 		"Barkskin",
 		"Frenzied Regeneration",

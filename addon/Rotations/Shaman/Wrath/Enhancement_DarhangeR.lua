@@ -10,7 +10,7 @@ local items = {
 	settingsfile = "DarhangeR_Enchancment.xml",
 	{ type = "title", text = "Enhancement Shaman by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },		
 	{ type = "title", text = "Lightning/Water Shields" },
@@ -42,6 +42,16 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.shaman.cureIcon()..":26:26\124t Cure Toxins", tooltip = "Auto dispel debuffs from player", enabled = true, key = "toxins" },
 	{ type = "entry", text = "\124T"..data.shaman.cureIcon()..":26:26\124t Cure Toxins (Member)", tooltip = "Auto dispel debuffs from members", enabled = false, key = "toxinsmemb" },	
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -84,9 +94,10 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",
+	"Trinkets (Config)",
 	"Racial Stuff",
-	"Use enginer gloves",
-	"Trinkets",
+		"Use enginer gloves",
+		"Trinkets",
 	"Wind Shear (Interrupt)",
 	"Totems pull",
 	"Magma Totem",
@@ -270,6 +281,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and data.shaman.InRange() then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, nil, "target") then
 			return true
 		end
 	end,
