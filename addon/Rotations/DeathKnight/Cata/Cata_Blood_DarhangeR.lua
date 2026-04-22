@@ -1,5 +1,6 @@
 local spellCast, spellValid, spellInstant, playerHP, playerPow, playerBuff, playerBuffSta, playerDistance, playerSlot, playerInventory, playerItemR, playerUseIt, playerEnemies, unitDebuff, unitDebuffRem, unitBuffType, unitEnemiesRange, unitDistance, unitBoss, drTrack, unitDebuffs = ni.spell.cast, ni.spell.valid, ni.spell.isinstant, ni.player.hp, ni.player.power, ni.player.buff, ni.player.buffstacks, ni.player.distance, ni.player.slotusable, ni.player.useinventoryitem, ni.player.itemready, ni.player.useitem, ni.player.enemiesinrange, ni.unit.debuff, ni.unit.debuffremaining, ni.unit.bufftype, ni.unit.enemiesinrange, ni.unit.distance, ni.unit.isboss, ni.drtracker.get, ni.unit.debuffs;
 local cata = ni.vars.build == 40300 or false;
+local data = ni.utils.require("DarhangeR");
 if cata then
 local KnowEngineer = ni.player.getskillinfo(GetSpellInfo(4036)) > 500 or false;
 local AntiAFKTime, LastReset = 0, 0;
@@ -51,6 +52,16 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = ni.player.itemicon(5512, 22, 22).." Healthstone", tooltip = "Use Warlock Healthstone (if you have) when player |cff00D700HP|r < %.", enabled = true, value = 35, min = 25, max = 65, step = 1, width = 40, key = "healthstoneuse" },	
 	{ type = "entry", text = ni.player.itemicon(57191, 22, 22).." Heal Potion", tooltip = "Use Heal Potions (if you have) when player |cff00D700HP|r < %.",  enabled = true, value = 30, min = 20, max = 60, step = 1, width = 40, key = "healpotionuse" },
+	{ type = "separator" },
+	{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+	{ type = "separator" },
+	{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+	{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+	{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	{ type = "entry", text = ni.player.itemicon(57192, 22, 22).." Mana Potion", tooltip = "Use Mana Potions (if you have) when player |cff0082FFMP|r < %.", enabled = true, value = 25, min = 15, max = 65, step = 1, width = 40, key = "manapotionuse" },
 };
 -- Get Setting from GUI -- 
@@ -326,6 +337,7 @@ local queue = {
 	"Vampiric Blood",
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
+	"Trinkets (Config)",
 	"Combat specific Pause",
 	"Empower Rune Weapon",
 	"Dark Command (Ally)",
@@ -479,6 +491,12 @@ local abilities = {
 					return true;
 				end
 			end
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data and data.UseConfiguredTrinkets(GetSetting, nil, "target") then
+			return true;
 		end
 	end,
 -----------------------------------

@@ -7,15 +7,18 @@ local function ActiveEnemies()
 end
 if build == 30300 and level == 80 and data then
 	local items = {
-		settingsfile = "DarhangeR_ProtоWarrior.xml",
+		settingsfile = "DarhangeR_ProtoWarrior.xml",
 		{ type = "title",    text = "Protection Warrior by |c0000CED1DarhangeR" },
 		{ type = "separator" },
-		{ type = "title",    text = "|cffFFFF00Main Settings" },
+		{ type = "page",     number = 0,                                                                                                                                text = "|cffFFFF00Main Settings" },
 		{ type = "separator" },
 		{ type = "entry",    text = "\124T" .. data.bossIcon() .. ":26:26\124t Boss Detect",                                                                            tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true,      key = "detect" },
 		{ type = "entry",    text = "Auto Stence",                                                                                                                      tooltip = "Auto use proper stence",                                            enabled = true,      key = "stence" },
-		{ type = "entry",    text = "\124T" .. data.warrior.batIcon() .. ":26:26\124t Battle Shout",                                                                    enabled = false,                                                               key = "battleshout" },
-		{ type = "entry",    text = "\124T" .. data.warrior.comIcon() .. ":26:26\124t Commanding Shout",                                                                enabled = true,                                                                key = "commandshout" },
+		{ type = "dropdown", text = "Shout Buff (Battle/Commanding)", key = "shoutmode", menu = {
+				{ selected = false, value = "Battle" },
+				{ selected = true, value = "Commanding" },
+			}
+		},
 		{ type = "entry",    text = "\124T" .. data.warrior.inter2Icon() .. ":26:26\124t Auto Interrupt",                                                               tooltip = "Auto check and interrupt all interruptible spells",                 enabled = true,      key = "autointerrupt" },
 		{ type = "entry",    text = "\124T" .. data.debugIcon() .. ":26:26\124t Debug Printing",                                                                        tooltip = "Enable for debug if you have problems",                             enabled = false,     key = "Debug" },
 		{ type = "separator" },
@@ -35,6 +38,16 @@ if build == 30300 and level == 80 and data then
 		{ type = "entry",    text = "\124T" .. data.warrior.rendIcon() .. ":26:26\124t Rend",                                                                           tooltip = "Work only on bosses",                                               enabled = true,      key = "rend" },
 		{ type = "entry",    text = "\124T" .. data.warrior.thundIcon() .. ":26:26\124t Thunder Clap (AoE)",                                                            enabled = true,                                                                key = "thunder" },
 		{ type = "entry",    text = "\124T" .. data.warrior.heroIcon() .. ":26:26\124t  /  \124T" .. data.warrior.cleaveIcon() .. ":26:26\124t Heroic Strike/Cleave",   tooltip = "Minimal rage threshold for use spells",                             value = 35,          key = "heroiccleave" },
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 	};
 	local function GetSetting(name)
 		for k, v in ipairs(items) do
@@ -60,6 +73,7 @@ if build == 30300 and level == 80 and data then
 		end
 	end;
 	local function OnLoad()
+		ni.GUI.DestroyFrame("Protection_Warrior_DarhangeR");
 		ni.GUI.AddFrame("Protection_Warrior_DarhangeR", items);
 	end
 	local function OnUnLoad()
@@ -78,7 +92,9 @@ if build == 30300 and level == 80 and data then
 		"Combat specific Pause",
 		"Healthstone (Use)",
 		"Heal Potions (Use)",
+		"Trinkets (Config)",
 		"Racial Stuff",
+		"Trinkets",
 		"Shield Bash (Interrupt)",
 		"Last Stand",
 		"Enraged Regeneration",
@@ -126,24 +142,28 @@ if build == 30300 and level == 80 and data then
 		end,
 		-----------------------------------
 		["Battle Shout"] = function()
-			local _, enabled = GetSetting("battleshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode ~= "Battle" then
+				return false
+			end
 			if ni.player.buffs("47436||48932||48934") then
 				return false
 			end
-			if enabled
-					and ni.spell.available(47436) then
+			if ni.spell.available(47436) then
 				ni.spell.cast(47436)
 				return true
 			end
 		end,
 		-----------------------------------
 		["Commanding Shout"] = function()
-			local _, enabled = GetSetting("commandshout")
+			local shoutMode = GetSetting("shoutmode")
+			if shoutMode ~= "Commanding" then
+				return false
+			end
 			if ni.player.buffs("47440||47440") then
 				return false
 			end
-			if enabled
-					and ni.spell.available(47440) then
+			if ni.spell.available(47440) then
 				ni.spell.cast(47440)
 				return true
 			end
@@ -254,6 +274,30 @@ if build == 30300 and level == 80 and data then
 			end
 		end,
 		-----------------------------------
+		-----------------------------------
+		["Trinkets (Config)"] = function()
+			if data.UseConfiguredTrinkets(GetSetting, 47488, "target") then
+				return true
+			end
+		end,
+		-----------------------------------
+		["Trinkets"] = function()
+			local _, enabled = GetSetting("detect")
+			if data.CDorBoss("target", 5, 35, 5, enabled)
+				and ni.player.slotcastable(13)
+				and ni.player.slotcd(13) == 0
+				and data.warrior.InRange() then
+				ni.player.useinventoryitem(13)
+			else
+				if data.CDorBoss("target", 5, 35, 5, enabled)
+					and ni.player.slotcastable(14)
+					and ni.player.slotcd(14) == 0
+					and data.warrior.InRange() then
+					ni.player.useinventoryitem(14)
+					return true
+				end
+			end
+		end,
 		["Shield Bash (Interrupt)"] = function()
 			local _, enabled = GetSetting("autointerrupt")
 		if data.TryInterrupt("target", enabled, 72, 0.35) then
@@ -301,7 +345,6 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Taunt"] = function()
 			local _, enabled = GetSetting("tau")
-			table.wipe(enemies);
 			if (data.youInInstance()
 						or enabled)
 					and ni.unit.exists("targettarget")
@@ -322,7 +365,6 @@ if build == 30300 and level == 80 and data then
 			if ni.spell.available(355)
 					and (data.youInInstance()
 						or enabled) then
-				table.wipe(enemies);
 				local enemies = ni.unit.enemiesinrange("player", 30)
 				for i = 1, #enemies do
 					local threatUnit = enemies[i].guid
@@ -339,7 +381,6 @@ if build == 30300 and level == 80 and data then
 		-----------------------------------
 		["Mocking Blow"] = function()
 			local _, enabled = GetSetting("mocking")
-			table.wipe(enemies);
 			if (data.youInInstance()
 						or enabled)
 					and ni.unit.exists("targettarget")
@@ -432,8 +473,7 @@ if build == 30300 and level == 80 and data then
 			if ni.unit.exists("target")
 					and data.warrior.InRange()
 					and UnitCanAttack("player", "target") then
-				table.wipe(enemies);
-				enemies = ni.unit.enemiesinrange("target", 8)
+				local enemies = ni.unit.enemiesinrange("target", 8)
 				for i = 1, # enemies do
 					local tar = enemies[i].guid;
 					if ni.unit.creaturetype(enemies[i].guid) ~= 8

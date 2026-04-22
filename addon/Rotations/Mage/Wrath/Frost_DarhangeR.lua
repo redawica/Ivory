@@ -8,7 +8,7 @@ local items = {
 	settingsfile = "DarhangeR_Frost.xml",
 	{ type = "title", text = "Frost Mage by |c0000CED1DarhangeR" },
 	{ type = "separator" },
-	{ type = "title", text = "|cffFFFF00Main Settings" },
+	{ type = "page", number = 0, text = "|cffFFFF00Main Settings" },
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.bossIcon()..":26:26\124t Boss Detect", tooltip = "When ON - Auto detect Bosses, when OFF - use CD bottom for Spells", enabled = true, key = "detect" },
 	{ type = "entry", text = "\124T"..data.mage.interIcon()..":26:26\124t Auto Interrupt", tooltip = "Auto check and interrupt all interruptible spells", enabled = true, key = "autointerrupt" },
@@ -36,6 +36,16 @@ local items = {
 	{ type = "separator" },
 	{ type = "entry", text = "\124T"..data.mage.curseIcon()..":26:26\124t Remove Curse", tooltip = "Auto dispel debuffs from player", enabled = true, key = "removecurse" },
 	{ type = "entry", text = "\124T"..data.mage.curseIcon()..":26:26\124t Remove Curse (Member)", tooltip = "Auto dispel debuffs from members", enabled = false, key = "removecursememb" },	
+		{ type = "separator" },
+		{ type = "page", number = 99, text = "|cff00BFFFTrinkets (Config)" },
+		{ type = "separator" },
+		{ type = "entry", text = "Enable Custom Trinkets", tooltip = "Use configured trinkets by ID/spell target", enabled = false, key = "trinketenabled" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket13spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket13unit" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14id" },
+		{ type = "input", value = "", width = 80, height = 15, key = "trinket14spell" },
+		{ type = "input", value = "target", width = 80, height = 15, key = "trinket14unit" },
 };
 local function GetSetting(name)
     for k, v in ipairs(items) do
@@ -85,9 +95,10 @@ local queue = {
 	"Healthstone (Use)",
 	"Heal Potions (Use)",
 	"Mana Potions (Use)",		
+	"Trinkets (Config)",
 	"Racial Stuff",
-	"Use enginer gloves",
-	"Trinkets",
+		"Use enginer gloves",
+		"Trinkets",
 	"Counterspell (Interrupt)",
 	"Freeze (Pet)",
 	"Cancel Ice Block",
@@ -187,12 +198,13 @@ local abilities = {
 	end,
 -----------------------------------
 	["Cancel Ice Block"] = function()
-			local p="player" for i = 1,40 
-			do local _,_,_,_,_,_,_,u,_,_,s=UnitBuff(p,i)		
+			local p = "player"
+			for i = 1, 40 do
+				local _, _, _, _, _, _, _, u, _, _, s = UnitBuff(p, i)
 			if ni.player.hp() > 60
-			and u==p and s==45438 then
-				CancelUnitBuff(p,i) 
-				break;
+			and u == p and s == 45438 then
+				CancelUnitBuff(p, i)
+				break
 			end
 		end 
 	end,
@@ -333,6 +345,12 @@ local abilities = {
 		 and data.CDorBoss("target", 5, 35, 5, enabled)
 		 and ni.spell.valid("target", 42842)  then
 			ni.player.useinventoryitem(10)
+			return true
+		end
+	end,
+-----------------------------------
+	["Trinkets (Config)"] = function()
+		if data.UseConfiguredTrinkets(GetSetting, 42842, "target") then
 			return true
 		end
 	end,
